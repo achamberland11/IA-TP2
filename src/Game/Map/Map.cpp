@@ -33,7 +33,7 @@ FTile GMap::CreateTile(const std::string &rawValue) {
     tile.TextureID = rawValue;
 
     if (rawValue == "Dirt") {
-        tile.TextureID += std::to_string(GetRand(22, 95));
+        tile.TextureID += std::to_string(GetRand(22, 85));
         tile.Type = ETileType::Dirt;
         tile.Walkable = true;
         tile.BlocksVision = false;
