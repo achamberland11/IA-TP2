@@ -35,4 +35,4 @@ target_compile_features(IA-TP2 PRIVATE cxx_std_17)
 target_link_libraries(IA-TP2 PRIVATE SFML::Graphics)
 
 # Copy Assets folder to output directory
-#file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)

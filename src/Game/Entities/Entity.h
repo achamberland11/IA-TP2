@@ -13,6 +13,7 @@
 
 class GEntity : public GObject
 {
+public:
     GEntity();
     virtual ~GEntity();
 

@@ -3,11 +3,19 @@
 //
 
 #pragma once
-#include "../../Core/Object.h"
+#include <string>
 
+enum class ETileType {
+    Floor,
+    Wall,
+    Dirt,
+    Obstacle,
+};
 
-class GTile : public GObject
-{
-    GTile();
-    virtual ~GTile();
+struct FTile {
+    ETileType Type;
+    std::string TextureID;
+    bool Walkable = true;
+    bool BlocksVision = false;
+    int MovementCost = 1;
 };

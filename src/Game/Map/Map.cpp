@@ -3,3 +3,117 @@
 //
 
 #include "Map.h"
+
+GMap::GMap(int width, int height) {
+    Width = width / PixelsPerTile;
+    Height = height / PixelsPerTile;
+
+    // Load Tileset
+    LoadFolder("Assets/Images/Tileset/Dirt");
+    LoadFolder("Assets/Images/Tileset/Stone");
+    LoadFolder("Assets/Images/Tileset/Clay");
+    LoadFolder("Assets/Images/Tileset/Mix");
+    LoadFolder("Assets/Images/Tileset/Floor");
+}
+
+void GMap::LoadFolder(const std::string folderPath) {
+    for (const auto &entry: std::filesystem::directory_iterator(folderPath)) {
+        if (entry.path().extension() == ".png") {
+            std::string tileName = entry.path().stem().string();
+
+            if (!Textures[tileName].loadFromFile(entry.path().string()))
+                std::cerr << "Error loading : " << entry.path() << std::endl;
+        }
+    }
+}
+
+FTile GMap::CreateTile(const std::string &rawValue) {
+    FTile tile{};
+
+    tile.TextureID = rawValue;
+
+    if (rawValue == "Dirt") {
+        tile.TextureID += std::to_string(GetRand(22, 95));
+        tile.Type = ETileType::Dirt;
+        tile.Walkable = true;
+        tile.BlocksVision = false;
+        tile.MovementCost = 10;
+    } else if (rawValue == "M") {
+        tile.TextureID += std::to_string(GetRand(8, 65));
+        tile.Type = ETileType::Floor;
+        tile.Walkable = false;
+        tile.BlocksVision = true;
+        tile.MovementCost = 1;
+    }
+
+    return tile;
+}
+
+void GMap::LoadMap(const std::string mapPath) {
+    Map.assign(Height, std::vector<FTile>(Width));
+
+    std::ifstream file(mapPath);
+    if (!file)
+        throw std::runtime_error("Can't open file");
+
+    std::string line;
+    for (int row = 0; row < Height && std::getline(file, line); row++) {
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
+
+        std::stringstream ss(line);
+        std::string value;
+
+        for (int col = 0; col < Width && std::getline(ss, value, ','); col++) {
+            if (!value.empty() && value.back() == '\r')
+                value.pop_back();
+
+            Map[row][col] = CreateTile(value);
+        }
+    }
+
+    for (auto &[tile, texture]: Textures) {
+        Sprites[tile] = std::make_unique<sf::Sprite>(texture);
+
+        sf::Vector2u textureSize = texture.getSize();
+        float scaleX = static_cast<float>(PixelsPerTile) / textureSize.x;
+        float scaleY = static_cast<float>(PixelsPerTile) / textureSize.y;
+        Sprites[tile]->setScale(sf::Vector2f(scaleX, scaleY));
+    }
+}
+
+void GMap::Display(sf::RenderWindow &window) {
+    for (int row = 0; row < Height; row++) {
+        for (int col = 0; col < Width; col++) {
+            sf::Vector2f position(
+                static_cast<float>(col * PixelsPerTile),
+                static_cast<float>(row * PixelsPerTile)
+            );
+
+            //Add a sand layer behind to cover wall gaps.
+            auto floor = Sprites.find("F");
+            if (floor != Sprites.end()) {
+                floor->second->setPosition(position);
+                window.draw(*floor->second);
+            }
+
+            const std::string &tileName = Map[row][col].TextureID;
+
+            auto it = Sprites.find(tileName);
+
+            if (it == Sprites.end())
+                continue;
+
+            it->second->setPosition(position);
+
+            window.draw(*it->second);
+        }
+    }
+}
+
+int GMap::GetRand(int max, int chance) const {
+    if (rand() % 100 <= chance)
+        return 0;
+
+    return rand() % max + 1;
+}

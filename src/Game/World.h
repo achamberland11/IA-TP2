@@ -8,6 +8,7 @@
 
 class GWorld : public GObject
 {
+public:
     GWorld();
     virtual ~GWorld();
 };

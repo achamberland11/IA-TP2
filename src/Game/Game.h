@@ -8,6 +8,7 @@
 
 class GGame : public GObject
 {
+public:
     GGame();
     virtual ~GGame();
 };
