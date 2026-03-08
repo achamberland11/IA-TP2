@@ -91,9 +91,10 @@ fonctionnelle. Vous pouvez remettre le vidéo sur Moodle ou fournir un lien vers
 Classe de base de tout objet du jeu.
 
 #### Classe GEntity : GObject
-Classe de base de tout entité présente dans le monde du jeu. Possède une position (à l'aide du component Transform).
+Classe de base de toute entité présente dans le monde du jeu. Possède une position, une rotation et un scale (à l'aide 
+du component Transform).
 
-#### Classe GComponenet : GObject
+#### Classe GComponent : GObject
 Classe de base de tout composant d'un GEntity.
 
 ---
@@ -101,53 +102,127 @@ Classe de base de tout composant d'un GEntity.
 ### Game
 #### Classe GGame : GObject
 Classe de base de la partie. Se charge d'initialiser le monde, de créer les entités requises, de lancer la boucle de jeu.
+- Initialise SFLM
+- Crée le monde
+- Lance la boucle de jeu (Update(), Render())
+
+#### Classe GWorld : GObject
+Classe de base du monde. Contient les entités du niveau, contient les obstacles / murs, l'agent et l'intrus.
+
+---
+
+### Map
+#### Classe GMap : GObject
+Classe de base pour la map, gère la structure du niveau et les collisions.
+
+#### Classe GTile : GObject
+Classe de base pour un tile du niveau.
+
+#### Classe GObstacle : GObject
+Classe de base pour un obstacle du niveau.
 
 ---
 ### Controllers
-#### Classe GController : GEntity
-Gère les inputs pour diriger les actions d'un Character et son cycle de vie. À besoin d'une référence à un Character. 
+#### Classe GController : GObject 
+Gère les inputs pour diriger les actions d'un Character et son cycle de vie. A besoin d'une référence à un Character. 
 
 ##### Classe GPlayerController : GController
-Gère les inputs du joueur (WASD pour les déplacements).
+Gère les inputs du joueur. A besoin d'une référence à un GPlayerCharacter.
 
 ##### Classe GInstrusController : GPlayerController
-Classe de l'intrus controllé par le joueur.
+Classe de l'intrus controllé par le joueur. A besoin d'une référence à un GIntrusCharacter.
 
 ##### Classe GAgentController : GController
-Gère les actions de l'agent (IA) comme son FSM, le pathfinding et le steering.
+Gère les actions de l'agent (IA) comme son FSM, le pathfinding et le steering. A besoin d'une référence à un 
+GAgentCharacter. Le controller (GAgentController) orchestre les différentes actions de l'agent à l'aide de son FSM.
 
 ---
 
 ### Characters
 #### Classe GCharacter : GEntity 
-Permet de charger un personnage de tout type dans la partie. A besoin d'une position de départ (déjat comprise dans la 
-classe Object), de points de vie, d'une vitesse.
+Permet de charger un personnage de tout type dans la partie. A besoin d'une position de départ (déjà comprise dans la 
+classe GEntity). Les Characters sont toutes les Entity mobiles.
 
 ##### Classe GPlayerCharacter : GCharacter
-Permet de charger un joueur dans la partie.
+Permet de charger un character controllé par l'utilisateur.
 
-##### Classe GAgent : GCharacter
-Permet de charger un agent (IA) dans la partie.
+##### Classe GIntrusCharacter : GPlayerCharacter
+Permet de charger l'intrus dans la partie.
+
+##### Classe GAgentCharacter : GCharacter
+Permet de charger un agent (IA) dans la partie. Contient les information sur le champ de vision, les points de patrouille,
+l'état courant (Current State) de l'agent...
 
 ---
 
 ### Components
 #### Classe GTransformComponent : GComponents
-Classe contenant un vector 2 pour la position (2D), tout GEntity contient un GTransform.
+Classe contenant un vector 2 pour la position (2D), un vecteur 2 pour la rotation et un vecteur 2 pour le scale. Tout
+GEntity contient un GTransformComponent.
 
 #### Classe GColliderComponent : GComponents
 Classe de base des colliders.
 
 #### Classe GVisionComponent : GComponents
-Classe de base des composants cone de vision.
+Classe de base du component pour le cone de vision. Vérifie si l'intrus (ou tout autre cible) est à portée, et si il 
+est dans le champ de vision, vérifie ensuite si la ligne de vue est libre.
 
-#### Classe 
+#### Classe GStateMachineComponent : GComponents
+Classe de base du component FSM. Gère les différents states de l'agent et permet de changer d'état avec ChangeState() 
+et Update l'état courant.
+
+#### Classe GPathfindingComponent : GComponents
+Classe de base du component pour le pathfinding. Gère le chemin à suivre par l'agent.
+
+#### Classe GSteeringComponent : GComponents
+Classe de base du component pour le steering. Gère les différents comportements de mouvement de l'agent (seek, arrive, 
+pursuit, follow path, avoid obstacles*, etc.)
 
 ---
 
-### 2D Colliders
+### Colliders
 #### Classe GCircleCollider : GColliderComponent
-Classe de collider circulaire.
+Classe de base pour un collider circulaire.
 
 #### Classe GBoxCollider : GColliderComponent
-Classe de collider rectangulaire.
+Classe de base pour un collider rectangulaire.
+
+#### Classe GCollisionSystem : GObject
+Classe de base pour le système de collisions. Gère les collisions entre les colliders.
+
+---
+
+### FSM
+#### Classe GState : GObject
+Classe abstraite de base pour tout les states de l'FSM. Contient les fonctions virtuelles pures Enter, Update, Exit.
+
+#### Classe GPatrolState : GState
+Classe de base pour le state patrouille.
+
+#### Classe GChaseState : GState
+Classe de base pour le state poursuite.
+
+#### Classe GReturnState : GState
+Classe de base pour le state retour (retour au dernier point de patrouille).
+
+
+---
+
+### Pathfinding
+
+#### Classe GGraph : GObject
+Classe de base d'un graphe. Stocke les nœuds et les connexions. Construit le réseau de navigation.
+
+#### Classe GGraphNode : GObject
+Classe de base d'un nœud du graphe.
+- Position
+- Index
+- Adjacents
+- Parent
+
+#### Classe GAStarPathfinding : GObject
+Classe de base du pathfinding A*.
+
+---
+
+### HUD

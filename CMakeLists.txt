@@ -13,7 +13,23 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(IA-TP2
-        src/main.cpp)
+        src/main.cpp
+        src/Core/Object.h
+        src/Game/Entities/Entity.cpp
+        src/Game/Entities/Entity.h
+        src/Game/Components/Component.cpp
+        src/Game/Components/Component.h
+        src/Macros/ObjectMacros.h
+        src/Game/Components/TransformComponent.cpp
+        src/Game/Components/TransformComponent.h
+        src/Game/Game.cpp
+        src/Game/Game.h
+        src/Game/World.cpp
+        src/Game/World.h
+        src/Game/Map/Map.cpp
+        src/Game/Map/Map.h
+        src/Game/Map/Tile.cpp
+        src/Game/Map/Tile.h)
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)
 target_link_libraries(IA-TP2 PRIVATE SFML::Graphics)
