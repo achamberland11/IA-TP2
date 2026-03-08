@@ -44,6 +44,13 @@ FTile GMap::CreateTile(const std::string &rawValue) {
         tile.Walkable = false;
         tile.BlocksVision = true;
         tile.MovementCost = 1;
+    } else if (rawValue == "J") {
+        //Temporairish??
+        tile.TextureID += std::to_string(GetRand(5, 10));
+        tile.Type = ETileType::Floor;
+        tile.Walkable = false;
+        tile.BlocksVision = true;
+        tile.MovementCost = 1;
     }
 
     return tile;
