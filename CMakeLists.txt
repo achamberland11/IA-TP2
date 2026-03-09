@@ -35,10 +35,13 @@ add_executable(IA-TP2
         src/Game/Entities/Characters/Character.h
         src/Game/Entities/Characters/PlayerCharacter.cpp
         src/Game/Entities/Characters/PlayerCharacter.h
+        src/Game/Entities/Characters/AgentCharacter.cpp
+        src/Game/Entities/Characters/AgentCharacter.h
         src/Game/Components/RendererComponent.cpp
         src/Game/Components/RendererComponent.h
         src/Game/Controllers/PlayerController.cpp
-        src/Game/Controllers/PlayerController.h)
+        src/Game/Controllers/PlayerController.h
+)
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)
 target_include_directories(IA-TP2 PRIVATE

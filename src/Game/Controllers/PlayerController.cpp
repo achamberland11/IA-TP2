@@ -31,6 +31,7 @@ void GPlayerController::Update(float dt) {
         const float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
         direction.x /= length;
         Owner->SetVelocity(direction * speed);
+        Owner->GetTransformComponent()->SetRotation(direction);
     }
 }
 

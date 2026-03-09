@@ -7,16 +7,18 @@
 #include "../../Controllers/PlayerController.h"
 #include "SFML/Window/Event.hpp"
 #include <map>
+#include <vector>
 
 
-class GPlayerCharacter : public GCharacter
+class GAgentCharacter : public GCharacter
 {
 public:
-    GPlayerCharacter();
-    ~GPlayerCharacter() override;
+    GAgentCharacter();
+    ~GAgentCharacter() override;
 
     void Start() override;
     void Update(float dt) override;
+    void DrawDebug(sf::RenderWindow& window);
 
 private:
     void LoadTextures();
@@ -26,4 +28,7 @@ private:
 
     float spriteTimer = 0.f;
     float spriteDuration = 0.5f;
+
+    std::vector<sf::Vector2f> targets = { sf::Vector2f(500, 300), sf::Vector2f(300, 500) };
+    int currentTarget = 0;
 };

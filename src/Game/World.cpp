@@ -5,6 +5,7 @@
 #include "World.h"
 
 #include "Entities/Characters/PlayerCharacter.h"
+#include "Entities/Characters/AgentCharacter.h"
 
 GWorld::GWorld(sf::Vector2u windowSize) : WindowSize(windowSize) {
     CreateMap();
@@ -31,6 +32,9 @@ void GWorld::Render(sf::RenderWindow& window) {
     if (Map) Map->Display(window);
 
     for (GEntity* entity: Entities) {
+        if(auto agent = dynamic_cast<GAgentCharacter*>(entity))
+            agent->DrawDebug(window);
+
         entity->Render(window);
     }
 }
@@ -53,12 +57,15 @@ void GWorld::CreateEntities() {
 
 void GWorld::CreatePlayer() {
     GPlayerCharacter* player = new GPlayerCharacter();
-    // player->GetTransformComponent()->SetPosition(sf::Vector2f(100, 100));
-    // player->GetTransformComponent()->SetScale(sf::Vector2f(1, 1));
+    player->GetTransformComponent()->SetPosition(sf::Vector2f(WindowSize.x / 2.f, WindowSize.y / 2.f));
+    player->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
     Entities.push_back(player);
     Controllers.push_back(player->GetController());
 }
 
 void GWorld::CreateAgent() {
-
+    GAgentCharacter* agent = new GAgentCharacter();
+    agent->GetTransformComponent()->SetPosition(sf::Vector2f(200, 100));
+    agent->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
+    Entities.push_back(agent);
 }

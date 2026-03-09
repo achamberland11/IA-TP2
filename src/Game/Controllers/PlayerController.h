@@ -17,6 +17,8 @@ public:
 
     void HandleEvent(const sf::Event& event) override;
 
+    bool IsMoving() { return bMoveUp || bMoveDown || bMoveLeft || bMoveRight; }
+
 private:
     bool bMoveUp = false;
     bool bMoveDown = false;
