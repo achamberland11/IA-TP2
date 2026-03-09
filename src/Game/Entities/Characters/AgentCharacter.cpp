@@ -1,5 +1,6 @@
 #include "AgentCharacter.h"
 #include <iostream>
+#include <SFML/Graphics/CircleShape.hpp>
 
 GAgentCharacter::GAgentCharacter()
 {
@@ -28,19 +29,23 @@ void GAgentCharacter::Start()
 
 void GAgentCharacter::Update(float dt)
 {
+	//Temporaire
 	sf::Vector2f position = Transform->GetPosition();
-	sf::Vector2f direction = target - position;
+	sf::Vector2f direction = targets[currentTarget] - position;
 	float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-	if (distance <= 2) 
-		SetVelocity({ 0.f, 0.f });
+	if (distance <= 2) {
+		currentTarget++;
+		if (currentTarget >= targets.size())
+			SetVelocity({ 0.f, 0.f });
+	}
 	else {
 		direction /= distance;
 		SetVelocity(direction * static_cast<float>(100));
 	}
 
 	std::string oldSpriteName = Renderer->GetSpriteName();
-	//sf::Vector2f direction;
+//	sf::Vector2f direction;
 	bool flip = true;
 
 	//Flip le sprite si l'agent va a gauche.
@@ -64,20 +69,33 @@ void GAgentCharacter::Update(float dt)
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 {
-	sf::Vector2f from = Transform->GetPosition();
-	sf::Vector2f to = target;
-	sf::Vector2f diff = to - from;
-	float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
-	float thickness = 5.f;
-	sf::Color lineColor (180, 100, 220, 180);
-	
-	sf::RectangleShape line(sf::Vector2f(length, thickness));
-	line.setFillColor(lineColor);
-	line.setOrigin(sf::Vector2f(0.f, thickness / 2.f));
-	line.setPosition(from);
-	line.setRotation(sf::radians(std::atan2(diff.y, diff.x)));
+	const sf::Color Color(180, 100, 220, 180);
+	const float LineTickness = 5.f;
 
-	window.draw(line);
+	sf::Vector2f from = Transform->GetPosition();
+
+	for (int i = currentTarget; i < targets.size(); i++) {
+		sf::Vector2f to = targets[i];
+		sf::Vector2f diff = to - from;
+		float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+
+		sf::RectangleShape line(sf::Vector2f(length, LineTickness));
+		line.setFillColor(Color);
+		line.setOrigin(sf::Vector2f(0.f, LineTickness / 2.f));
+		line.setPosition(from);
+		line.setRotation(sf::radians(std::atan2(diff.y, diff.x)));
+
+		window.draw(line);
+
+		sf::CircleShape circle(8.f);
+		circle.setOrigin(sf::Vector2f(8.f, 8.f));
+		circle.setPosition(to);
+		circle.setFillColor(Color);
+
+		window.draw(circle);
+
+		from = to;
+	}
 }
 
 void GAgentCharacter::LoadTextures()
