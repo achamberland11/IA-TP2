@@ -42,6 +42,10 @@ add_executable(IA-TP2
         src/Game/Controllers/PlayerController.h)
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)
+target_include_directories(IA-TP2 PRIVATE
+        src
+        src/AI
+)
 target_link_libraries(IA-TP2 PRIVATE SFML::Graphics)
 
 # Copy Assets folder to output directory
