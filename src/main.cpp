@@ -5,31 +5,18 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "Game/Game.h"
 #include "Game/Map/Map.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Network/SocketHandle.hpp"
 #include "SFML/System/Vector2.hpp"
 
 int main() {
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
 
     try {
-        sf::Vector2u windowSize(1280, 736);
-        sf::RenderWindow window(sf::VideoMode(windowSize), "TP AI");
-        window.setFramerateLimit(120);
-
-        GMap Map(windowSize.x, windowSize.y);
-
-        Map.LoadMap("Assets/map.csv");
-
-        while (window.isOpen()) {
-            // Draw
-            window.clear(sf::Color::Blue);
-
-            Map.Display(window);
-
-            window.display();
-        }
+        GGame Game(sf::Vector2u(1280, 720));
+        Game.Run();
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return -1;
