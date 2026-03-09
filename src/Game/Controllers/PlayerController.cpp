@@ -1,3 +1,4 @@
+#include "PlayerController.h"
 //
 // Created by Antoine on 2026-03-09.
 //
@@ -29,6 +30,7 @@ void GPlayerController::Update(float dt) {
         const float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
         direction.x /= length;
         Owner->SetVelocity(direction * speed);
+        Owner->GetTransformComponent()->SetRotation(direction);
     }
 }
 
@@ -54,5 +56,4 @@ void GPlayerController::HandleEvent(const sf::Event &event) {
             default: break;
         }
     }
-
 }

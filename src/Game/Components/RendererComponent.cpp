@@ -7,22 +7,34 @@
 #include "../Entities/Entity.h"
 
 void GRendererComponent::Start() {
-    // Sprite->setScale(Owner->GetTransformComponent()->GetScale());
-
-    Shape.setSize(Owner->GetTransformComponent()->GetScale());
-    Shape.setFillColor(Color);
+	if (Sprite)
+		Sprite->setScale(Owner->GetTransformComponent()->GetScale());
+	else
+	{
+		Shape.setSize(Owner->GetTransformComponent()->GetScale());
+		Shape.setFillColor(Color);
+	}
 }
 
 void GRendererComponent::Update(float deltaSeconds) {
-    // Sprite->setColor(Color);
-    // Sprite->setPosition(Owner->GetTransformComponent()->GetPosition());
-    // Sprite->setRotation(Owner->GetTransformComponent()->GetRotation());
+	// Sprite->setColor(Color);
+	// Sprite->setRotation(Owner->GetTransformComponent()->GetRotation());
 
-    Shape.setPosition(Owner->GetTransformComponent()->GetPosition());
-    Shape.setFillColor(Color);
+	if (Sprite)
+	{
+		Sprite->setPosition(Owner->GetTransformComponent()->GetPosition());
+		Sprite->setScale(Owner->GetTransformComponent()->GetScale());
+	}
+	else
+	{
+		Shape.setPosition(Owner->GetTransformComponent()->GetPosition());
+		Shape.setFillColor(Color);
+	}
 }
 
-void GRendererComponent::Render(sf::RenderWindow &window) {
-    // window.draw(Sprite);
-    window.draw(Shape);
+void GRendererComponent::Render(sf::RenderWindow& window) {
+	if (Sprite)
+		window.draw(*Sprite);
+	else
+		window.draw(Shape);
 }

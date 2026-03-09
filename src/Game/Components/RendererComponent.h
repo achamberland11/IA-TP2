@@ -23,8 +23,6 @@ public:
         Shape.setFillColor(Color);
         Shape.setPosition(sf::Vector2f(0, 0));
         Shape.setScale(sf::Vector2f(1, 1));
-        /*Sprite = new sf::Sprite(*Texture);
-        Sprite->setColor(Color);*/
     }
     ~GRendererComponent() override {
         // delete Sprite;
@@ -38,10 +36,15 @@ public:
     // sf::Sprite* GetSprite() const { return Sprite; }
     sf::RectangleShape& GetShape() { return Shape; }
     void SetColor(const sf::Color& color) { Color = color; }
+    void SetSprite(const sf::Sprite& sprite, std::string name) { Sprite = std::make_unique<sf::Sprite>(sprite); SpriteName = name; }
+
+    std::string GetSpriteName() { return SpriteName; }
 
 private:
     /*const std::unique_ptr<::sf::Texture> Texture;
     sf::Sprite* Sprite;*/
     sf::RectangleShape Shape;
     sf::Color Color;
+    std::unique_ptr<sf::Sprite> Sprite;
+    std::string SpriteName;
 };

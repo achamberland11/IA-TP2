@@ -10,7 +10,6 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
 
-
 class GWorld : public GObject
 {
 public:
@@ -30,7 +29,6 @@ private:
     void CreatePlayer();
     void CreateAgent();
 
-private:
     sf::Vector2u WindowSize;
     std::unique_ptr<GMap> Map;
 
