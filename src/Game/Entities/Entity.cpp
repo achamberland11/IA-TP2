@@ -16,6 +16,16 @@ GEntity::~GEntity()
     Components.clear();
 }
 
+void GEntity::Start()
+{
+    for (auto component : Components) component->Start();
+}
+
+void GEntity::Update(float dt)
+{
+    for (auto component : Components) component->Update(dt);
+}
+
 void GEntity::AddComponent(GComponent* component)
 {
     Components.push_back(component);

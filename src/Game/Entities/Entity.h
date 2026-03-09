@@ -19,7 +19,9 @@ public:
 
     std::string Name = "Entity";
     bool bActive = true;
-    std::vector<GComponent*> Components;
+
+    virtual void Start();
+    virtual void Update(float dt);
 
     void AddComponent(GComponent* component);
     void RemoveComponent(GComponent* component);
@@ -28,5 +30,6 @@ public:
     GTransformComponent* GetTransformComponent() { return Transform; }
 
 protected:
+    std::vector<GComponent*> Components;
     GTransformComponent* Transform;
 };
