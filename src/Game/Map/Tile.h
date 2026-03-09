@@ -15,6 +15,7 @@ enum class ETileType {
 struct FTile {
     ETileType Type;
     std::string TextureID;
+    std::string ObjectID;
     bool Walkable = true;
     bool BlocksVision = false;
     int MovementCost = 1;

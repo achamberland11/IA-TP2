@@ -14,6 +14,7 @@ GMap::GMap(int width, int height) {
     LoadFolder("Assets/Images/Tileset/Clay");
     LoadFolder("Assets/Images/Tileset/Mix");
     LoadFolder("Assets/Images/Tileset/Floor");
+    LoadFolder("Assets/Images/Objects");
 }
 
 void GMap::LoadFolder(const std::string folderPath) {
@@ -31,25 +32,34 @@ FTile GMap::CreateTile(const std::string &rawValue) {
     FTile tile{};
 
     tile.TextureID = rawValue;
+        
+    size_t sep = rawValue.find('|');
+    std::string base = (sep != std::string::npos) ? rawValue.substr(0, sep) : rawValue;
+    tile.ObjectID = (sep != std::string::npos) ? rawValue.substr(sep + 1) : "";
+
+    tile.TextureID = base;
 
     if (rawValue == "Dirt") {
         tile.TextureID += std::to_string(GetRand(22, 85));
         tile.Type = ETileType::Dirt;
-        tile.Walkable = true;
+        tile.Walkable = false;
         tile.BlocksVision = false;
         tile.MovementCost = 10;
-    } else if (rawValue == "M") {
-        tile.TextureID += std::to_string(GetRand(8, 65));
+    } else if (rawValue.find("F_") == 0) {
+        if (rawValue.find("F_M") == 0)
+            tile.TextureID += std::to_string(GetRand(8, 65));
+        if (rawValue.find("F_J") == 0)
+            tile.TextureID += std::to_string(GetRand(5, 10));
+
         tile.Type = ETileType::Floor;
-        tile.Walkable = false;
-        tile.BlocksVision = true;
+        tile.Walkable = true;
+        tile.BlocksVision = false;
         tile.MovementCost = 1;
-    } else if (rawValue == "J") {
-        //Temporairish??
-        tile.TextureID += std::to_string(GetRand(5, 10));
-        tile.Type = ETileType::Floor;
+    }
+    else {
+        tile.Type = ETileType::Wall;
         tile.Walkable = false;
-        tile.BlocksVision = true;
+        tile.BlocksVision = false;
         tile.MovementCost = 1;
     }
 
@@ -98,7 +108,7 @@ void GMap::Display(sf::RenderWindow &window) {
             );
 
             //Add a sand layer behind to cover wall gaps.
-            auto floor = Sprites.find("F");
+            auto floor = Sprites.find("F_F");
             if (floor != Sprites.end()) {
                 floor->second->setPosition(position);
                 window.draw(*floor->second);
@@ -114,8 +124,23 @@ void GMap::Display(sf::RenderWindow &window) {
             it->second->setPosition(position);
 
             window.draw(*it->second);
+
+            const std::string& objectName = Map[row][col].ObjectID;
+
+            if (!objectName.empty()) {
+                auto obj = Sprites.find(objectName);
+                if (obj != Sprites.end()) {
+                    obj->second->setPosition(position);
+                    window.draw(*obj->second);
+                }
+            }
         }
     }
+}
+
+bool GMap::IsWalkable(int row, int col)
+{
+    return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
 }
 
 int GMap::GetRand(int max, int chance) const {
