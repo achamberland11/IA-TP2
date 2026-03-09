@@ -21,9 +21,9 @@ public:
 private:
     void LoadTextures();
 
-    std::map<std::string, sf::Texture> m_textures;
-    std::map<std::string, std::unique_ptr<sf::Sprite>> m_sprites;
+    std::map<std::string, sf::Texture> Textures;
+    std::map<std::string, std::unique_ptr<sf::Sprite>> Sprites;
 
-    float spriteTimer = 0.f;
-    float spriteDuration = 0.5f;
+    float SpriteTimer = 0.f;
+    float SpriteDuration = 0.05f;
 };

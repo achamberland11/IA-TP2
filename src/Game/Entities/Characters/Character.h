@@ -22,7 +22,12 @@ public:
     void SetVelocity(const sf::Vector2f& velocity);
     void StopMoving();
 
+    float GetMovementSpeed() const { return MovementSpeed; }
+    bool IsMoving() const { return bMoving; }
+
 protected:
     GController* Controller;
     sf::Vector2f Velocity = sf::Vector2f(0, 0);
+    float MovementSpeed = 100.f;
+    bool bMoving = false;
 };

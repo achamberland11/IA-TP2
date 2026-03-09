@@ -15,8 +15,8 @@ GPlayerCharacter::GPlayerCharacter() {
 
 	LoadTextures();
 
-	auto it = m_sprites.find("C_Front");
-	if (it != m_sprites.end() && it->second)
+	auto it = Sprites.find("C_Front");
+	if (it != Sprites.end() && it->second)
 		Renderer->SetSprite(*it->second, "C_Front");
 	else
 		std::cerr << "Error : C_Front sprite not found" << std::endl;
@@ -54,21 +54,27 @@ void GPlayerCharacter::Update(float dt) {
 		oldDirection = oldDirection.substr(0, walkPos);
 	*/
 
-	if (static_cast<GPlayerController*>(Controller)->IsMoving() && !oldSpriteName.empty())
+	if (!IsMoving()) {
+		auto it = Sprites.find(spriteName);
+		if (it != Sprites.end() && it->second)
+			Renderer->SetSprite(*it->second, spriteName);
+	}
+
+	if (IsMoving() && !oldSpriteName.empty())
 	{
 		spriteName += "Walk";
 
-		spriteTimer += dt;
+		SpriteTimer += dt;
 
-		if (spriteTimer > spriteDuration)
+		if (SpriteTimer > SpriteDuration)
 		{
-			spriteName += (oldSpriteName.back() == '1') ? "2" : "1";
+			spriteName += oldSpriteName.back() == '1' ? '2' : '1';
 
-			auto it = m_sprites.find(spriteName);
-			if (it != m_sprites.end() && it->second)
+			auto it = Sprites.find(spriteName);
+			if (it != Sprites.end() && it->second)
 				Renderer->SetSprite(*it->second, spriteName);
 
-			spriteTimer = 0;
+			SpriteTimer = 0;
 		}
 	}
 
@@ -80,18 +86,18 @@ void GPlayerCharacter::LoadTextures() {
 		if (entry.path().extension() == ".png") {
 			std::string tileName = entry.path().stem().string();
 
-			if (!m_textures[tileName].loadFromFile(entry.path().string()))
+			if (!Textures[tileName].loadFromFile(entry.path().string()))
 				std::cerr << "Error loading : " << entry.path() << std::endl;
 		}
 	}
 
-	for (const auto& [name, texture] : m_textures) {
-		if (m_textures.find(name) == m_textures.end())
+	for (const auto& [name, texture] : Textures) {
+		if (Textures.find(name) == Textures.end())
 			continue;
 
-		m_sprites[name] = std::make_unique<sf::Sprite>(m_textures[name]);
-		m_sprites[name]->setScale(Transform->GetScale());
-		sf::FloatRect bounds = m_sprites[name]->getLocalBounds();
-		m_sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
+		Sprites[name] = std::make_unique<sf::Sprite>(Textures[name]);
+		Sprites[name]->setScale(Transform->GetScale());
+		sf::FloatRect bounds = Sprites[name]->getLocalBounds();
+		Sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
 	}
 }

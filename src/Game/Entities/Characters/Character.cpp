@@ -35,9 +35,11 @@ void GCharacter::Update(float dt) {
 
 void GCharacter::SetVelocity(const sf::Vector2f &velocity) {
     Velocity = velocity;
+    if (velocity != sf::Vector2f(0, 0)) bMoving = true;
 }
 
 void GCharacter::StopMoving() {
     Velocity = sf::Vector2f(0, 0);
+    bMoving = false;
     // std::cout << "StopMoving" << std::endl;
 }

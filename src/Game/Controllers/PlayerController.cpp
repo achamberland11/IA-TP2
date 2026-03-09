@@ -16,8 +16,6 @@ void GPlayerController::Update(float dt) {
     GController::Update(dt);
 
     if (!Owner) return;
-
-    constexpr float speed = 100.0f; // @TODO speed hardcoded, should be in PlayerCharacter
     sf::Vector2f direction(0.f, 0.f);
 
     if (bMoveUp) direction.y = -1.f;
@@ -30,7 +28,7 @@ void GPlayerController::Update(float dt) {
     else {
         const float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
         direction.x /= length;
-        Owner->SetVelocity(direction * speed);
+        Owner->SetVelocity(direction * Owner->GetMovementSpeed());
         Owner->GetTransformComponent()->SetRotation(direction);
     }
 }
