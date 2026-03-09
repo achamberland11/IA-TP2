@@ -30,22 +30,28 @@ void GAgentCharacter::Start()
 void GAgentCharacter::Update(float dt)
 {
 	//Temporaire
-	sf::Vector2f position = Transform->GetPosition();
-	sf::Vector2f direction = targets[currentTarget] - position;
-	float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+	if (!bFinished && !targets.empty()) {
 
-	if (distance <= 2) {
-		currentTarget++;
-		if (currentTarget >= targets.size())
-			SetVelocity({ 0.f, 0.f });
-	}
-	else {
-		direction /= distance;
-		SetVelocity(direction * static_cast<float>(100));
+		sf::Vector2f position = Transform->GetPosition();
+		sf::Vector2f direction = targets[currentTarget] - position;
+		float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+		if (distance <= 2) {
+			if (currentTarget + 1 < targets.size())
+				currentTarget++;
+			else {
+				bFinished = true;
+				SetVelocity({ 0.f, 0.f });
+			}
+		}
+		else {
+			direction /= distance;
+			SetVelocity(direction * static_cast<float>(100));
+		}
 	}
 
 	std::string oldSpriteName = Renderer->GetSpriteName();
-//	sf::Vector2f direction;
+	//	sf::Vector2f direction;
 	bool flip = true;
 
 	//Flip le sprite si l'agent va a gauche.

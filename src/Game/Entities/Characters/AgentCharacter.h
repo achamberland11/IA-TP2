@@ -29,6 +29,7 @@ private:
     float spriteTimer = 0.f;
     float spriteDuration = 0.5f;
 
-    std::vector<sf::Vector2f> targets = { sf::Vector2f(500, 300), sf::Vector2f(300, 500) };
+    std::vector<sf::Vector2f> targets = { sf::Vector2f(500, 300), sf::Vector2f(600, 400) };
     int currentTarget = 0;
+    bool bFinished = false;
 };
