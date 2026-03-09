@@ -50,5 +50,7 @@ private:
     std::unordered_map<std::string, sf::Texture> Textures;
     std::unordered_map<std::string, std::unique_ptr<sf::Sprite>> Sprites;
 
+    std::vector<std::vector<FTile>> ObjectMap;
+
     int GetRand(int max, int chance) const;
 };
