@@ -13,7 +13,7 @@ class GTransformComponent : public GComponent
 public:
     GENERATE_COMPONENT(false, false, false)
 
-    GTransformComponent()
+    GTransformComponent(GEntity* owner) : GComponent(owner)
     {
         Name = "Transform";
     }
@@ -21,10 +21,15 @@ public:
     void Start() override {}
     void Update(float deltaSeconds) override {}
 
-    bool CanDuplicate() const override { return bCanDuplicate; }
-    bool CanBeDisabled() const override { return bCanBeDisabled; }
-    bool CanBeDeleted() const override { return bCanBeDeleted; }
+    sf::Vector2f GetPosition() const { return Position; }
+    sf::Vector2f GetRotation() const { return Rotation; }
+    sf::Vector2f GetScale() const { return Scale; }
 
+    void SetPosition(const sf::Vector2f& pos) { Position = pos; }
+    void SetRotation(const sf::Vector2f& rot) { Rotation = rot; }
+    void SetScale(const sf::Vector2f& scale) { Scale = scale; }
+
+private:
     sf::Vector2f Position = {0,0};
     sf::Vector2f Rotation = {0,0};
     sf::Vector2f Scale = {1,1};

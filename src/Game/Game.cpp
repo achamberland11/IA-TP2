@@ -5,16 +5,14 @@
 #include "Game.h"
 
 GGame::GGame(sf::Vector2u windowSize)
-: WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI")
-{
+    : WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI") {
     Window.setFramerateLimit(120);
     Initialize();
 }
 
 GGame::~GGame() = default;
 
-void GGame::Initialize()
-{
+void GGame::Initialize() {
     World = std::make_unique<GWorld>(WindowSize);
 }
 
@@ -30,10 +28,12 @@ void GGame::Run() {
 }
 
 void GGame::HandleEvents() {
-    while (const std::optional event = Window.pollEvent()) {
+    while (const std::optional<sf::Event> &event = Window.pollEvent()) {
         if (event->is<sf::Event::Closed>()) {
             Window.close();
         }
+
+        if (World) World->HandleEvent(*event);
     }
 }
 

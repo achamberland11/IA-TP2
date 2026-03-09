@@ -6,23 +6,27 @@
 #include <string>
 #include "../../Core/Object.h"
 
+class GEntity;
 
 class GComponent : public GObject
 {
 public:
     GENERATE_COMPONENT(true, true, true)
 
-    GComponent() {}
+    GComponent(GEntity* owner) : Owner(owner) {}
     virtual ~GComponent() = default;
 
     virtual void Start() = 0;
     virtual void Update(float deltaSeconds) = 0;
 
-    virtual bool CanDuplicate() const { return bCanDuplicate; }
-    virtual bool CanBeDisabled() const { return bCanBeDisabled; }
-    virtual bool CanBeDeleted() const { return bCanBeDeleted; }
+    bool CanDuplicate() const { return bCanDuplicate; }
+    bool CanBeDisabled() const { return bCanBeDisabled; }
+    bool CanBeDeleted() const { return bCanBeDeleted; }
 
 
     std::string Name = "Component";
     bool bEnabled = true;
+
+protected:
+    GEntity* Owner;
 };

@@ -4,9 +4,9 @@
 
 #pragma once
 #include "../../Core/Object.h"
-#include "../Entities/Characters/Character.h"
 #include "SFML/Window/Event.hpp"
 
+class GCharacter;
 
 class GController : public GObject
 {
@@ -17,7 +17,7 @@ public:
     virtual void Start();
     virtual void Update(float dt);
 
-    virtual void HandleEvent(sf::Event& event) = 0;
+    virtual void HandleEvent(const sf::Event& event) = 0;
 
 protected:
     GCharacter* Owner;

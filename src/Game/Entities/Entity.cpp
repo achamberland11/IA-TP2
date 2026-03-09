@@ -4,10 +4,14 @@
 
 #include "Entity.h"
 
-GEntity::GEntity()
-{
-    Transform = new GTransformComponent();
-    // GTransformComponent::StaticClass().Factory(this);
+#include "SFML/Graphics/RectangleShape.hpp"
+#include "SFML/Graphics/Sprite.hpp"
+
+GEntity::GEntity() {
+    Transform = new GTransformComponent(this);
+    Renderer = new GRendererComponent(this);
+    AddComponent(Transform);
+    AddComponent(Renderer);
 }
 
 GEntity::~GEntity()
@@ -24,6 +28,12 @@ void GEntity::Start()
 void GEntity::Update(float dt)
 {
     for (auto component : Components) component->Update(dt);
+}
+
+void GEntity::Render(sf::RenderWindow &window) {
+    if (!bActive || Transform == nullptr) return;
+
+    Renderer->Render(window);
 }
 
 void GEntity::AddComponent(GComponent* component)

@@ -3,3 +3,9 @@
 //
 
 #include "Controller.h"
+
+void GController::Start() {
+}
+
+void GController::Update(float dt) {
+}

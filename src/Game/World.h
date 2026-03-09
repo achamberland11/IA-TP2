@@ -4,6 +4,7 @@
 
 #pragma once
 #include "../Core/Object.h"
+#include "Controllers/Controller.h"
 #include "Entities/Entity.h"
 #include "Map/Map.h"
 #include "SFML/Graphics/RenderWindow.hpp"
@@ -19,15 +20,20 @@ public:
     void Update(float deltaSeconds);
     void Render(sf::RenderWindow& window);
 
+    void HandleEvent(const sf::Event& event);
+
     GMap* GetMap() const { return Map.get(); }
 
 private:
     void CreateMap();
     void CreateEntities();
+    void CreatePlayer();
+    void CreateAgent();
 
 private:
     sf::Vector2u WindowSize;
     std::unique_ptr<GMap> Map;
 
     std::vector<GEntity*> Entities;
+    std::vector<GController*> Controllers;
 };
