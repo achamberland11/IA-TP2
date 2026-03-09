@@ -65,7 +65,7 @@ void GWorld::CreatePlayer() {
 
 void GWorld::CreateAgent() {
     GAgentCharacter* agent = new GAgentCharacter();
-    agent->GetTransformComponent()->SetPosition(sf::Vector2f(200, 100));
+    // agent->GetTransformComponent()->SetPosition(sf::Vector2f(200, 100));
     agent->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
     Entities.push_back(agent);
 }

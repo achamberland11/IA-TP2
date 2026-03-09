@@ -15,7 +15,12 @@ public:
     GGame(sf::Vector2u windowSize);
     virtual ~GGame();
 
+    static GGame* GetInstance() { return Instance; }
+
     void Run();
+
+    GWorld* GetWorld() const { return World.get(); }
+    GMap* GetMap() const { return World->GetMap(); }
 
 private:
     void Initialize();
@@ -24,6 +29,8 @@ private:
     void Render();
 
 private:
+    static GGame* Instance;
+
     sf::Vector2u WindowSize;
     sf::RenderWindow Window;
     std::unique_ptr<GWorld> World;

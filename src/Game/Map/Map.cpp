@@ -32,7 +32,7 @@ FTile GMap::CreateTile(const std::string &rawValue) {
     FTile tile{};
 
     tile.TextureID = rawValue;
-        
+
     size_t sep = rawValue.find('|');
     std::string base = (sep != std::string::npos) ? rawValue.substr(0, sep) : rawValue;
     tile.ObjectID = (sep != std::string::npos) ? rawValue.substr(sep + 1) : "";
@@ -55,8 +55,7 @@ FTile GMap::CreateTile(const std::string &rawValue) {
         tile.Walkable = true;
         tile.BlocksVision = false;
         tile.MovementCost = 1;
-    }
-    else {
+    } else {
         tile.Type = ETileType::Wall;
         tile.Walkable = false;
         tile.BlocksVision = false;
@@ -125,7 +124,7 @@ void GMap::Display(sf::RenderWindow &window) {
 
             window.draw(*it->second);
 
-            const std::string& objectName = Map[row][col].ObjectID;
+            const std::string &objectName = Map[row][col].ObjectID;
 
             if (!objectName.empty()) {
                 auto obj = Sprites.find(objectName);
@@ -138,9 +137,37 @@ void GMap::Display(sf::RenderWindow &window) {
     }
 }
 
-bool GMap::IsWalkable(int row, int col)
-{
-    return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
+bool GMap::IsWalkable(int row, int col) {
+    if (row < 0 || row >= Height || col < 0 || col >= Width)
+        return false;
+    // return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
+    return Map[row][col].Walkable;
+}
+
+bool GMap::BlocksVision(int row, int col) {
+    return Map[row][col].BlocksVision;
+}
+
+int GMap::GetMovementCost(int row, int col) {
+    return Map[row][col].MovementCost;
+}
+
+/*std::vector<FTile> GMap::GetNeighbours(int row, int col) {
+    // @TODO implementation
+}*/
+
+sf::Vector2f GMap::WorldToGrid(sf::Vector2f worldPos) {
+    return sf::Vector2f(
+        std::floor(worldPos.x / PixelsPerTile), // col
+        std::floor(worldPos.y / PixelsPerTile) // row
+    );
+}
+
+sf::Vector2f GMap::GridToWorld(sf::Vector2f gridPos) {
+    return sf::Vector2f(
+        gridPos.x * PixelsPerTile + PixelsPerTile / 2.f,
+        gridPos.y * PixelsPerTile + PixelsPerTile / 2.f
+    );
 }
 
 int GMap::GetRand(int max, int chance) const {

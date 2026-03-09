@@ -5,7 +5,7 @@
 GAgentCharacter::GAgentCharacter()
 {
 	Name = "AgentCharacter";
-	Transform->SetPosition(sf::Vector2f(200, 100));
+	Transform->SetPosition(sf::Vector2f(275, 150));
 	Transform->SetScale(sf::Vector2f(1, 1));
 	Renderer->SetColor(sf::Color::Magenta);
 

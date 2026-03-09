@@ -4,13 +4,18 @@
 
 #include "Game.h"
 
+GGame *GGame::Instance = nullptr;
+
 GGame::GGame(sf::Vector2u windowSize)
     : WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI") {
+    Instance = this;
     Window.setFramerateLimit(120);
     Initialize();
 }
 
-GGame::~GGame() = default;
+GGame::~GGame() {
+    Instance = nullptr;
+}
 
 void GGame::Initialize() {
     World = std::make_unique<GWorld>(WindowSize);

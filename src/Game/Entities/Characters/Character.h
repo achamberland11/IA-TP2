@@ -5,6 +5,7 @@
 #pragma once
 #include "../Entity.h"
 #include "../../Controllers/Controller.h"
+#include "Game/Map/Map.h"
 
 
 class GCharacter : public GEntity
