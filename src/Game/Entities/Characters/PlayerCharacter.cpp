@@ -20,7 +20,6 @@ GPlayerCharacter::GPlayerCharacter() {
 		Renderer->SetSprite(*it->second, "C_Front");
 	else
 		std::cerr << "Error : C_Front sprite not found" << std::endl;
-
 }
 
 GPlayerCharacter::~GPlayerCharacter() {
@@ -55,7 +54,7 @@ void GPlayerCharacter::Update(float dt) {
 		oldDirection = oldDirection.substr(0, walkPos);
 	*/
 
-	if (static_cast<GPlayerController*>(Controller)->IsMoving())
+	if (static_cast<GPlayerController*>(Controller)->IsMoving() && !oldSpriteName.empty())
 	{
 		spriteName += "Walk";
 
@@ -63,7 +62,7 @@ void GPlayerCharacter::Update(float dt) {
 
 		if (spriteTimer > spriteDuration)
 		{
-			spriteName += (Renderer->GetSpriteName().back() == '1') ? "2" : "1";
+			spriteName += (oldSpriteName.back() == '1') ? "2" : "1";
 
 			auto it = m_sprites.find(spriteName);
 			if (it != m_sprites.end() && it->second)
