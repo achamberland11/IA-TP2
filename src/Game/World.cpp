@@ -47,14 +47,13 @@ void GWorld::CreateMap() {
 }
 
 void GWorld::CreateEntities() {
-    // @TODO Create Agent and the Intruder (maybe obstacles?)
     CreatePlayer();
     CreateAgent();
 }
 
 void GWorld::CreatePlayer() {
     GPlayerCharacter* player = new GPlayerCharacter();
-    player->GetTransformComponent()->SetPosition(sf::Vector2f(100, 100));
+    // player->GetTransformComponent()->SetPosition(sf::Vector2f(100, 100));
     // player->GetTransformComponent()->SetScale(sf::Vector2f(1, 1));
     Entities.push_back(player);
     Controllers.push_back(player->GetController());

@@ -4,6 +4,8 @@
 
 #include "Character.h"
 
+#include <iostream>
+
 
 GCharacter::GCharacter() {
     Name = "Character";
@@ -37,4 +39,5 @@ void GCharacter::SetVelocity(const sf::Vector2f &velocity) {
 
 void GCharacter::StopMoving() {
     Velocity = sf::Vector2f(0, 0);
+    // std::cout << "StopMoving" << std::endl;
 }

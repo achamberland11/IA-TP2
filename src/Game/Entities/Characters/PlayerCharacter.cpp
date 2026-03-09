@@ -6,7 +6,7 @@
 
 GPlayerCharacter::GPlayerCharacter() {
     Name = "PlayerCharacter";
-    Transform->SetPosition(sf::Vector2f(50, 50));
+    Transform->SetPosition(sf::Vector2f(250, 150));
     Transform->SetScale(sf::Vector2f(1, 1));
     Renderer->SetColor(sf::Color::Cyan);
 
