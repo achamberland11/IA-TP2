@@ -32,6 +32,9 @@ void GWorld::Render(sf::RenderWindow& window) {
     if (Map) Map->Display(window);
 
     for (GEntity* entity: Entities) {
+        if(auto agent = dynamic_cast<GAgentCharacter*>(entity))
+            agent->DrawDebug(window);
+
         entity->Render(window);
     }
 }

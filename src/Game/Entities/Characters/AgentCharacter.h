@@ -17,6 +17,7 @@ public:
 
     void Start() override;
     void Update(float dt) override;
+    void DrawDebug(sf::RenderWindow& window);
 
 private:
     void LoadTextures();
@@ -26,4 +27,6 @@ private:
 
     float spriteTimer = 0.f;
     float spriteDuration = 0.5f;
+
+    sf::Vector2f target = sf::Vector2f(500, 300);
 };
