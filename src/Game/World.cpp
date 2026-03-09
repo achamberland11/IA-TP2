@@ -57,7 +57,7 @@ void GWorld::CreateEntities() {
 
 void GWorld::CreatePlayer() {
     GPlayerCharacter* player = new GPlayerCharacter();
-    player->GetTransformComponent()->SetPosition(sf::Vector2f(WindowSize.x / 2.f, WindowSize.y / 2.f));
+    // player->GetTransformComponent()->SetPosition(sf::Vector2f(WindowSize.x / 2.f, WindowSize.y / 2.f));
     player->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
     Entities.push_back(player);
     Controllers.push_back(player->GetController());

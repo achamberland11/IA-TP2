@@ -17,8 +17,6 @@ void GRendererComponent::Start() {
 }
 
 void GRendererComponent::Update(float deltaSeconds) {
-	// Sprite->setColor(Color);
-	// Sprite->setRotation(Owner->GetTransformComponent()->GetRotation());
 
 	if (Sprite)
 	{
