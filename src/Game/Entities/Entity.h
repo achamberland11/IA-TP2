@@ -35,6 +35,7 @@ public:
     GTransformComponent* GetTransformComponent() const { return Transform; }
     GRendererComponent* GetRendererComponent() const { return Renderer; }
 
+    bool IsCollidingWith(const GEntity* other, float halfWidth) const;
 protected:
     std::vector<GComponent*> Components;
     GTransformComponent* Transform;

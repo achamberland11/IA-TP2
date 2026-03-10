@@ -18,15 +18,44 @@ void GAgentController::Start() {
 }
 
 void GAgentController::Update(float dt) {
-    GController::Update(dt);
+	if (!Owner)
+		return;
 
-    if (!Owner) return;
-    if (!FSM)
-        return;
+	if(FSM)
+		FSM->Update(dt);
 
-    FSM->Update(dt);
+	sf::Vector2f steering = ComputeSteering(dt);
+	Owner->SetVelocity(steering);
+
+	//Owner->Update(dt);
 }
 
 void GAgentController::HandleEvent(const sf::Event &event) {
     if (!Owner) return;
+}
+
+sf::Vector2f GAgentController::ComputeSteering(float dt)
+{
+	if (targets.empty() || currentTarget >= targets.size())
+		return { 0.f, 0.f };
+
+	sf::Vector2f position = Owner->GetTransformComponent()->GetPosition();
+	direction = targets[currentTarget] - position;
+	float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+	//Arrive behavior
+	float speed = Owner->GetMovementSpeed();
+	if (distance < SlowingRadius)
+		speed *= distance / SlowingRadius;
+
+	if (distance < 2.f) {
+		if (currentTarget + 1 < targets.size())
+			currentTarget++;
+		else
+			return { 0.f, 0.f };
+	}
+
+	direction /= distance;
+
+	return direction * speed;
 }

@@ -51,3 +51,12 @@ std::vector<GComponent*> GEntity::GetComponents()
 {
     return Components;
 }
+
+bool GEntity::IsCollidingWith(const GEntity* other, float halfWidth) const
+{
+    sf::Vector2f pos = GetTransformComponent()->GetPosition();
+    sf::Vector2f otherPos = other->GetTransformComponent()->GetPosition();
+
+    return (std::abs(pos.x - otherPos.x) < halfWidth * 2) &&
+        (std::abs(pos.y - otherPos.y) < halfWidth * 2);
+}

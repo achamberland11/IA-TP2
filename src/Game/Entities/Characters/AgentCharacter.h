@@ -22,8 +22,6 @@ public:
     void Update(float dt) override;
     void DrawDebug(sf::RenderWindow& window);
 
-    void SetTargets(std::vector<sf::Vector2f> newTargets) { targets = newTargets; }
-
 private:
     void LoadTextures();
 
@@ -34,8 +32,4 @@ private:
 
     float spriteTimer = 0.f;
     float spriteDuration = 0.5f;
-
-    std::vector<sf::Vector2f> targets;
-    int currentTarget = 0;
-    bool bFinished = false;
 };

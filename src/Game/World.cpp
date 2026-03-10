@@ -7,6 +7,7 @@
 #include "Entities/Characters/PlayerCharacter.h"
 #include "Entities/Characters/AgentCharacter.h"
 #include "Map/AStar.h"
+#include "Controllers/AgentController.h"
 
 GWorld::GWorld(sf::Vector2u windowSize) : WindowSize(windowSize) {
 	CreateMap();
@@ -42,9 +43,18 @@ void GWorld::Update(float deltaSeconds) {
 			auto path = AStar::FindPath(Map.get(),
 				agent->GetTransformComponent()->GetPosition(),
 				player->GetTransformComponent()->GetPosition());
-			agent->SetTargets(path);
+
+			GAgentController* agentCtrl = dynamic_cast<GAgentController*>(agent->GetController());
+
+			agentCtrl->SetTargets(path);
 		}
+
 		pathTimer = 0.f;
+
+		if (agent->IsCollidingWith(player, 8.f)) {
+			std::cout << "Agent collided with player! Exiting program.\n";
+			std::exit(0);
+		}
 	}
 
 	for (GEntity* entity : Entities) {

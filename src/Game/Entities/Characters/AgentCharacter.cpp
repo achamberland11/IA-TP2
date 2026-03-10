@@ -38,32 +38,13 @@ void GAgentCharacter::Start()
 
 void GAgentCharacter::Update(float dt)
 {
-	GCharacter::Update(dt);
-
-	//Temporaire
-	if (!bFinished && !targets.empty()) {
-
-		sf::Vector2f position = Transform->GetPosition();
-		sf::Vector2f direction = targets[currentTarget] - position;
-		float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-
-		if (distance <= 2) {
-			if (currentTarget + 1 < targets.size())
-				currentTarget++;
-			else {
-				bFinished = true;
-				SetVelocity({ 0.f, 0.f });
-			}
-		}
-		else {
-			direction /= distance;
-			SetVelocity(direction * static_cast<float>(100));
-		}
-	}
+	GCharacter::Update(dt);	
 
 	std::string oldSpriteName = Renderer->GetSpriteName();
-	//	sf::Vector2f direction;
-	bool flip = true;
+
+	GAgentController* agent = dynamic_cast<GAgentController*>(Controller);
+
+	bool flip = agent->GetDirection().x < 0.f;
 
 	//Flip le sprite si l'agent va a gauche.
 	Transform->SetScale(sf::Vector2f(flip ? -std::abs(Transform->GetScale().x) : std::abs(Transform->GetScale().x), Transform->GetScale().y));
@@ -90,8 +71,10 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 	sf::Vector2f from = Transform->GetPosition();
 	sf::Vector2f prevDir(0.f, 0.f);
 
-	for (int i = currentTarget; i < targets.size(); i++) {
-		sf::Vector2f to = targets[i];
+	GAgentController* agent = dynamic_cast<GAgentController*>(Controller);
+
+	for (int i = agent->GetCurrentTarget(); i < agent->GetTargets().size(); i++) {
+		sf::Vector2f to = agent->GetTargets()[i];
 		sf::Vector2f diff = to - from;
 		float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
 		sf::Vector2f dir = diff / length;
@@ -106,7 +89,7 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 
 		float dot = prevDir.x * dir.x + prevDir.y * dir.y;
 
-		if (i > (int)currentTarget && dot < 0.99f && (prevDir.x != 0.f || prevDir.y != 0.f)) {
+		if (i > (int)agent->GetCurrentTarget() && dot < 0.99f && (prevDir.x != 0.f || prevDir.y != 0.f)) {
 			sf::CircleShape circle(4.f);
 			circle.setOrigin(sf::Vector2f(4.f, 4.f));
 			circle.setPosition(from);
