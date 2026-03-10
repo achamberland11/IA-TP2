@@ -3,6 +3,8 @@
 //
 
 #include "AgentStates.h"
+#include "Game/Entities/Characters/AgentCharacter.h"
+
 
 /**
  * Global State
@@ -13,10 +15,13 @@ AgentGlobalStates *AgentGlobalStates::Instance() {
     return &instance;
 }
 
-void AgentGlobalStates::Enter(GEntity* agent) {
+void AgentGlobalStates::Enter(GEntity *agent) {
+    Agent = static_cast<GAgentCharacter*>(agent);
 }
 
 void AgentGlobalStates::Execute(GEntity* agent) {
+
+
 }
 
 void AgentGlobalStates::Exit(GEntity* agent) {
@@ -31,10 +36,36 @@ AgentPatrolState *AgentPatrolState::Instance() {
     return &instance;
 }
 
-void AgentPatrolState::Enter(GEntity* agent) {
+void AgentPatrolState::Enter(GEntity *agent) {
+    Agent = static_cast<GAgentCharacter*>(agent);
+    PatrolIndex = 0;
 }
 
 void AgentPatrolState::Execute(GEntity* agent) {
+    if (!Agent)
+        return;
+
+    // @TODO temp type shit
+    std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
+    sf::Vector2f currentWaypoint = waypoints[PatrolIndex];
+
+    if (!waypoints.empty() && !Agent->WaypointReached()) {
+        sf::Vector2f position = Agent->GetTransformComponent()->GetPosition();
+        sf::Vector2f direction = currentWaypoint - position;
+        float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+        if (distance < 0.1f) {
+            if (PatrolIndex + 1 < waypoints.size())
+                PatrolIndex++;
+            else {
+                PatrolIndex = 0;
+            }
+        }
+        else {
+            direction /= distance;
+            Agent->SetVelocity(direction * 100.f);
+        }
+    }
 }
 
 void AgentPatrolState::Exit(GEntity* agent) {
@@ -49,7 +80,7 @@ AgentChaseState *AgentChaseState::Instance() {
     return &instance;
 }
 
-void AgentChaseState::Enter(GEntity* agent) {
+void AgentChaseState::Enter(GEntity *agent) {
 }
 
 void AgentChaseState::Execute(GEntity* agent) {
@@ -67,7 +98,7 @@ AgentReturnState *AgentReturnState::Instance() {
     return &instance;
 }
 
-void AgentReturnState::Enter(GEntity* agent) {
+void AgentReturnState::Enter(GEntity *agent) {
 }
 
 void AgentReturnState::Execute(GEntity* agent) {

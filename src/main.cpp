@@ -11,13 +11,16 @@
 #include "SFML/Network/SocketHandle.hpp"
 #include "SFML/System/Vector2.hpp"
 
-int main() {
+int main()
+{
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    try {
+    try
+    {
         GGame Game(sf::Vector2u(1280, 720));
         Game.Run();
-    } catch (const std::exception &e) {
+    } catch (const std::exception &e)
+    {
         std::cerr << "Error: " << e.what() << std::endl;
         return -1;
     }

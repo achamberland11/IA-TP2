@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include "Game/Entities/Entity.h"
 #include "IA/FSM/State.h"
 
 class GAgentCharacter;
@@ -20,6 +19,8 @@ private:
 
     AgentGlobalStates(const AgentGlobalStates&);
     AgentGlobalStates& operator=(const AgentGlobalStates&);
+
+    GAgentCharacter* Agent;
 
 public:
     static AgentGlobalStates* Instance();
@@ -41,6 +42,9 @@ private:
     AgentPatrolState(const AgentPatrolState&);
     AgentPatrolState& operator=(const AgentPatrolState&);
 
+    GAgentCharacter* Agent;
+    int PatrolIndex = 0;
+
 public:
     static AgentPatrolState* Instance();
 
@@ -61,10 +65,12 @@ private:
     AgentChaseState(const AgentChaseState&);
     AgentChaseState& operator=(const AgentChaseState&);
 
+    GAgentCharacter* Agent;
+
 public:
     static AgentChaseState* Instance();
 
-    void Enter(GEntity* agent) override;
+    void Enter(GEntity *agent) override;
     void Execute(GEntity* agent) override;
     void Exit(GEntity* agent) override;
 };
@@ -80,10 +86,12 @@ class AgentReturnState : public State<GEntity> {
     AgentReturnState(const AgentReturnState&);
     AgentReturnState& operator=(const AgentReturnState&);
 
+    GAgentCharacter* Agent;
+
 public:
     static AgentReturnState* Instance();
 
-    void Enter(GEntity* agent) override;
+    void Enter(GEntity *agent) override;
     void Execute(GEntity* agent) override;
     void Exit(GEntity* agent) override;
 };

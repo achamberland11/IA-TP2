@@ -11,8 +11,7 @@
 class GAgentController : public GController
 {
 public:
-    GAgentController(GCharacter* owner) : GController(owner)
-    {}
+    GAgentController(GCharacter* owner);
     ~GAgentController() override = default;
 
     void Start() override;

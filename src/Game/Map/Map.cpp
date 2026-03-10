@@ -4,7 +4,8 @@
 
 #include "Map.h"
 
-GMap::GMap(int width, int height) {
+GMap::GMap(int width, int height)
+{
     Width = width / PixelsPerTile;
     Height = height / PixelsPerTile;
 
@@ -17,9 +18,12 @@ GMap::GMap(int width, int height) {
     LoadFolder("Assets/Images/Objects");
 }
 
-void GMap::LoadFolder(const std::string folderPath) {
-    for (const auto &entry: std::filesystem::directory_iterator(folderPath)) {
-        if (entry.path().extension() == ".png") {
+void GMap::LoadFolder(const std::string folderPath)
+{
+    for (const auto &entry: std::filesystem::directory_iterator(folderPath))
+    {
+        if (entry.path().extension() == ".png")
+        {
             std::string tileName = entry.path().stem().string();
 
             if (!Textures[tileName].loadFromFile(entry.path().string()))
@@ -28,7 +32,8 @@ void GMap::LoadFolder(const std::string folderPath) {
     }
 }
 
-FTile GMap::CreateTile(const std::string &rawValue) {
+FTile GMap::CreateTile(const std::string &rawValue)
+{
     FTile tile{};
 
     tile.TextureID = rawValue;
@@ -39,13 +44,15 @@ FTile GMap::CreateTile(const std::string &rawValue) {
 
     tile.TextureID = base;
 
-    if (rawValue == "Dirt") {
+    if (rawValue == "Dirt")
+    {
         tile.TextureID += std::to_string(GetRand(22, 85));
         tile.Type = ETileType::Dirt;
         tile.Walkable = false;
         tile.BlocksVision = false;
         tile.MovementCost = 10;
-    } else if (rawValue.find("F_") == 0) {
+    } else if (rawValue.find("F_") == 0)
+    {
         if (rawValue.find("F_M") == 0)
             tile.TextureID += std::to_string(GetRand(8, 65));
         if (rawValue.find("F_J") == 0)
@@ -55,7 +62,8 @@ FTile GMap::CreateTile(const std::string &rawValue) {
         tile.Walkable = true;
         tile.BlocksVision = false;
         tile.MovementCost = 1;
-    } else {
+    } else
+    {
         tile.Type = ETileType::Wall;
         tile.Walkable = false;
         tile.BlocksVision = false;
@@ -68,7 +76,8 @@ FTile GMap::CreateTile(const std::string &rawValue) {
     return tile;
 }
 
-void GMap::LoadMap(const std::string mapPath) {
+void GMap::LoadMap(const std::string mapPath)
+{
     Map.assign(Height, std::vector<FTile>(Width));
 
     std::ifstream file(mapPath);
@@ -76,14 +85,16 @@ void GMap::LoadMap(const std::string mapPath) {
         throw std::runtime_error("Can't open file");
 
     std::string line;
-    for (int row = 0; row < Height && std::getline(file, line); row++) {
+    for (int row = 0; row < Height && std::getline(file, line); row++)
+    {
         if (!line.empty() && line.back() == '\r')
             line.pop_back();
 
         std::stringstream ss(line);
         std::string value;
 
-        for (int col = 0; col < Width && std::getline(ss, value, ','); col++) {
+        for (int col = 0; col < Width && std::getline(ss, value, ','); col++)
+        {
             if (!value.empty() && value.back() == '\r')
                 value.pop_back();
 
@@ -91,7 +102,8 @@ void GMap::LoadMap(const std::string mapPath) {
         }
     }
 
-    for (auto &[tile, texture]: Textures) {
+    for (auto &[tile, texture]: Textures)
+    {
         Sprites[tile] = std::make_unique<sf::Sprite>(texture);
 
         sf::Vector2u textureSize = texture.getSize();
@@ -101,9 +113,12 @@ void GMap::LoadMap(const std::string mapPath) {
     }
 }
 
-void GMap::Display(sf::RenderWindow &window) {
-    for (int row = 0; row < Height; row++) {
-        for (int col = 0; col < Width; col++) {
+void GMap::Display(sf::RenderWindow &window)
+{
+    for (int row = 0; row < Height; row++)
+    {
+        for (int col = 0; col < Width; col++)
+        {
             sf::Vector2f position(
                 static_cast<float>(col * PixelsPerTile),
                 static_cast<float>(row * PixelsPerTile)
@@ -111,7 +126,8 @@ void GMap::Display(sf::RenderWindow &window) {
 
             //Add a sand layer behind to cover wall gaps.
             auto floor = Sprites.find("F_F");
-            if (floor != Sprites.end()) {
+            if (floor != Sprites.end())
+            {
                 floor->second->setPosition(position);
                 window.draw(*floor->second);
             }
@@ -129,9 +145,11 @@ void GMap::Display(sf::RenderWindow &window) {
 
             const std::string &objectName = Map[row][col].ObjectID;
 
-            if (!objectName.empty()) {
+            if (!objectName.empty())
+            {
                 auto obj = Sprites.find(objectName);
-                if (obj != Sprites.end()) {
+                if (obj != Sprites.end())
+                {
                     obj->second->setPosition(position);
                     window.draw(*obj->second);
                 }
@@ -140,7 +158,8 @@ void GMap::Display(sf::RenderWindow &window) {
     }
 }
 
-bool GMap::IsWalkable(int row, int col) {
+bool GMap::IsWalkable(int row, int col)
+{
     if (row < 0 || row >= Height || col < 0 || col >= Width)
         return false;
 
@@ -148,11 +167,13 @@ bool GMap::IsWalkable(int row, int col) {
     // return Map[row][col].Walkable;
 }
 
-bool GMap::BlocksVision(int row, int col) {
+bool GMap::BlocksVision(int row, int col)
+{
     return Map[row][col].BlocksVision;
 }
 
-int GMap::GetMovementCost(int row, int col) {
+int GMap::GetMovementCost(int row, int col)
+{
     return Map[row][col].MovementCost;
 }
 
@@ -160,21 +181,24 @@ int GMap::GetMovementCost(int row, int col) {
     // @TODO implementation
 }*/
 
-sf::Vector2f GMap::WorldToGrid(sf::Vector2f worldPos) {
+sf::Vector2f GMap::WorldToGrid(sf::Vector2f worldPos)
+{
     return sf::Vector2f(
         std::floor(worldPos.x / PixelsPerTile), // col
         std::floor(worldPos.y / PixelsPerTile) // row
     );
 }
 
-sf::Vector2f GMap::GridToWorld(sf::Vector2f gridPos) {
+sf::Vector2f GMap::GridToWorld(sf::Vector2f gridPos)
+{
     return sf::Vector2f(
         gridPos.x * PixelsPerTile + PixelsPerTile / 2.f,
         gridPos.y * PixelsPerTile + PixelsPerTile / 2.f
     );
 }
 
-int GMap::GetRand(int max, int chance) const {
+int GMap::GetRand(int max, int chance) const
+{
     if (rand() % 100 <= chance)
         return 0;
 

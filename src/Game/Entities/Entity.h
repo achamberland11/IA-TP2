@@ -18,37 +18,43 @@ class GEntity : public GObject
 {
 public:
     GEntity();
+
     virtual ~GEntity() override;
 
     std::string Name = "Entity";
     bool bActive = true;
 
     virtual void Start();
+
     virtual void Update(float dt);
-    virtual void Render(sf::RenderWindow& window);
 
-    void AddComponent(GComponent* component);
-    void RemoveComponent(GComponent* component);
-    std::vector<GComponent*> GetComponents();
-    template <typename T>
-    T* GetComponent();
+    virtual void Render(sf::RenderWindow &window);
 
-    GTransformComponent* GetTransformComponent() const { return Transform; }
-    GRendererComponent* GetRendererComponent() const { return Renderer; }
+    void AddComponent(GComponent *component);
+
+    void RemoveComponent(GComponent *component);
+
+    std::vector<GComponent *> GetComponents();
+
+    template<typename T>
+    T *GetComponent();
+
+    GTransformComponent *GetTransformComponent() const { return Transform; }
+    GRendererComponent *GetRendererComponent() const { return Renderer; }
 
 protected:
-    std::vector<GComponent*> Components;
-    GTransformComponent* Transform;
-    GRendererComponent* Renderer;
+    std::vector<GComponent *> Components;
+    GTransformComponent *Transform;
+    GRendererComponent *Renderer;
 };
 
-template <typename T>
-T* GEntity::GetComponent()
+template<typename T>
+T *GEntity::GetComponent()
 {
     static_assert(std::is_base_of<GComponent, T>::value, "T must derive from GComponent");
-    for (GComponent* component : Components)
+    for (GComponent *component: Components)
     {
-        if (T* cast = dynamic_cast<T*>(component))
+        if (T *cast = dynamic_cast<T *>(component))
             return cast;
     }
     return nullptr;

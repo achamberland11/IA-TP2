@@ -21,6 +21,7 @@ public:
 
     GWorld* GetWorld() const { return World.get(); }
     GMap* GetMap() const { return World->GetMap(); }
+    sf::RenderWindow& GetWindow() { return Window; }
 
 private:
     void Initialize();

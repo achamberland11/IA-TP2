@@ -18,12 +18,10 @@ class State
 {
 public:
 
-  virtual ~State() {
-    StateName = "DefaultState";
-  }
+  virtual ~State() {}
 
   //this will execute when the state is entered
-  virtual void Enter(GEntity*)=0;
+  virtual void Enter(GEntity *)=0;
 
   //this is the states normal update function
   virtual void Execute(GEntity*)=0;
@@ -34,5 +32,5 @@ public:
   std::string GetName()const{return StateName;}
 
 protected:
-  std::string StateName;
+  std::string StateName = "DefaultState";
 };

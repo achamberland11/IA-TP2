@@ -19,6 +19,7 @@ GGame::~GGame() {
 
 void GGame::Initialize() {
     World = std::make_unique<GWorld>(WindowSize);
+    World->Start();
 }
 
 void GGame::Run() {

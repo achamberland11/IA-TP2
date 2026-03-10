@@ -5,19 +5,22 @@
 #include "AgentController.h"
 
 
-void GAgentController::Start() {
+GAgentController::GAgentController(GCharacter *owner) : GController(owner) {}
+
+void GAgentController::Start()
+{
     GController::Start();
-    
+
     if (!Owner) return;
-    
+
     FSM = Owner->GetComponent<GFSMComponent>();
 
     assert(FSM && "<GAgentController> : FSMComponent not found !");
-    FSM->SetCurrentState(AgentPatrolState::Instance());
-    FSM->SetGlobalState(AgentGlobalStates::Instance());
+    FSM->ChangeState(AgentPatrolState::Instance());
 }
 
-void GAgentController::Update(float dt) {
+void GAgentController::Update(float dt)
+{
     GController::Update(dt);
 
     if (!Owner) return;
@@ -27,6 +30,7 @@ void GAgentController::Update(float dt) {
     FSM->Update(dt);
 }
 
-void GAgentController::HandleEvent(const sf::Event &event) {
+void GAgentController::HandleEvent(const sf::Event &event)
+{
     if (!Owner) return;
 }

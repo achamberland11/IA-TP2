@@ -47,13 +47,6 @@ void GPlayerCharacter::Update(float dt) {
 
 	spriteName += direction;
 
-	/*std::string oldDirection = oldSpriteName.substr(2);
-	size_t walkPos = oldDirection.find("Walk");
-
-	if (walkPos != std::string::npos)
-		oldDirection = oldDirection.substr(0, walkPos);
-	*/
-
 	if (!IsMoving()) {
 		auto it = Sprites.find(spriteName);
 		if (it != Sprites.end() && it->second)

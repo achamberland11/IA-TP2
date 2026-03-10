@@ -4,35 +4,45 @@
 
 #include "FSMComponent.h"
 
-void GFSMComponent::Start() {
+#include "IA/FSM/Agent/AgentStates.h"
+
+void GFSMComponent::Start()
+{
+    SetCurrentState(AgentPatrolState::Instance());
+    SetGlobalState(AgentGlobalStates::Instance());
 }
 
-void GFSMComponent::Update(float deltaSeconds) {
+void GFSMComponent::Update(float deltaSeconds)
+{
     if (GlobalState) GlobalState->Execute(Owner);
 
     if (CurrentState) CurrentState->Execute(Owner);
 }
 
-void GFSMComponent::ChangeState(State<GEntity> *newState) {
+void GFSMComponent::ChangeState(State<GEntity> *newState)
+{
     assert(newState && "<GFSMComponent> : Trying to change to a null state !");
 
     PreviousState = CurrentState;
 
-    CurrentState->Exit(Owner);
+    if (CurrentState) CurrentState->Exit(Owner);
 
     CurrentState = newState;
 
     CurrentState->Enter(Owner);
 }
 
-void GFSMComponent::RevertToPreviousState() {
+void GFSMComponent::RevertToPreviousState()
+{
     ChangeState(PreviousState);
 }
 
-bool GFSMComponent::isInState(const State<GEntity> &state) const {
+bool GFSMComponent::isInState(const State<GEntity> &state) const
+{
     return CurrentState == &state;
 }
 
-std::string GFSMComponent::GetNameOfCurrentState() const {
+std::string GFSMComponent::GetNameOfCurrentState() const
+{
     return CurrentState->GetName();
 }

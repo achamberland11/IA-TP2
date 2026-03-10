@@ -1,30 +1,33 @@
 #include "AgentCharacter.h"
 #include <iostream>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Font.hpp>
 
 #include "Game/Controllers/AgentController.h"
 
 GAgentCharacter::GAgentCharacter()
 {
-	Name = "AgentCharacter";
-	Transform->SetPosition(sf::Vector2f(275, 150));
-	Transform->SetScale(sf::Vector2f(1, 1));
-	Renderer->SetColor(sf::Color::Magenta);
-	
-	FSM = new GFSMComponent(this);
-	AddComponent(FSM);
-	
-	Controller = new GAgentController(this);
+    Name = "AgentCharacter";
+    Transform->SetPosition(sf::Vector2f(1000, 550));
+    Transform->SetScale(sf::Vector2f(1, 1));
+    Renderer->SetColor(sf::Color::Magenta);
 
-	LoadTextures();
+    FSM = new GFSMComponent(this);
+    AddComponent(FSM);
 
-	auto it = m_sprites.find("E_F1");
-	if (it != m_sprites.end() && it->second)
-		Renderer->SetSprite(*it->second, "E_F1");
-	else
-		std::cerr << "Error : E_F1 sprite not found" << std::endl;
+    Controller = new GAgentController(this);
 
-	MovementSpeed = 75.f; // Agent is slower
+    LoadTextures();
+
+    auto it = m_sprites.find("E_F1");
+    if (it != m_sprites.end() && it->second)
+        Renderer->SetSprite(*it->second, "E_F1");
+    else
+        std::cerr << "Error : E_F1 sprite not found" << std::endl;
+
+    MovementSpeed = 75.f; // Agent is slower
+    SetWaypoints();
 }
 
 GAgentCharacter::~GAgentCharacter()
@@ -33,104 +36,132 @@ GAgentCharacter::~GAgentCharacter()
 
 void GAgentCharacter::Start()
 {
-	GCharacter::Start();
+    GCharacter::Start();
 }
 
 void GAgentCharacter::Update(float dt)
 {
-	GCharacter::Update(dt);
+    GCharacter::Update(dt);
 
-	//Temporaire
-	if (!bFinished && !targets.empty()) {
+    // Sprite rendering
+    std::string oldSpriteName = Renderer->GetSpriteName();
+    //	sf::Vector2f direction;
+    bool flip = true;
 
-		sf::Vector2f position = Transform->GetPosition();
-		sf::Vector2f direction = targets[currentTarget] - position;
-		float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    //Flip le sprite si l'agent va a gauche.
+    Transform->SetScale(sf::Vector2f(flip ? -std::abs(Transform->GetScale().x) : std::abs(Transform->GetScale().x),
+                                     Transform->GetScale().y));
 
-		if (distance <= 2) {
-			if (currentTarget + 1 < targets.size())
-				currentTarget++;
-			else {
-				bFinished = true;
-				SetVelocity({ 0.f, 0.f });
-			}
-		}
-		else {
-			direction /= distance;
-			SetVelocity(direction * static_cast<float>(100));
-		}
-	}
+    spriteTimer += dt;
 
-	std::string oldSpriteName = Renderer->GetSpriteName();
-	//	sf::Vector2f direction;
-	bool flip = true;
+    if (spriteTimer > spriteDuration && !oldSpriteName.empty())
+    {
+        std::string spriteName = (oldSpriteName.back() == '1') ? "E_F2" : "E_F1";
 
-	//Flip le sprite si l'agent va a gauche.
-	Transform->SetScale(sf::Vector2f(flip ? -std::abs(Transform->GetScale().x) : std::abs(Transform->GetScale().x), Transform->GetScale().y));
+        auto it = m_sprites.find(spriteName);
+        if (it != m_sprites.end() && it->second)
+            Renderer->SetSprite(*it->second, spriteName);
 
-	spriteTimer += dt;
-
-	if (spriteTimer > spriteDuration && !oldSpriteName.empty())
-	{
-		std::string spriteName = (oldSpriteName.back() == '1') ? "E_F2" : "E_F1";
-
-		auto it = m_sprites.find(spriteName);
-		if (it != m_sprites.end() && it->second)
-			Renderer->SetSprite(*it->second, spriteName);
-
-		spriteTimer = 0;
-	}
+        spriteTimer = 0;
+    }
 }
 
-void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
+void GAgentCharacter::Render(sf::RenderWindow &window)
 {
-	const sf::Color Color(180, 100, 220, 180);
-	const float LineTickness = 5.f;
+    GEntity::Render(window);
+    DrawDebug(window);
 
-	sf::Vector2f from = Transform->GetPosition();
+    // @TODO temporaire, devrait pas être à chaque rendu comme ça
+    if (FSM && FSM->GetCurrentState())
+    {
+        sf::Font font;
+        if (!font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
+            std::cerr << "Failed to load font" << std::endl;
+        sf::Text stateText(font);
+        std::string stateName = FSM->GetCurrentState()->GetName();
+        stateText.setString("State: " + stateName);
+        stateText.setCharacterSize(24);
+        stateText.setFillColor(sf::Color::White);
+        stateText.setOutlineColor(sf::Color::Black);
+        stateText.setOutlineThickness(2.f);
 
-	for (int i = currentTarget; i < targets.size(); i++) {
-		sf::Vector2f to = targets[i];
-		sf::Vector2f diff = to - from;
-		float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+        sf::FloatRect textBounds = stateText.getLocalBounds();
+        float textWidth = textBounds.size.x;
+        stateText.setPosition({window.getSize().x - textWidth - 20.f, 20.f});
 
-		sf::RectangleShape line(sf::Vector2f(length, LineTickness));
-		line.setFillColor(Color);
-		line.setOrigin(sf::Vector2f(0.f, LineTickness / 2.f));
-		line.setPosition(from);
-		line.setRotation(sf::radians(std::atan2(diff.y, diff.x)));
+        window.draw(stateText);
+    }
+}
 
-		window.draw(line);
+void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
+{
+    const sf::Color Color(180, 100, 220, 180);
+    const float LineTickness = 5.f;
 
-		sf::CircleShape circle(8.f);
-		circle.setOrigin(sf::Vector2f(8.f, 8.f));
-		circle.setPosition(to);
-		circle.setFillColor(Color);
+    sf::Vector2f from = Transform->GetPosition();
 
-		window.draw(circle);
+    for (int i = 0; i < waypoints.size(); i++)
+    {
+        sf::Vector2f to = waypoints[i];
+        sf::Vector2f diff = to - from;
+        float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
 
-		from = to;
-	}
+        sf::RectangleShape line(sf::Vector2f(length, LineTickness));
+        line.setFillColor(Color);
+        line.setOrigin(sf::Vector2f(0.f, LineTickness / 2.f));
+        line.setPosition(from);
+        line.setRotation(sf::radians(std::atan2(diff.y, diff.x)));
+
+        window.draw(line);
+
+        sf::CircleShape circle(8.f);
+        circle.setOrigin(sf::Vector2f(8.f, 8.f));
+        circle.setPosition(to);
+        circle.setFillColor(Color);
+
+        window.draw(circle);
+
+        from = to;
+    }
 }
 
 void GAgentCharacter::LoadTextures()
 {
-	for (const auto& entry : std::filesystem::directory_iterator("Assets/Images/Enemy")) {
-		if (entry.path().extension() == ".png") {
-			std::string tileName = entry.path().stem().string();
+    for (const auto &entry: std::filesystem::directory_iterator("Assets/Images/Enemy"))
+    {
+        if (entry.path().extension() == ".png")
+        {
+            std::string tileName = entry.path().stem().string();
 
-			if (!m_textures[tileName].loadFromFile(entry.path().string()))
-				std::cerr << "Error loading : " << entry.path() << std::endl;
-		}
-	}
+            if (!m_textures[tileName].loadFromFile(entry.path().string()))
+                std::cerr << "Error loading : " << entry.path() << std::endl;
+        }
+    }
 
-	for (const auto& [name, texture] : m_textures) {
-		if (m_textures.find(name) == m_textures.end())
-			continue;
+    for (const auto &[name, texture]: m_textures)
+    {
+        if (m_textures.find(name) == m_textures.end())
+            continue;
 
-		m_sprites[name] = std::make_unique<sf::Sprite>(m_textures[name]);
-		m_sprites[name]->setScale(Transform->GetScale());
-		sf::FloatRect bounds = m_sprites[name]->getLocalBounds();
-		m_sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
-	}
+        m_sprites[name] = std::make_unique<sf::Sprite>(m_textures[name]);
+        m_sprites[name]->setScale(Transform->GetScale());
+        sf::FloatRect bounds = m_sprites[name]->getLocalBounds();
+        m_sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
+    }
+}
+
+void GAgentCharacter::SetWaypoints()
+{
+    waypoints.push_back(sf::Vector2f(1000.f, 550.f));
+    waypoints.push_back(sf::Vector2f(975.f, 100.f));
+    waypoints.push_back(sf::Vector2f(730.f, 100.f));
+    waypoints.push_back(sf::Vector2f(625.f, 375.f));
+    waypoints.push_back(sf::Vector2f(500.f, 550.f));
+    waypoints.push_back(sf::Vector2f(250.f, 325.f));
+    waypoints.push_back(sf::Vector2f(135.f, 350.f));
+    waypoints.push_back(sf::Vector2f(150.f, 425.f));
+    waypoints.push_back(sf::Vector2f(275.f, 375.f));
+    waypoints.push_back(sf::Vector2f(275.f, 575.f));
+    waypoints.push_back(sf::Vector2f(650.f, 575.f));
+    waypoints.push_back(sf::Vector2f(875.f, 575.f));
 }
