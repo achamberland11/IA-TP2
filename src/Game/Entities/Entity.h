@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../../../build/_deps/sfml-src/extlibs/headers/vulkan/vulkan_core.h"
 #include "../Components/Component.h"
 #include "../../Core/Object.h"
 #include "../Components/RendererComponent.h"
@@ -29,6 +30,8 @@ public:
     void AddComponent(GComponent* component);
     void RemoveComponent(GComponent* component);
     std::vector<GComponent*> GetComponents();
+    template <typename T>
+    T* GetComponent();
 
     GTransformComponent* GetTransformComponent() const { return Transform; }
     GRendererComponent* GetRendererComponent() const { return Renderer; }
@@ -38,3 +41,15 @@ protected:
     GTransformComponent* Transform;
     GRendererComponent* Renderer;
 };
+
+template <typename T>
+T* GEntity::GetComponent()
+{
+    static_assert(std::is_base_of<GComponent, T>::value, "T must derive from GComponent");
+    for (GComponent* component : Components)
+    {
+        if (T* cast = dynamic_cast<T*>(component))
+            return cast;
+    }
+    return nullptr;
+}

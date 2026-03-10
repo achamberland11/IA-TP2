@@ -4,8 +4,8 @@
 
 #pragma once
 #include "Component.h"
-#include "Game/Entities/Entity.h"
 #include "IA/FSM/State.h"
+#include <assert.h>
 
 
 class GFSMComponent : public GComponent

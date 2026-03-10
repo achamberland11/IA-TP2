@@ -4,12 +4,15 @@
 
 #pragma once
 #include "Controller.h"
-
+#include "Game/Components/FSMComponent.h"
+#include "Game/Entities/Characters/Character.h"
+#include "IA/FSM/Agent/AgentStates.h"
 
 class GAgentController : public GController
 {
 public:
-    GAgentController(GCharacter* owner) : GController(owner) {}
+    GAgentController(GCharacter* owner) : GController(owner)
+    {}
     ~GAgentController() override = default;
 
     void Start() override;
@@ -18,5 +21,5 @@ public:
     void HandleEvent(const sf::Event& event) override;
 
 private:
-    // @TODO ref to FSM compoent from Agent
+    GFSMComponent* FSM = nullptr;
 };

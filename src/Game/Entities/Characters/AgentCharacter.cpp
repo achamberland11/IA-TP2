@@ -2,12 +2,19 @@
 #include <iostream>
 #include <SFML/Graphics/CircleShape.hpp>
 
+#include "Game/Controllers/AgentController.h"
+
 GAgentCharacter::GAgentCharacter()
 {
 	Name = "AgentCharacter";
 	Transform->SetPosition(sf::Vector2f(625, 150));
 	Transform->SetScale(sf::Vector2f(1, 1));
 	Renderer->SetColor(sf::Color::Magenta);
+	
+	FSM = new GFSMComponent(this);
+	AddComponent(FSM);
+	
+	Controller = new GAgentController(this);
 
 	LoadTextures();
 
@@ -31,7 +38,8 @@ void GAgentCharacter::Start()
 
 void GAgentCharacter::Update(float dt)
 {
-	std::cerr << "Targets: " << targets.size() << std::endl;
+	GCharacter::Update(dt);
+
 	//Temporaire
 	if (!bFinished && !targets.empty()) {
 
@@ -72,8 +80,6 @@ void GAgentCharacter::Update(float dt)
 
 		spriteTimer = 0;
 	}
-
-	GCharacter::Update(dt);
 }
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow& window)

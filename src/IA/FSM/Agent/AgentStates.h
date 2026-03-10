@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "Game/Entities/Entity.h"
 #include "IA/FSM/State.h"
 
 class GAgentCharacter;
@@ -10,7 +11,7 @@ class GAgentCharacter;
 /**
  * Global state
  */
-class AgentGlobalStates : public State<GAgentCharacter>
+class AgentGlobalStates : public State<GEntity>
 {
 private:
     AgentGlobalStates() {
@@ -23,15 +24,15 @@ private:
 public:
     static AgentGlobalStates* Instance();
 
-    void Enter(GAgentCharacter* agent) override;
-    void Execute(GAgentCharacter* agent) override;
-    void Exit(GAgentCharacter* agent) override;
+    void Enter(GEntity* agent) override;
+    void Execute(GEntity* agent) override;
+    void Exit(GEntity* agent) override;
 };
 
 /**
  * Patrol state
  */
-class AgentPatrolState : public State<GAgentCharacter> {
+class AgentPatrolState : public State<GEntity> {
 private:
     AgentPatrolState() {
         StateName = "PatrolState";
@@ -43,15 +44,15 @@ private:
 public:
     static AgentPatrolState* Instance();
 
-    void Enter(GAgentCharacter* agent) override;
-    void Execute(GAgentCharacter* agent) override;
-    void Exit(GAgentCharacter* agent) override;
+    void Enter(GEntity* agent) override;
+    void Execute(GEntity* agent) override;
+    void Exit(GEntity* agent) override;
 };
 
 /**
  * Chase State
  */
-class AgentChaseState : public State<GAgentCharacter> {
+class AgentChaseState : public State<GEntity> {
 private:
     AgentChaseState() {
         StateName = "ChaseState";
@@ -63,15 +64,15 @@ private:
 public:
     static AgentChaseState* Instance();
 
-    void Enter(GAgentCharacter* agent) override;
-    void Execute(GAgentCharacter* agent) override;
-    void Exit(GAgentCharacter* agent) override;
+    void Enter(GEntity* agent) override;
+    void Execute(GEntity* agent) override;
+    void Exit(GEntity* agent) override;
 };
 
 /**
  * Return State
  */
-class AgentReturnState : public State<GAgentCharacter> {
+class AgentReturnState : public State<GEntity> {
     AgentReturnState() {
         StateName = "ReturnState";
     }
@@ -82,7 +83,7 @@ class AgentReturnState : public State<GAgentCharacter> {
 public:
     static AgentReturnState* Instance();
 
-    void Enter(GAgentCharacter* agent) override;
-    void Execute(GAgentCharacter* agent) override;
-    void Exit(GAgentCharacter* agent) override;
+    void Enter(GEntity* agent) override;
+    void Execute(GEntity* agent) override;
+    void Exit(GEntity* agent) override;
 };

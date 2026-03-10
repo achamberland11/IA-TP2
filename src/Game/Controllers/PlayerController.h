@@ -18,6 +18,7 @@ public:
     void HandleEvent(const sf::Event& event) override;
 
 private:
+    sf::Vector2f Direction = sf::Vector2f(0.f, 0.f);
     bool bMoveUp = false;
     bool bMoveDown = false;
     bool bMoveLeft = false;

@@ -147,6 +147,7 @@ bool GMap::IsWalkable(int row, int col) {
         return false;
 
     return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
+    // return Map[row][col].Walkable;
 }
 
 bool GMap::BlocksVision(int row, int col) {

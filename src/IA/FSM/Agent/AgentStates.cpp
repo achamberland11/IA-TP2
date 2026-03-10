@@ -13,13 +13,13 @@ AgentGlobalStates *AgentGlobalStates::Instance() {
     return &instance;
 }
 
-void AgentGlobalStates::Enter(GAgentCharacter *agent) {
+void AgentGlobalStates::Enter(GEntity* agent) {
 }
 
-void AgentGlobalStates::Execute(GAgentCharacter *agent) {
+void AgentGlobalStates::Execute(GEntity* agent) {
 }
 
-void AgentGlobalStates::Exit(GAgentCharacter *agent) {
+void AgentGlobalStates::Exit(GEntity* agent) {
 }
 
 /**
@@ -31,13 +31,13 @@ AgentPatrolState *AgentPatrolState::Instance() {
     return &instance;
 }
 
-void AgentPatrolState::Enter(GAgentCharacter *agent) {
+void AgentPatrolState::Enter(GEntity* agent) {
 }
 
-void AgentPatrolState::Execute(GAgentCharacter *agent) {
+void AgentPatrolState::Execute(GEntity* agent) {
 }
 
-void AgentPatrolState::Exit(GAgentCharacter *agent) {
+void AgentPatrolState::Exit(GEntity* agent) {
 }
 
 /**
@@ -49,13 +49,13 @@ AgentChaseState *AgentChaseState::Instance() {
     return &instance;
 }
 
-void AgentChaseState::Enter(GAgentCharacter *agent) {
+void AgentChaseState::Enter(GEntity* agent) {
 }
 
-void AgentChaseState::Execute(GAgentCharacter *agent) {
+void AgentChaseState::Execute(GEntity* agent) {
 }
 
-void AgentChaseState::Exit(GAgentCharacter *agent) {
+void AgentChaseState::Exit(GEntity* agent) {
 }
 
 /**
@@ -67,11 +67,11 @@ AgentReturnState *AgentReturnState::Instance() {
     return &instance;
 }
 
-void AgentReturnState::Enter(GAgentCharacter *agent) {
+void AgentReturnState::Enter(GEntity* agent) {
 }
 
-void AgentReturnState::Execute(GAgentCharacter *agent) {
+void AgentReturnState::Execute(GEntity* agent) {
 }
 
-void AgentReturnState::Exit(GAgentCharacter *agent) {
+void AgentReturnState::Exit(GEntity* agent) {
 }
