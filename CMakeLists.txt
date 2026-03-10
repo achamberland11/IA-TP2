@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.0)
 project(IA-TP2 LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(SFML_USE_VULKAN OFF)
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -29,6 +30,8 @@ add_executable(IA-TP2
         src/Game/Map/Map.cpp
         src/Game/Map/Map.h
         src/Game/Map/Tile.h
+        src/Game/Map/AStar.h
+        src/Game/Map/AStar.cpp
         src/Game/Controllers/Controller.cpp
         src/Game/Controllers/Controller.h
         src/Game/Entities/Characters/Character.cpp
@@ -47,6 +50,8 @@ add_executable(IA-TP2
         src/Game/Components/FsmComponent.h
         src/IA/FSM/Agent/AgentStates.cpp
         src/IA/FSM/Agent/AgentStates.h
+        src/Game/Components/ConeVisionComponent.cpp
+        src/Game/Components/ConeVisionComponent.h
 )
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)

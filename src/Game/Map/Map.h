@@ -18,6 +18,10 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
+struct FNavNode {
+    int Row, Col;
+    std::vector<int> Neighbors;
+};
 
 class GMap : public GObject {
 public:
@@ -40,6 +44,10 @@ public:
     sf::Vector2f WorldToGrid(sf::Vector2f worldPos);
     sf::Vector2f GridToWorld(sf::Vector2f gridPos);
 
+    std::vector<FNavNode> NavGraph;
+
+    int GetNavIndex(int row, int col) const { return row * Width + col; }
+
 private:
     static const int PixelsPerTile = 32;
 
@@ -51,4 +59,6 @@ private:
     std::unordered_map<std::string, std::unique_ptr<sf::Sprite>> Sprites;
 
     int GetRand(int max, int chance) const;
+
+    void BuildNavGraph();
 };

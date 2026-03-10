@@ -20,6 +20,7 @@ public:
     void SetController(GController* controller) { Controller = controller; }
     GController* GetController() const { return Controller; }
 
+    sf::Vector2f GetVelocity() { return Velocity; }
     void SetVelocity(const sf::Vector2f& velocity);
     void StopMoving();
 

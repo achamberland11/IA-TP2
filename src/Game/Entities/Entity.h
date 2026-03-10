@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "../../../build/_deps/sfml-src/extlibs/headers/vulkan/vulkan_core.h"
 #include "../Components/Component.h"
 #include "../../Core/Object.h"
 #include "../Components/RendererComponent.h"
@@ -42,6 +41,7 @@ public:
     GTransformComponent *GetTransformComponent() const { return Transform; }
     GRendererComponent *GetRendererComponent() const { return Renderer; }
 
+    bool IsCollidingWith(const GEntity* other, float halfWidth) const;
 protected:
     std::vector<GComponent *> Components;
     GTransformComponent *Transform;
