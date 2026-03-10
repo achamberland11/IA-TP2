@@ -16,20 +16,20 @@ void GPlayerController::Update(float dt) {
     GController::Update(dt);
 
     if (!Owner) return;
-    sf::Vector2f direction(0.f, 0.f);
+    Direction = sf::Vector2f(0.f, 0.f);
 
-    if (bMoveUp) direction.y = -1.f;
-    if (bMoveDown) direction.y = 1.f;
-    if (bMoveLeft) direction.x = -1.f;
-    if (bMoveRight) direction.x = 1.f;
+    if (bMoveUp) Direction.y = -1.f;
+    if (bMoveDown) Direction.y = 1.f;
+    if (bMoveLeft) Direction.x = -1.f;
+    if (bMoveRight) Direction.x = 1.f;
 
-    if (direction == sf::Vector2f(0.f, 0.f))
+    if (Direction == sf::Vector2f(0.f, 0.f))
         Owner->StopMoving();
     else {
-        const float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-        direction.x /= length;
-        Owner->SetVelocity(direction * Owner->GetMovementSpeed());
-        Owner->GetTransformComponent()->SetRotation(direction);
+        const float length = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
+        Direction.x /= length;
+        Owner->SetVelocity(Direction * Owner->GetMovementSpeed());
+        Owner->GetTransformComponent()->SetRotation(Direction);
     }
 }
 

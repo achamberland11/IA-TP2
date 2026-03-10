@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../../../build/_deps/sfml-src/extlibs/headers/vulkan/vulkan_core.h"
 #include "../Components/Component.h"
 #include "../../Core/Object.h"
 #include "../Components/RendererComponent.h"
@@ -29,6 +30,8 @@ public:
     void AddComponent(GComponent* component);
     void RemoveComponent(GComponent* component);
     std::vector<GComponent*> GetComponents();
+    template <typename T>
+    T* GetComponent();
 
     GTransformComponent* GetTransformComponent() const { return Transform; }
     GRendererComponent* GetRendererComponent() const { return Renderer; }

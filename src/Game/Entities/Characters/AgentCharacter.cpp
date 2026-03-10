@@ -2,12 +2,19 @@
 #include <iostream>
 #include <SFML/Graphics/CircleShape.hpp>
 
+#include "Game/Controllers/AgentController.h"
+
 GAgentCharacter::GAgentCharacter()
 {
 	Name = "AgentCharacter";
 	Transform->SetPosition(sf::Vector2f(275, 150));
 	Transform->SetScale(sf::Vector2f(1, 1));
 	Renderer->SetColor(sf::Color::Magenta);
+	
+	FSM = new GFSMComponent(this);
+	AddComponent(FSM);
+	
+	Controller = new GAgentController(this);
 
 	LoadTextures();
 

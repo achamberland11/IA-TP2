@@ -25,7 +25,7 @@ public:
 private:
     void LoadTextures();
 
-    GFSMComponent* fsm;
+    GFSMComponent* FSM;
 
     std::map<std::string, sf::Texture> m_textures;
     std::map<std::string, std::unique_ptr<sf::Sprite>> m_sprites;
