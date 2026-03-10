@@ -7,6 +7,7 @@
 #include "Game/Game.h"
 #include "Game/World.h"
 #include "Game/Controllers/AgentController.h"
+#include "Game/Map/AStar.h"
 
 GAgentCharacter::GAgentCharacter()
 {
@@ -18,30 +19,27 @@ GAgentCharacter::GAgentCharacter()
     FSM = new GFSMComponent(this);
     AddComponent(FSM);
 
-    Controller = new GAgentController(this);
+    AgentController = new GAgentController(this);
+    Controller = AgentController;
 
     // Initialize vision component
     VisionComponent = new GConeVisionComponent(this);
     SetupVisionComponent(150.f, 90.f);
     AddComponent(VisionComponent);
 
-    Controller = new GAgentController(this);
-
     LoadTextures();
 
-    auto it = m_sprites.find("E_F1");
-    if (it != m_sprites.end() && it->second)
+    auto it = Sprites.find("E_F1");
+    if (it != Sprites.end() && it->second)
         Renderer->SetSprite(*it->second, "E_F1");
     else
         std::cerr << "Error : E_F1 sprite not found" << std::endl;
 
     MovementSpeed = 50.f; // Agent is slower
-    SetWaypoints();
+    SetPatrolWaypoints();
 }
 
-GAgentCharacter::~GAgentCharacter()
-{
-}
+GAgentCharacter::~GAgentCharacter() {}
 
 void GAgentCharacter::Start()
 {
@@ -55,25 +53,23 @@ void GAgentCharacter::Update(float dt)
     // Sprite rendering
     std::string oldSpriteName = Renderer->GetSpriteName();
 
-    GAgentController *agentContrller = dynamic_cast<GAgentController *>(Controller);
-
-    bool flip = agentContrller->GetDirection().x < 0.f;
+    bool flip = Direction.x < 0.f;
 
     //Flip le sprite si l'agent va a gauche.
     Transform->SetScale(sf::Vector2f(flip ? -std::abs(Transform->GetScale().x) : std::abs(Transform->GetScale().x),
                                      Transform->GetScale().y));
 
-    spriteTimer += dt;
+    SpriteTimer += dt;
 
-    if (spriteTimer > spriteDuration && !oldSpriteName.empty())
+    if (SpriteTimer > SpriteDuration && !oldSpriteName.empty())
     {
         std::string spriteName = (oldSpriteName.back() == '1') ? "E_F2" : "E_F1";
 
-        auto it = m_sprites.find(spriteName);
-        if (it != m_sprites.end() && it->second)
+        auto it = Sprites.find(spriteName);
+        if (it != Sprites.end() && it->second)
             Renderer->SetSprite(*it->second, spriteName);
 
-        spriteTimer = 0;
+        SpriteTimer = 0;
     }
 
     // Update vision direction based on movement
@@ -85,12 +81,18 @@ void GAgentCharacter::Update(float dt)
 
     // Debug vision
 
-    GGame *game = GGame::GetInstance();
-    GPlayerCharacter *PlayerCharacter = game->GetPlayerCharacter();
-    if (VisionComponent && PlayerCharacter)
+    if (VisionComponent && AgentController->GetPlayer())
     {
-        if (VisionComponent->CanSeeEntity(PlayerCharacter))
+        if (VisionComponent->CanSeeEntity(AgentController->GetPlayer()))
             std::cout << "Player detected!" << std::endl;
+    }
+
+    SetVelocity(ComputeSteering(dt));
+
+    if (IsCollidingWith(AgentController->GetPlayer(), 8.f))
+    {
+        std::cout << "Agent collided with player! Exiting program.\n";
+        std::exit(0);
     }
 }
 
@@ -100,7 +102,7 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
     DrawDebug(window);
 
     // @TODO temporaire, devrait pas être à chaque rendu comme ça
-    if (FSM && FSM->GetCurrentState())
+    /*if (FSM && FSM->GetCurrentState())
     {
         sf::Font font;
         if (!font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
@@ -118,7 +120,7 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
         stateText.setPosition({window.getSize().x - textWidth - 20.f, 20.f});
 
         window.draw(stateText);
-    }
+    }*/
 }
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
@@ -129,11 +131,10 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
     sf::Vector2f from = Transform->GetPosition();
     sf::Vector2f prevDir(0.f, 0.f);
 
-    GAgentController *agent = dynamic_cast<GAgentController *>(Controller);
 
-    for (int i = agent->GetCurrentTarget(); i < agent->GetTargets().size(); i++)
+    for (int i = WaypointIndex; i < Waypoints.size(); i++)
     {
-        sf::Vector2f to = agent->GetTargets()[i];
+        sf::Vector2f to = Waypoints[i];
         sf::Vector2f diff = to - from;
         float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
         sf::Vector2f dir = diff / length;
@@ -148,7 +149,7 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
 
         float dot = prevDir.x * dir.x + prevDir.y * dir.y;
 
-        if (i > (int) agent->GetCurrentTarget() && dot < 0.99f && (prevDir.x != 0.f || prevDir.y != 0.f))
+        if (i > WaypointIndex && dot < 0.99f && (prevDir.x != 0.f || prevDir.y != 0.f))
         {
             sf::CircleShape circle(4.f);
             circle.setOrigin(sf::Vector2f(4.f, 4.f));
@@ -161,30 +162,6 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
         from = to;
         prevDir = dir;
 
-
-        for (int i = 0; i < waypoints.size(); i++)
-        {
-            sf::Vector2f to = waypoints[i];
-            sf::Vector2f diff = to - from;
-            float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
-
-            sf::RectangleShape line(sf::Vector2f(length, LineTickness));
-            line.setFillColor(Color);
-            line.setOrigin(sf::Vector2f(0.f, LineTickness / 2.f));
-            line.setPosition(from);
-            line.setRotation(sf::radians(std::atan2(diff.y, diff.x)));
-
-            window.draw(line);
-
-            sf::CircleShape circle(8.f);
-            circle.setOrigin(sf::Vector2f(8.f, 8.f));
-            circle.setPosition(to);
-            circle.setFillColor(Color);
-
-            window.draw(circle);
-
-            from = to;
-        }
     }
 
     // Draw vision cone
@@ -240,6 +217,13 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
     }
 }
 
+void GAgentCharacter::SetWaypoints(const std::vector<sf::Vector2f>& waypoints)
+{
+    std::cout << "Waypoints set!" << std::endl;
+    Waypoints = waypoints;
+    WaypointIndex = 0;
+}
+
 void GAgentCharacter::LoadTextures()
 {
     for (const auto &entry: std::filesystem::directory_iterator("Assets/Images/Enemy"))
@@ -248,20 +232,20 @@ void GAgentCharacter::LoadTextures()
         {
             std::string tileName = entry.path().stem().string();
 
-            if (!m_textures[tileName].loadFromFile(entry.path().string()))
+            if (!Textures[tileName].loadFromFile(entry.path().string()))
                 std::cerr << "Error loading : " << entry.path() << std::endl;
         }
     }
 
-    for (const auto &[name, texture]: m_textures)
+    for (const auto &[name, texture]: Textures)
     {
-        if (m_textures.find(name) == m_textures.end())
+        if (Textures.find(name) == Textures.end())
             continue;
 
-        m_sprites[name] = std::make_unique<sf::Sprite>(m_textures[name]);
-        m_sprites[name]->setScale(Transform->GetScale());
-        sf::FloatRect bounds = m_sprites[name]->getLocalBounds();
-        m_sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
+        Sprites[name] = std::make_unique<sf::Sprite>(Textures[name]);
+        Sprites[name]->setScale(Transform->GetScale());
+        sf::FloatRect bounds = Sprites[name]->getLocalBounds();
+        Sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
     }
 }
 
@@ -276,18 +260,86 @@ void GAgentCharacter::SetupVisionComponent(float range, float angle)
 }
 
 
-void GAgentCharacter::SetWaypoints()
+void GAgentCharacter::SetPatrolWaypoints()
 {
-    waypoints.push_back(sf::Vector2f(1000.f, 550.f));
-    waypoints.push_back(sf::Vector2f(975.f, 100.f));
-    waypoints.push_back(sf::Vector2f(730.f, 100.f));
-    waypoints.push_back(sf::Vector2f(625.f, 375.f));
-    waypoints.push_back(sf::Vector2f(500.f, 550.f));
-    waypoints.push_back(sf::Vector2f(250.f, 325.f));
-    waypoints.push_back(sf::Vector2f(135.f, 350.f));
-    waypoints.push_back(sf::Vector2f(150.f, 425.f));
-    waypoints.push_back(sf::Vector2f(275.f, 375.f));
-    waypoints.push_back(sf::Vector2f(275.f, 575.f));
-    waypoints.push_back(sf::Vector2f(650.f, 575.f));
-    waypoints.push_back(sf::Vector2f(875.f, 575.f));
+    PatrolPoints.push_back(sf::Vector2f(1000.f, 550.f));
+    PatrolPoints.push_back(sf::Vector2f(975.f, 100.f));
+    PatrolPoints.push_back(sf::Vector2f(730.f, 100.f));
+    PatrolPoints.push_back(sf::Vector2f(625.f, 375.f));
+    PatrolPoints.push_back(sf::Vector2f(500.f, 550.f));
+    PatrolPoints.push_back(sf::Vector2f(250.f, 325.f));
+    PatrolPoints.push_back(sf::Vector2f(135.f, 350.f));
+    PatrolPoints.push_back(sf::Vector2f(150.f, 425.f));
+    PatrolPoints.push_back(sf::Vector2f(275.f, 375.f));
+    PatrolPoints.push_back(sf::Vector2f(275.f, 575.f));
+    PatrolPoints.push_back(sf::Vector2f(650.f, 575.f));
+    PatrolPoints.push_back(sf::Vector2f(875.f, 575.f));
+}
+
+sf::Vector2f GAgentCharacter::ComputeSteering(float dt)
+{
+    GPlayerCharacter* player = AgentController->GetPlayer();
+	sf::Vector2f agentPos = Transform->GetPosition();
+
+
+	if (FSM->GetCurrentState() == AgentChaseState::Instance()) {
+        if (!player)
+            return { 0.f, 0.f };
+
+	    sf::Vector2f playerPos = player->GetTransformComponent()->GetPosition();
+	    sf::Vector2f playerVel = player->GetVelocity();
+
+	    //Calculate prediction time
+	    sf::Vector2f toPlayer = playerPos - agentPos;
+	    float distance = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+
+		//Predict
+		float predictionTime = (MovementSpeed > 0.f) ? distance / MovementSpeed : 0.f;
+
+		const float MaxPrediction = 0.5f;
+
+		if (predictionTime > MaxPrediction)
+			predictionTime = MaxPrediction;
+
+		sf::Vector2 predictedPos = playerPos + playerVel * predictionTime;
+
+		Direction = predictedPos - agentPos;
+		float dist = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
+
+		if (dist > 0.f)
+			Direction /= dist;
+		else
+			return { 0.f, 0.f };
+
+		//Arrive behavior
+		float speed = MovementSpeed;
+		if (distance < SlowingRadius)
+			speed *= distance / SlowingRadius;
+
+		return Direction * speed;
+	}
+	//Patrol or Return
+	else {
+		if (Waypoints.empty() || WaypointIndex >= Waypoints.size())
+			return { 0.f, 0.f };
+
+		sf::Vector2f targetPos = Waypoints[WaypointIndex];
+		Direction = targetPos - agentPos;
+		float distance = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
+
+		if (distance < 2.f)
+			if (WaypointIndex + 1 < Waypoints.size())
+				WaypointIndex++;
+			else
+				return { 0.f, 0.f };
+
+		Direction /= distance;
+
+		//Arrive behavior
+		float speed = MovementSpeed;
+		if (distance < SlowingRadius)
+			speed *= distance / SlowingRadius;
+
+		return Direction * speed;
+	}
 }

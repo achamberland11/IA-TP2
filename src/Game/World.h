@@ -26,14 +26,14 @@ public:
     void HandleEvent(const sf::Event &event);
 
     GMap *GetMap() const { return Map.get(); }
-    GPlayerCharacter *GetPlayerCharacter();
-    GAgentCharacter *GetAgentCharacter();
+    GPlayerCharacter *GetPlayerCharacter() const { return Player; }
+    GAgentCharacter *GetAgentCharacter() const { return Agent; }
 
 private:
     void CreateMap();
     void CreateEntities();
-    GPlayerCharacter* CreatePlayer();
-    void CreateAgent(GPlayerCharacter* player);
+    void CreatePlayer();
+    void CreateAgent();
 
     sf::Vector2u WindowSize;
     std::unique_ptr<GMap> Map;
@@ -41,6 +41,6 @@ private:
     std::vector<GEntity*> Entities;
     std::vector<GController*> Controllers;
 
-    float pathTimer = 0.f;
-    float pathInterval = 0.f;
+    GPlayerCharacter *Player;
+    GAgentCharacter *Agent;
 };

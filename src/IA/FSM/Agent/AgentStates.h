@@ -44,6 +44,7 @@ private:
 
     GAgentCharacter* Agent;
     int PatrolIndex = 0;
+    int NextPatrolPointIndex = PatrolIndex + 1;
 
 public:
     static AgentPatrolState* Instance();

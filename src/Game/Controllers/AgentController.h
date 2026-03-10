@@ -9,6 +9,8 @@
 #include "IA/FSM/Agent/AgentStates.h"
 #include <Game/Entities/Characters/PlayerCharacter.h>
 
+#include "Game/Components/ConeVisionComponent.h"
+
 class GAgentController : public GController
 {
 public:
@@ -19,24 +21,19 @@ public:
     void Update(float dt) override;
 
     void HandleEvent(const sf::Event& event) override;
-    void SetPlayer(GPlayerCharacter* player) { Player = player; }
-    void SetTargets(std::vector<sf::Vector2f> newTargets) { targets = newTargets; }
-    std::vector<sf::Vector2f> GetTargets() { return targets; }
-    int GetCurrentTarget() { return currentTarget; }
-    sf::Vector2f GetDirection() { return direction; }
+    int GetCurrentTarget() { return CurrentTarget; }
+    void FindPath(const sf::Vector2f &target);
+
+    GPlayerCharacter* GetPlayer() { return Player; }
 
 private:
     GFSMComponent* FSM = nullptr;
+    GConeVisionComponent* Vision = nullptr;
 
-    sf::Vector2f direction;
     GPlayerCharacter* Player = nullptr;
+    GAgentCharacter* Agent = nullptr;
 
-    std::vector<sf::Vector2f> targets;
-    int currentTarget = 0;
+    int CurrentTarget = 0;
     bool bFinished = false;
 
-    sf::Vector2f ComputeSteering(float dt);
-
-    //Steering
-    const float SlowingRadius = 50.f;
 };

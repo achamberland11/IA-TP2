@@ -3,6 +3,8 @@
 //
 
 #include "AgentStates.h"
+
+#include "Game/Game.h"
 #include "Game/Entities/Characters/AgentCharacter.h"
 
 
@@ -21,7 +23,6 @@ void AgentGlobalStates::Enter(GEntity *agent) {
 
 void AgentGlobalStates::Execute(GEntity* agent) {
 
-
 }
 
 void AgentGlobalStates::Exit(GEntity* agent) {
@@ -39,32 +40,30 @@ AgentPatrolState *AgentPatrolState::Instance() {
 void AgentPatrolState::Enter(GEntity *agent) {
     Agent = static_cast<GAgentCharacter*>(agent);
     PatrolIndex = 0;
+
+    std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+
+    Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex+1]);
 }
 
 void AgentPatrolState::Execute(GEntity* agent) {
     if (!Agent)
         return;
 
-    // @TODO temp type shit
-    std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
-    sf::Vector2f currentWaypoint = waypoints[PatrolIndex];
+    std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+    if (patrolPoints.empty())
+        return;
 
-    if (!waypoints.empty() && !Agent->WaypointReached()) {
-        sf::Vector2f position = Agent->GetTransformComponent()->GetPosition();
-        sf::Vector2f direction = currentWaypoint - position;
-        float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    sf::Vector2f agentPos = Agent->GetTransformComponent()->GetPosition();
+    sf::Vector2f targetPos = patrolPoints[PatrolIndex];
 
-        if (distance < 0.1f) {
-            if (PatrolIndex + 1 < waypoints.size())
-                PatrolIndex++;
-            else {
-                PatrolIndex = 0;
-            }
-        }
-        else {
-            direction /= distance;
-            Agent->SetVelocity(direction * 100.f);
-        }
+    sf::Vector2f diff = targetPos - agentPos;
+    float distanceSq = diff.x * diff.x + diff.y * diff.y;
+
+    if (distanceSq < 25.f)
+    {
+        PatrolIndex = (PatrolIndex + 1) % patrolPoints.size();
+        Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex]);
     }
 }
 

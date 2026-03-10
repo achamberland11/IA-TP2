@@ -8,6 +8,7 @@
 
 #include "Game/Components/FSMComponent.h"
 #include "Game/Components/ConeVisionComponent.h"
+#include "Game/Controllers/AgentController.h"
 
 class GConeVisionComponent;
 
@@ -22,27 +23,40 @@ public:
     void Render(sf::RenderWindow &window) override;
     void DrawDebug(sf::RenderWindow &window);
 
-    std::vector<sf::Vector2f> GetWaypoints() const { return waypoints; }
-    bool WaypointReached() const { return bWaypointReached; }
+
+    std::vector<sf::Vector2f> GetWaypoints() const { return Waypoints; }
+    void SetWaypoints(const std::vector<sf::Vector2f>& waypoints);
+
+    std::vector<sf::Vector2f> GetPatrolPoints() const { return PatrolPoints; }
 
     // Vision-related methods
     void SetupVisionComponent(float range = 150.f, float angle = 90.f);
 
+    GAgentController* GetAgentController() const { return AgentController; }
+
 private:
     void LoadTextures();
 
-    void SetWaypoints();
+    void SetPatrolWaypoints();
+    sf::Vector2f ComputeSteering(float dt);
 
     GFSMComponent *FSM = nullptr;
     GConeVisionComponent* VisionComponent = nullptr;
 
-    std::map<std::string, sf::Texture> m_textures;
-    std::map<std::string, std::unique_ptr<sf::Sprite> > m_sprites;
+    std::map<std::string, sf::Texture> Textures;
+    std::map<std::string, std::unique_ptr<sf::Sprite> > Sprites;
 
-    float spriteTimer = 0.f;
-    float spriteDuration = 0.5f;
+    GAgentController* AgentController = nullptr;
 
-    std::vector<sf::Vector2f> waypoints;
+    float SpriteTimer = 0.f;
+    float SpriteDuration = 0.5f;
 
-    bool bWaypointReached = false;
+    std::vector<sf::Vector2f> PatrolPoints;
+    std::vector<sf::Vector2f> Waypoints;
+    sf::Vector2f CurrentWaypoint;
+    int WaypointIndex = 0;
+
+    //Steering
+    const float SlowingRadius = 50.f;
+    sf::Vector2f Direction;
 };
