@@ -41,6 +41,12 @@ add_executable(IA-TP2
         src/Game/Components/RendererComponent.h
         src/Game/Controllers/PlayerController.cpp
         src/Game/Controllers/PlayerController.h
+        src/Game/Controllers/AgentController.cpp
+        src/Game/Controllers/AgentController.h
+        src/Game/Components/FsmComponent.cpp
+        src/Game/Components/FsmComponent.h
+        src/IA/FSM/Agent/AgentStates.cpp
+        src/IA/FSM/Agent/AgentStates.h
 )
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)

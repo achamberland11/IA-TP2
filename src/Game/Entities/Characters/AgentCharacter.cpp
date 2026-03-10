@@ -16,6 +16,8 @@ GAgentCharacter::GAgentCharacter()
 		Renderer->SetSprite(*it->second, "E_F1");
 	else
 		std::cerr << "Error : E_F1 sprite not found" << std::endl;
+
+	MovementSpeed = 75.f; // Agent is slower
 }
 
 GAgentCharacter::~GAgentCharacter()
