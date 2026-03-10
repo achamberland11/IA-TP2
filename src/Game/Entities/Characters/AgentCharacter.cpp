@@ -82,10 +82,8 @@ void GAgentCharacter::Update(float dt)
 	GPlayerCharacter* PlayerCharacter = game->GetPlayerCharacter();
 	if (VisionComponent && PlayerCharacter)
 	{
-		if (VisionComponent->CanSeeEntity(PlayerCharacter))
-		{
-			std::cout << "Player detected!" << std::endl;
-		}
+		 if (VisionComponent->CanSeeEntity(PlayerCharacter))
+		 				 std::cout << "Player detected!" << std::endl;
 	}
 }
 

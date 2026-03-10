@@ -58,7 +58,7 @@ FTile GMap::CreateTile(const std::string &rawValue) {
     } else {
         tile.Type = ETileType::Wall;
         tile.Walkable = false;
-        tile.BlocksVision = false;
+        tile.BlocksVision = true;
         tile.MovementCost = 1;
     }
 

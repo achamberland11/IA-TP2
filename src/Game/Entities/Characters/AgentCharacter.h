@@ -4,14 +4,12 @@
 
 #pragma once
 #include "Character.h"
-#include "../../Controllers/PlayerController.h"
-#include "SFML/Window/Event.hpp"
 #include <map>
-#include <vector>
 
 #include "Game/Components/FSMComponent.h"
 #include "Game/Components/ConeVisionComponent.h"
 
+class GConeVisionComponent;
 
 class GAgentCharacter : public GCharacter
 {
@@ -25,7 +23,6 @@ public:
 
     // Vision-related methods
     void SetupVisionComponent(float range = 150.f, float angle = 90.f);
-    std::vector<GEntity*> GetVisibleEntities(const std::vector<GEntity*>& potentialTargets) const;
 
 private:
     void LoadTextures();

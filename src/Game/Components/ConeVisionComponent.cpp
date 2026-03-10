@@ -3,21 +3,20 @@
 //
 
 #include "ConeVisionComponent.h"
+
 #include "../Entities/Entity.h"
 #include "TransformComponent.h"
-#include <algorithm>
+#include "Game/Game.h"
 #include <cmath>
 
-const float PI = 3.14159265359f;
+const float PI = 3.14159f;
 
 void GConeVisionComponent::Start()
 {
-    // Initialization if needed
 }
 
 void GConeVisionComponent::Update(float deltaSeconds)
 {
-    // Update logic if needed (e.g., rotate view direction based on entity orientation)
 }
 
 sf::Vector2f GConeVisionComponent::GetOwnerPosition() const
@@ -26,13 +25,6 @@ sf::Vector2f GConeVisionComponent::GetOwnerPosition() const
 
     GTransformComponent* transform = Owner->GetTransformComponent();
     return transform ? transform->GetPosition() : sf::Vector2f(0, 0);
-}
-
-float GConeVisionComponent::GetDistance(const sf::Vector2f& from, const sf::Vector2f& to) const
-{
-    float dx = to.x - from.x;
-    float dy = to.y - from.y;
-    return std::sqrt(dx * dx + dy * dy);
 }
 
 float GConeVisionComponent::GetAngleBetween(const sf::Vector2f& from, const sf::Vector2f& to) const
@@ -81,14 +73,28 @@ bool GConeVisionComponent::CanSeeEntity(GEntity* target) const
 
     sf::Vector2f ownerPos = GetOwnerPosition();
     sf::Vector2f targetPos = targetTransform->GetPosition();
+    sf::Vector2f directionToPlayer = targetPos - ownerPos;
+    float distance = directionToPlayer.length();
 
-    // Check distance
-    float distance = GetDistance(ownerPos, targetPos);
     if (distance > VisionRange) return false;
 
-    // Check angle
     float targetAngle = GetAngleBetween(ownerPos, targetPos);
+    if (!IsAngleWithinCone(targetAngle, VisionAngle)) return false;
 
-    return IsAngleWithinCone(targetAngle, VisionAngle);
+    GGame* game = GGame::GetInstance();
+    if (!game || !game->GetMap() || distance <= 0.f) return true;
+
+    const float stepSize = 5.f;
+    for (float step = 0.f; step < distance; step += stepSize)
+    {
+        sf::Vector2f checkPos = ownerPos + directionToPlayer * (step / distance);
+        sf::Vector2f gridPos = game->GetMap()->WorldToGrid(checkPos);
+
+        int row = static_cast<int>(gridPos.y);
+        int col = static_cast<int>(gridPos.x);
+        if (game->GetMap()->BlocksVision(row, col))
+            return false;
+    }
+
+    return true;
 }
-

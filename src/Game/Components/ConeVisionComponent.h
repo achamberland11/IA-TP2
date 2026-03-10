@@ -5,8 +5,8 @@
 #pragma once
 #include "Component.h"
 #include "SFML/System/Vector2.hpp"
-#include <vector>
 #include <cmath>
+#include <vector>
 
 class GEntity;
 
@@ -35,17 +35,15 @@ public:
 
     // Detection
     bool CanSeeEntity(GEntity* target) const;
-    std::vector<GEntity*> GetVisibleEntities(const std::vector<GEntity*>& potentialTargets) const;
 
 private:
     // Helper methods
     sf::Vector2f GetOwnerPosition() const;
-    float GetDistance(const sf::Vector2f& from, const sf::Vector2f& to) const;
     float GetAngleBetween(const sf::Vector2f& from, const sf::Vector2f& to) const;
     bool IsAngleWithinCone(float targetAngle, float coneAngle) const;
 
     // Vision parameters
-    float VisionRange = 100.f;      // Distance of vision
-    float VisionAngle = 60.f;       // Total cone angle in degrees (30 degrees from center on each side)
-    float ViewDirection = 0.f;      // Direction the entity is facing in degrees
+    float VisionRange = 100.f;
+    float VisionAngle = 60.f;
+    float ViewDirection = 0.f;
 };
