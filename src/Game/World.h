@@ -33,8 +33,8 @@ public:
 private:
     void CreateMap();
     void CreateEntities();
-    void CreatePlayer();
-    void CreateAgent();
+    GPlayerCharacter* CreatePlayer();
+    void CreateAgent(GPlayerCharacter* player);
 
     sf::Vector2u WindowSize;
     std::unique_ptr<GMap> Map;

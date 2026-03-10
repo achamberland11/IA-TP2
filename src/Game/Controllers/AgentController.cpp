@@ -39,23 +39,38 @@ sf::Vector2f GAgentController::ComputeSteering(float dt)
 	if (targets.empty() || currentTarget >= targets.size())
 		return { 0.f, 0.f };
 
-	sf::Vector2f position = Owner->GetTransformComponent()->GetPosition();
-	direction = targets[currentTarget] - position;
-	float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+	sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
+	sf::Vector2f playerPos = Player->GetTransformComponent()->GetPosition();
+	sf::Vector2f playerVel = Player->GetVelocity();
+
+	//Calculate prediction time
+	sf::Vector2f toPlayer = playerPos - agentPos;
+	float distance = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+
+	//Predict
+	float agentSpeed = Owner->GetMovementSpeed();
+	float predictionTime = (agentSpeed > 0.f) ? distance / agentSpeed : 0.f;
+
+	const float MaxPrediction = 0.5f;
+
+	if (predictionTime > MaxPrediction)
+		predictionTime = MaxPrediction;
+
+	sf::Vector2 predictedPos = playerPos + playerVel * predictionTime;
+
+	direction = predictedPos - agentPos;
+	float dist = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+	if (dist > 0.f)
+		direction /= dist;
+	else 
+		return { 0.f, 0.f };
+
 
 	//Arrive behavior
 	float speed = Owner->GetMovementSpeed();
 	if (distance < SlowingRadius)
 		speed *= distance / SlowingRadius;
-
-	if (distance < 2.f) {
-		if (currentTarget + 1 < targets.size())
-			currentTarget++;
-		else
-			return { 0.f, 0.f };
-	}
-
-	direction /= distance;
 
 	return direction * speed;
 }

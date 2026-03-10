@@ -103,20 +103,23 @@ void GWorld::CreateMap() {
 }
 
 void GWorld::CreateEntities() {
-	CreatePlayer();
-	CreateAgent();
+	auto* player = CreatePlayer();
+	CreateAgent(player);
 }
 
-void GWorld::CreatePlayer() {
+GPlayerCharacter* GWorld::CreatePlayer() {
 	GPlayerCharacter* player = new GPlayerCharacter();
 	// player->GetTransformComponent()->SetPosition(sf::Vector2f(WindowSize.x / 2.f, WindowSize.y / 2.f));
 	player->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
 	Entities.push_back(player);
 	Controllers.push_back(player->GetController());
+
+	return player;
 }
 
-void GWorld::CreateAgent() {
+void GWorld::CreateAgent(GPlayerCharacter* player) {
 	GAgentCharacter* agent = new GAgentCharacter();
+	dynamic_cast<GAgentController*>(agent->GetController())->SetPlayer(player);
 	// agent->GetTransformComponent()->SetPosition(sf::Vector2f(200, 100));
 	agent->GetTransformComponent()->SetScale(sf::Vector2f(1.25f, 1.25f));
 	Entities.push_back(agent);
