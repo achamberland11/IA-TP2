@@ -51,6 +51,9 @@ private:
 
     GAgentController* AgentController = nullptr;
 
+    sf::Font Font;
+    bool bFontLoaded = false;
+
     float SpriteTimer = 0.f;
     float SpriteDuration = 0.5f;
 

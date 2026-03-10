@@ -40,7 +40,6 @@ public:
     bool IsWalkable(int row, int col);
     bool BlocksVision(int row, int col);
     int GetMovementCost(int row, int col);
-    // std::vector<FTile> GetNeighbours(int row, int col);
     sf::Vector2f WorldToGrid(sf::Vector2f worldPos);
     sf::Vector2f GridToWorld(sf::Vector2f gridPos);
 

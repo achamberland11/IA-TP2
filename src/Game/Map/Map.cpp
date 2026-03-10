@@ -179,10 +179,6 @@ int GMap::GetMovementCost(int row, int col)
     return Map[row][col].MovementCost;
 }
 
-/*std::vector<FTile> GMap::GetNeighbours(int row, int col) {
-    // @TODO implementation
-}*/
-
 sf::Vector2f GMap::WorldToGrid(sf::Vector2f worldPos)
 {
     return sf::Vector2f(

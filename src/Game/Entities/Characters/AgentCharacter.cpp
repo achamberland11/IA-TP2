@@ -37,9 +37,16 @@ GAgentCharacter::GAgentCharacter()
 
     MovementSpeed = 50.f; // Agent is slower
     SetPatrolWaypoints();
+
+    if (Font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
+        bFontLoaded = true;
+    else
+        std::cerr << "Failed to load font" << std::endl;
 }
 
-GAgentCharacter::~GAgentCharacter() {}
+GAgentCharacter::~GAgentCharacter()
+{
+}
 
 void GAgentCharacter::Start()
 {
@@ -101,26 +108,22 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
     GEntity::Render(window);
     DrawDebug(window);
 
-    // @TODO temporaire, devrait pas être à chaque rendu comme ça
-    /*if (FSM && FSM->GetCurrentState())
+    if (bFontLoaded && FSM && FSM->GetCurrentState())
     {
-        sf::Font font;
-        if (!font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
-            std::cerr << "Failed to load font" << std::endl;
-        sf::Text stateText(font);
         std::string stateName = FSM->GetCurrentState()->GetName();
-        stateText.setString("State: " + stateName);
+        std::string text = "Current State : " + stateName;
+
+        sf::Text stateText(Font);
+
+        stateText.setString(text);
         stateText.setCharacterSize(24);
-        stateText.setFillColor(sf::Color::White);
+        stateText.setFillColor(sf::Color::Magenta);
+        stateText.setStyle(sf::Text::Bold | sf::Text::Underlined);
         stateText.setOutlineColor(sf::Color::Black);
         stateText.setOutlineThickness(2.f);
 
-        sf::FloatRect textBounds = stateText.getLocalBounds();
-        float textWidth = textBounds.size.x;
-        stateText.setPosition({window.getSize().x - textWidth - 20.f, 20.f});
-
         window.draw(stateText);
-    }*/
+    }
 }
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
@@ -161,14 +164,14 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
 
         from = to;
         prevDir = dir;
-
     }
 
     // Draw vision cone
     if (VisionComponent)
     {
         const sf::Color ColorVisionCone(255, 0, 0, 180);
-        float range = VisionComponent->GetVisionRange();
+        float rangeBuffer = VisionComponent->GetVisionRange() * 0.07f;
+        float range = VisionComponent->GetVisionRange() + rangeBuffer;
         float angle = VisionComponent->GetVisionAngle();
         float direction = VisionComponent->GetDirection();
 
@@ -217,7 +220,7 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
     }
 }
 
-void GAgentCharacter::SetWaypoints(const std::vector<sf::Vector2f>& waypoints)
+void GAgentCharacter::SetWaypoints(const std::vector<sf::Vector2f> &waypoints)
 {
     std::cout << "Waypoints set!" << std::endl;
     Waypoints = waypoints;
@@ -278,66 +281,68 @@ void GAgentCharacter::SetPatrolWaypoints()
 
 sf::Vector2f GAgentCharacter::ComputeSteering(float dt)
 {
-    GPlayerCharacter* player = AgentController->GetPlayer();
-	sf::Vector2f agentPos = Transform->GetPosition();
+    GPlayerCharacter *player = AgentController->GetPlayer();
+    sf::Vector2f agentPos = Transform->GetPosition();
 
 
-	if (FSM->GetCurrentState() == AgentChaseState::Instance()) {
+    if (FSM->GetCurrentState() == AgentChaseState::Instance())
+    {
         if (!player)
-            return { 0.f, 0.f };
+            return {0.f, 0.f};
 
-	    sf::Vector2f playerPos = player->GetTransformComponent()->GetPosition();
-	    sf::Vector2f playerVel = player->GetVelocity();
+        sf::Vector2f playerPos = player->GetTransformComponent()->GetPosition();
+        sf::Vector2f playerVel = player->GetVelocity();
 
-	    //Calculate prediction time
-	    sf::Vector2f toPlayer = playerPos - agentPos;
-	    float distance = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+        //Calculate prediction time
+        sf::Vector2f toPlayer = playerPos - agentPos;
+        float distance = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
 
-		//Predict
-		float predictionTime = (MovementSpeed > 0.f) ? distance / MovementSpeed : 0.f;
+        //Predict
+        float predictionTime = (MovementSpeed > 0.f) ? distance / MovementSpeed : 0.f;
 
-		const float MaxPrediction = 0.5f;
+        const float MaxPrediction = 0.5f;
 
-		if (predictionTime > MaxPrediction)
-			predictionTime = MaxPrediction;
+        if (predictionTime > MaxPrediction)
+            predictionTime = MaxPrediction;
 
-		sf::Vector2 predictedPos = playerPos + playerVel * predictionTime;
+        sf::Vector2 predictedPos = playerPos + playerVel * predictionTime;
 
-		Direction = predictedPos - agentPos;
-		float dist = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
+        Direction = predictedPos - agentPos;
+        float dist = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
 
-		if (dist > 0.f)
-			Direction /= dist;
-		else
-			return { 0.f, 0.f };
+        if (dist > 0.f)
+            Direction /= dist;
+        else
+            return {0.f, 0.f};
 
-		//Arrive behavior
-		float speed = MovementSpeed;
-		if (distance < SlowingRadius)
-			speed *= distance / SlowingRadius;
+        //Arrive behavior
+        float speed = MovementSpeed;
+        if (distance < SlowingRadius)
+            speed *= distance / SlowingRadius;
 
-		return Direction * speed;
-	}
-	//Patrol or Return
-	else {
-		if (Waypoints.empty() || WaypointIndex >= Waypoints.size())
-			return { 0.f, 0.f };
+        return Direction * speed;
+    }
+    //Patrol or Return
+    else
+    {
+        if (Waypoints.empty() || WaypointIndex >= Waypoints.size())
+            return {0.f, 0.f};
 
-		sf::Vector2f targetPos = Waypoints[WaypointIndex];
-		Direction = targetPos - agentPos;
-		float distance = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
+        sf::Vector2f targetPos = Waypoints[WaypointIndex];
+        Direction = targetPos - agentPos;
+        float distance = std::sqrt(Direction.x * Direction.x + Direction.y * Direction.y);
 
-		if (distance < 2.f)
-			if (WaypointIndex + 1 < Waypoints.size())
-				WaypointIndex++;
-			else
-			{
-			    Waypoints.clear();
-				return { 0.f, 0.f };
-			}
+        if (distance < 2.f)
+            if (WaypointIndex + 1 < Waypoints.size())
+                WaypointIndex++;
+            else
+            {
+                Waypoints.clear();
+                return {0.f, 0.f};
+            }
 
-		Direction /= distance;
+        Direction /= distance;
 
-		return Direction * MovementSpeed;
-	}
+        return Direction * MovementSpeed;
+    }
 }
