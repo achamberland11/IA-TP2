@@ -34,4 +34,7 @@ private:
 
     std::vector<GEntity*> Entities;
     std::vector<GController*> Controllers;
+
+    float pathTimer = 0.f;
+    float pathInterval = 0.f;
 };

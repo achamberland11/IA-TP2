@@ -5,7 +5,7 @@
 GAgentCharacter::GAgentCharacter()
 {
 	Name = "AgentCharacter";
-	Transform->SetPosition(sf::Vector2f(275, 150));
+	Transform->SetPosition(sf::Vector2f(625, 150));
 	Transform->SetScale(sf::Vector2f(1, 1));
 	Renderer->SetColor(sf::Color::Magenta);
 
@@ -17,7 +17,7 @@ GAgentCharacter::GAgentCharacter()
 	else
 		std::cerr << "Error : E_F1 sprite not found" << std::endl;
 
-	MovementSpeed = 75.f; // Agent is slower
+	MovementSpeed = 50.f; // Agent is slower
 }
 
 GAgentCharacter::~GAgentCharacter()
@@ -31,6 +31,7 @@ void GAgentCharacter::Start()
 
 void GAgentCharacter::Update(float dt)
 {
+	std::cerr << "Targets: " << targets.size() << std::endl;
 	//Temporaire
 	if (!bFinished && !targets.empty()) {
 
@@ -77,15 +78,17 @@ void GAgentCharacter::Update(float dt)
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 {
-	const sf::Color Color(180, 100, 220, 180);
-	const float LineTickness = 5.f;
+	const sf::Color Color(180, 100, 220, 255);
+	const float LineTickness = 3.f;
 
 	sf::Vector2f from = Transform->GetPosition();
+	sf::Vector2f prevDir(0.f, 0.f);
 
 	for (int i = currentTarget; i < targets.size(); i++) {
 		sf::Vector2f to = targets[i];
 		sf::Vector2f diff = to - from;
 		float length = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+		sf::Vector2f dir = diff / length;
 
 		sf::RectangleShape line(sf::Vector2f(length, LineTickness));
 		line.setFillColor(Color);
@@ -95,14 +98,19 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 
 		window.draw(line);
 
-		sf::CircleShape circle(8.f);
-		circle.setOrigin(sf::Vector2f(8.f, 8.f));
-		circle.setPosition(to);
-		circle.setFillColor(Color);
+		float dot = prevDir.x * dir.x + prevDir.y * dir.y;
 
-		window.draw(circle);
+		if (i > (int)currentTarget && dot < 0.99f && (prevDir.x != 0.f || prevDir.y != 0.f)) {
+			sf::CircleShape circle(4.f);
+			circle.setOrigin(sf::Vector2f(4.f, 4.f));
+			circle.setPosition(from);
+			circle.setFillColor(Color);
+
+			window.draw(circle);
+		}
 
 		from = to;
+		prevDir = dir;
 	}
 }
 

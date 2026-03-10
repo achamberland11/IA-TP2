@@ -99,6 +99,8 @@ void GMap::LoadMap(const std::string mapPath) {
         float scaleY = static_cast<float>(PixelsPerTile) / textureSize.y;
         Sprites[tile]->setScale(sf::Vector2f(scaleX, scaleY));
     }
+
+    BuildNavGraph();
 }
 
 void GMap::Display(sf::RenderWindow &window) {
@@ -178,4 +180,31 @@ int GMap::GetRand(int max, int chance) const {
         return 0;
 
     return rand() % max + 1;
+}
+
+void GMap::BuildNavGraph()
+{
+    NavGraph.resize(Height * Width);
+
+    const int neighborRowOffsets[] = { -1, 1, 0, 0 };
+    const int neighborColOffsets[] = { 0, 0, -1, 1 };
+
+    for(int r = 0; r < Height; r++)
+        for (int c = 0; c < Width; c++) {
+            NavGraph[GetNavIndex(r, c)].Row = r;
+            NavGraph[GetNavIndex(r, c)].Col = c;
+
+            if (!IsWalkable(r, c))
+                continue;
+
+            for (int i = 0; i < 4; i++) {
+                int neighborRow = r + neighborRowOffsets[i];
+                int neighborCol = c + neighborColOffsets[i];
+                
+                if (IsWalkable(neighborRow, neighborCol))
+                    NavGraph[GetNavIndex(r, c)].Neighbors.push_back(GetNavIndex(neighborRow, neighborCol));
+
+            }
+        }
+
 }

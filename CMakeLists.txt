@@ -29,6 +29,8 @@ add_executable(IA-TP2
         src/Game/Map/Map.cpp
         src/Game/Map/Map.h
         src/Game/Map/Tile.h
+        src/Game/Map/AStar.h
+        src/Game/Map/AStar.cpp
         src/Game/Controllers/Controller.cpp
         src/Game/Controllers/Controller.h
         src/Game/Entities/Characters/Character.cpp
