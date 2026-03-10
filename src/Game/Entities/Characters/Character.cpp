@@ -51,9 +51,12 @@ void GCharacter::Update(float dt) {
 
         // Try Y axis
         sf::Vector2f testY(currentPos.x, currentPos.y + Velocity.y * dt);
-        sf::Vector2f gridYL = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x - halfWidth, testY.y + halfHeight });
-        sf::Vector2f gridYR = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x + halfWidth, testY.y + halfHeight });
-        sf::Vector2f gridYC = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x, testY.y + halfHeight });
+        int collisionMargin = 15.f;
+        float checkYVert = (Velocity.y > 0.f) ? (testY.y + halfHeight - collisionMargin) : (testY.y - halfHeight + collisionMargin);
+
+        sf::Vector2f gridYL = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x - halfWidth, checkYVert });
+        sf::Vector2f gridYR = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x + halfWidth, checkYVert });
+        sf::Vector2f gridYC = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x, checkYVert });
         if (GGame::GetInstance()->GetMap()->IsWalkable(gridYL.y, gridYL.x) &&
             GGame::GetInstance()->GetMap()->IsWalkable(gridYR.y, gridYR.x) &&
             GGame::GetInstance()->GetMap()->IsWalkable(gridYC.y, gridYC.x))
