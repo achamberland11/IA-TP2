@@ -23,6 +23,10 @@ public:
     void Update(float dt) override;
     void DrawDebug(sf::RenderWindow& window);
 
+    // Vision-related methods
+    void SetupVisionComponent(float range = 150.f, float angle = 90.f);
+    std::vector<GEntity*> GetVisibleEntities(const std::vector<GEntity*>& potentialTargets) const;
+
 private:
     void LoadTextures();
 
@@ -34,8 +38,4 @@ private:
 
     float spriteTimer = 0.f;
     float spriteDuration = 0.5f;
-
-    std::vector<sf::Vector2f> targets = { sf::Vector2f(500, 300), sf::Vector2f(600, 400) };
-    int currentTarget = 0;
-    bool bFinished = false;
 };
