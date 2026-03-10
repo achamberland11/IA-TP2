@@ -4,8 +4,6 @@
 
 #include "AgentController.h"
 
-#include "Game/Entities/Characters/Character.h"
-#include "IA/FSM/Agent/AgentStates.h"
 
 void GAgentController::Start() {
     GController::Start();
@@ -13,6 +11,8 @@ void GAgentController::Start() {
     if (!Owner) return;
     
     FSM = Owner->GetComponent<GFSMComponent>();
+
+    assert(FSM && "<GAgentController> : FSMComponent not found !");
     FSM->SetCurrentState(AgentPatrolState::Instance());
     FSM->SetGlobalState(AgentGlobalStates::Instance());
 }
@@ -21,8 +21,9 @@ void GAgentController::Update(float dt) {
     GController::Update(dt);
 
     if (!Owner) return;
-    if (!FSM) return;
-    
+    if (!FSM)
+        return;
+
     FSM->Update(dt);
 }
 

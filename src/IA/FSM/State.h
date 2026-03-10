@@ -11,7 +11,7 @@
 #pragma once
 #include <string>
 
-#include "Game/Entities/Characters/AgentCharacter.h"
+class GEntity;
 
 template <class entity_type>
 class State

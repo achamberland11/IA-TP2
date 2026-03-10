@@ -51,15 +51,3 @@ std::vector<GComponent*> GEntity::GetComponents()
 {
     return Components;
 }
-
-template <typename T>
-T* GEntity::GetComponent()
-{
-    static_assert(std::is_base_of<GComponent, T>::value, "T must derive from GComponent");
-    for (GComponent* component : Components)
-    {
-        if (T* cast = dynamic_cast<T*>(component))
-            return cast;
-    }
-    return nullptr;
-}

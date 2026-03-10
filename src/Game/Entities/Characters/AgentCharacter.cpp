@@ -38,6 +38,8 @@ void GAgentCharacter::Start()
 
 void GAgentCharacter::Update(float dt)
 {
+	GCharacter::Update(dt);
+
 	//Temporaire
 	if (!bFinished && !targets.empty()) {
 
@@ -78,8 +80,6 @@ void GAgentCharacter::Update(float dt)
 
 		spriteTimer = 0;
 	}
-
-	GCharacter::Update(dt);
 }
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
