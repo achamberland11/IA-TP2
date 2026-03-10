@@ -50,6 +50,8 @@ add_executable(IA-TP2
         src/Game/Components/FsmComponent.h
         src/IA/FSM/Agent/AgentStates.cpp
         src/IA/FSM/Agent/AgentStates.h
+        src/Game/Components/ConeVisionComponent.cpp
+        src/Game/Components/ConeVisionComponent.h
 )
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)

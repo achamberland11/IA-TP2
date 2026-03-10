@@ -1,0 +1,255 @@
+GUIDE D'INTÉGRATION RAPIDE - CONE VISION
+=========================================
+
+POUR LES DÉBUTANTS
+==================
+
+1. UTILISER DIRECTEMENT AVEC AGENTCHARACTER
+--------------------------------------------
+
+L'AgentCharacter utilise déjà le ConeVisionComponent!
+
+  GAgentCharacter* enemy = new GAgentCharacter();
+
+  // Configurez la vision
+  enemy->SetupVisionComponent(200.f, 90.f);
+
+  // Obtenez les entités visibles
+  std::vector<GEntity*> visible = enemy->GetVisibleEntities(allPlayers);
+
+  if (!visible.empty()) {
+      // L'ennemi vous a vu!
+  }
+
+
+2. AJOUTER À UNE AUTRE ENTITÉ
+------------------------------
+
+  // Créer une entité
+  GEntity* sentinel = new GEntity();
+
+  // Ajouter le composant de vision
+  GConeVisionComponent* vision = new GConeVisionComponent(sentinel);
+  vision->SetVisionRange(250.f);
+  vision->SetVisionAngle(120.f);
+  vision->SetDirection(45.f);
+  sentinel->AddComponent(vision);
+
+  // Utiliser
+  if (vision->CanSeeEntity(target)) {
+      std::cout << "Cible détectée!" << std::endl;
+  }
+
+
+3. PARAMÈTRES TYPIQUES
+----------------------
+
+Pour une sentinelle (garde):
+  vision->SetVisionRange(200.f);    // 200 pixels
+  vision->SetVisionAngle(120.f);    // 120 degrés
+
+Pour un archer (tireur):
+  vision->SetVisionRange(400.f);    // 400 pixels
+  vision->SetVisionAngle(45.f);     // 45 degrés
+
+Pour une créature (peu intelligente):
+  vision->SetVisionRange(150.f);    // 150 pixels
+  vision->SetVisionAngle(180.f);    // 180 degrés
+
+
+4. CAS D'USAGE COURANT
+----------------------
+
+En boucle de mise à jour:
+
+  void Update(float dt) {
+      // Récupérer les ennemis visibles
+      std::vector<GEntity*> enemies = GetAllEnemies();
+      std::vector<GEntity*> visible = agent->GetVisibleEntities(enemies);
+
+      if (visible.empty()) {
+          // Patrouille
+          Patrol();
+      } else {
+          // Engager le premier ennemi
+          ChaseEnemy(visible[0]);
+      }
+  }
+
+
+5. VÉRIFIER UNE CIBLE SPÉCIFIQUE
+---------------------------------
+
+  if (GConeVisionComponent* vision = enemy->GetComponent<GConeVisionComponent>()) {
+      if (vision->CanSeeEntity(player)) {
+          std::cout << "Vous êtes détecté!" << std::endl;
+      }
+  }
+
+
+ANGLES ET DIRECTIONS
+====================
+
+Angles standards:
+  0° = Est (droite)
+  90° = Nord (haut)
+  180° = Ouest (gauche)
+  270° = Sud (bas)
+
+Cône de vision:
+  Angle = 60°  → Champ étroit (±30° du centre)
+  Angle = 90°  → Champ normal (±45° du centre)
+  Angle = 120° → Champ large (±60° du centre)
+  Angle = 180° → Demi-cercle (±90° du centre)
+  Angle = 360° → Vision complète
+
+
+PROBLÈMES COURANTS
+==================
+
+P: "La détection ne fonctionne pas"
+R: 1. Vérifier que VisionRange > 0
+   2. Vérifier que VisionAngle > 0
+   3. Vérifier que la cible a un TransformComponent
+   4. Vérifier que la distance est <= VisionRange
+
+P: "Détecte les choses derrière"
+R: Réduire VisionAngle ou vérifier SetDirection()
+
+P: "Pas assez sensible"
+R: Augmenter VisionRange ou VisionAngle
+
+P: "Trop sensible"
+R: Réduire VisionRange ou VisionAngle
+
+
+PERFORMANCE
+===========
+
+• CanSeeEntity(): O(1) - Très rapide
+• GetVisibleEntities(n): O(n) - Linéaire
+• Pas de garbage collection
+• Pas d'allocations mémoire importantes
+
+Optimisation:
+  Vérifier chaque N frames plutôt que chaque frame:
+
+    if (frameCounter++ % 5 == 0) {
+        visible = vision->GetVisibleEntities(enemies);
+    }
+
+
+API COMPLÈTE
+============
+
+Configuration:
+  vision->SetVisionRange(float)     // Portée en pixels
+  vision->SetVisionAngle(float)     // Angle en degrés
+  vision->SetDirection(float)       // Direction en degrés (0-360)
+
+Lecture:
+  vision->GetVisionRange()          // Retourne la portée
+  vision->GetVisionAngle()          // Retourne l'angle
+  vision->GetDirection()            // Retourne la direction
+
+Détection:
+  vision->CanSeeEntity(target)      // true/false
+  vision->GetVisibleEntities(list)  // std::vector<GEntity*>
+
+
+EXEMPLES AVANCÉS
+================
+
+Rotation de la vision:
+
+  void Update(float dt) {
+      float speed = 45.f; // °/sec
+      float dir = vision->GetDirection();
+      vision->SetDirection(dir + speed * dt);
+  }
+
+
+Système d'alerte progressif:
+
+  int count = vision->GetVisibleEntities(enemies).size();
+
+  if (count == 0) alertLevel = CALM;
+  else if (count < 3) alertLevel = YELLOW;
+  else if (count < 5) alertLevel = ORANGE;
+  else alertLevel = RED;
+
+
+Filtrage par type:
+
+  std::vector<GEntity*> all = vision->GetVisibleEntities(candidates);
+  std::vector<GEntity*> players;
+
+  for (GEntity* e : all) {
+      if (IsPlayerCharacter(e)) {
+          players.push_back(e);
+      }
+  }
+
+
+FICHIERS MODIFIÉS
+=================
+
+Lors de l'implémentation:
+  • ConeVisionComponent.h
+  • ConeVisionComponent.cpp
+  • Entity.cpp (ajout #include)
+  • AgentCharacter.h
+  • AgentCharacter.cpp
+
+Tous compilent sans erreurs ✓
+
+
+DÉPANNAGE
+=========
+
+Erreur: "ConeVisionComponent not found"
+Solution: #include "Game/Components/ConeVisionComponent.h"
+
+Erreur: "GetComponent not working"
+Solution: Utiliser GetComponent<GConeVisionComponent>()
+
+Erreur: "Detect nothing"
+Solution: Vérifier que:
+  - VisionRange > 0
+  - VisionAngle > 0
+  - Cible a TransformComponent
+  - Cible est à distance <= VisionRange
+
+
+BONNES PRATIQUES
+================
+
+✓ DO:
+  - Vérifier chaque N frames pour la performance
+  - Utiliser GetVisibleEntities() en boucle
+  - Mettre à jour SetDirection() avec l'orientation
+  - Configurer des paramètres réalistes
+
+✗ DON'T:
+  - Appeler CanSeeEntity() pour chaque frame
+  - Passer un vecteur vide à GetVisibleEntities()
+  - Oublier de configurer la portée/angle
+  - Utiliser des angles hors [0, 360]
+
+
+RESSOURCES
+==========
+
+Documentation complète: CONE_VISION_DOCUMENTATION.md
+Exemples avancés: ConeVisionUsageExamples.cpp
+Tests unitaires: ConeVisionComponentTest.cpp
+Implémentation: ConeVisionComponent.h/cpp
+
+
+===========================================
+C'est tout ce que vous devez savoir pour utiliser
+le système de détection de vision en cône!
+
+Vous êtes prêt à l'emploi! 🚀
+===========================================
+

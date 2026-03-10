@@ -21,6 +21,8 @@ public:
 
     GWorld* GetWorld() const { return World.get(); }
     GMap* GetMap() const { return World->GetMap(); }
+    GPlayerCharacter* GetPlayerCharacter() const { return World->GetPlayerCharacter(); }
+    GAgentCharacter* GetAgentCharacter() const { return World->GetAgentCharacter(); }
 
 private:
     void Initialize();
