@@ -62,6 +62,9 @@ FTile GMap::CreateTile(const std::string &rawValue) {
         tile.MovementCost = 1;
     }
 
+    if (!tile.ObjectID.empty())
+        tile.Type = ETileType::Obstacle;
+
     return tile;
 }
 
@@ -140,8 +143,8 @@ void GMap::Display(sf::RenderWindow &window) {
 bool GMap::IsWalkable(int row, int col) {
     if (row < 0 || row >= Height || col < 0 || col >= Width)
         return false;
-    // return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
-    return Map[row][col].Walkable;
+
+    return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
 }
 
 bool GMap::BlocksVision(int row, int col) {
