@@ -331,15 +331,13 @@ sf::Vector2f GAgentCharacter::ComputeSteering(float dt)
 			if (WaypointIndex + 1 < Waypoints.size())
 				WaypointIndex++;
 			else
+			{
+			    Waypoints.clear();
 				return { 0.f, 0.f };
+			}
 
 		Direction /= distance;
 
-		//Arrive behavior
-		float speed = MovementSpeed;
-		if (distance < SlowingRadius)
-			speed *= distance / SlowingRadius;
-
-		return Direction * speed;
+		return Direction * MovementSpeed;
 	}
 }

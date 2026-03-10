@@ -28,11 +28,14 @@ public:
     void SetWaypoints(const std::vector<sf::Vector2f>& waypoints);
 
     std::vector<sf::Vector2f> GetPatrolPoints() const { return PatrolPoints; }
+    int GetPatrolIndex() const { return PatrolIndex; }
+    void SetPatrolIndex(int index) { PatrolIndex = index; }
 
     // Vision-related methods
     void SetupVisionComponent(float range = 150.f, float angle = 90.f);
 
     GAgentController* GetAgentController() const { return AgentController; }
+    GFSMComponent* GetFSM() const { return FSM; }
 
 private:
     void LoadTextures();
@@ -55,6 +58,7 @@ private:
     std::vector<sf::Vector2f> Waypoints;
     sf::Vector2f CurrentWaypoint;
     int WaypointIndex = 0;
+    int PatrolIndex = 0;
 
     //Steering
     const float SlowingRadius = 50.f;

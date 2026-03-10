@@ -21,8 +21,32 @@ std::vector<sf::Vector2f> AStar::FindPath(GMap* map, sf::Vector2f worldStart, sf
 	int endRow = static_cast<int>(gridEnd.y);
 	int endCol = static_cast<int>(gridEnd.x);
 
+	// If the goal is not walkable, find the nearest walkable cell
 	if (!map->IsWalkable(endRow, endCol))
-		return {};
+	{
+		bool found = false;
+		for (int radius = 1; radius <= std::max(map->GetWidth(), map->GetHeight()) && !found; radius++)
+		{
+			for (int dr = -radius; dr <= radius && !found; dr++)
+			{
+				for (int dc = -radius; dc <= radius && !found; dc++)
+				{
+					if (std::abs(dr) != radius && std::abs(dc) != radius)
+						continue; // Only check the border of the square
+					int nr = endRow + dr;
+					int nc = endCol + dc;
+					if (map->IsWalkable(nr, nc))
+					{
+						endRow = nr;
+						endCol = nc;
+						found = true;
+					}
+				}
+			}
+		}
+		if (!found)
+			return {};
+	}
 
 	std::vector<std::vector<FAStarNode*>> grid(map->GetHeight(), std::vector<FAStarNode*>(map->GetWidth(), nullptr));
 	std::vector<std::vector<bool>> closed(map->GetHeight(), std::vector<bool>(map->GetWidth(), false));
