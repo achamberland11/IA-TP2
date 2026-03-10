@@ -36,16 +36,27 @@ void GCharacter::Update(float dt) {
         sf::Vector2f currentPos = Transform->GetPosition();
         sf::Vector2f finalPos = currentPos;
 
+        float halfWidth = 4.f * Transform->GetScale().x;
+        float halfHeight = 8.f * Transform->GetScale().y;
+
         // Try X axis
         sf::Vector2f testX(currentPos.x + Velocity.x * dt, currentPos.y);
-        sf::Vector2f gridX = GGame::GetInstance()->GetMap()->WorldToGrid(testX);
-        if (GGame::GetInstance()->GetMap()->IsWalkable(gridX.y, gridX.x))
+        sf::Vector2f gridXL = GGame::GetInstance()->GetMap()->WorldToGrid({ testX.x - halfWidth, testX.y + halfHeight });
+        sf::Vector2f gridXR = GGame::GetInstance()->GetMap()->WorldToGrid({ testX.x + halfWidth, testX.y + halfHeight });
+        sf::Vector2f gridXC = GGame::GetInstance()->GetMap()->WorldToGrid({ testX.x, testX.y + halfHeight });
+        if (GGame::GetInstance()->GetMap()->IsWalkable(gridXL.y, gridXL.x) &&
+            GGame::GetInstance()->GetMap()->IsWalkable(gridXR.y, gridXR.x) &&
+            GGame::GetInstance()->GetMap()->IsWalkable(gridXC.y, gridXC.x))
             finalPos.x = testX.x;
 
         // Try Y axis
         sf::Vector2f testY(currentPos.x, currentPos.y + Velocity.y * dt);
-        sf::Vector2f gridY = GGame::GetInstance()->GetMap()->WorldToGrid(testY);
-        if (GGame::GetInstance()->GetMap()->IsWalkable(gridY.y, gridY.x))
+        sf::Vector2f gridYL = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x - halfWidth, testY.y + halfHeight });
+        sf::Vector2f gridYR = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x + halfWidth, testY.y + halfHeight });
+        sf::Vector2f gridYC = GGame::GetInstance()->GetMap()->WorldToGrid({ testY.x, testY.y + halfHeight });
+        if (GGame::GetInstance()->GetMap()->IsWalkable(gridYL.y, gridYL.x) &&
+            GGame::GetInstance()->GetMap()->IsWalkable(gridYR.y, gridYR.x) &&
+            GGame::GetInstance()->GetMap()->IsWalkable(gridYC.y, gridYC.x))
             finalPos.y = testY.y;
 
         Transform->SetPosition(finalPos);
