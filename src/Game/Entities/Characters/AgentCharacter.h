@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Game/Components/FSMComponent.h"
+#include "Game/Components/ConeVisionComponent.h"
 
 
 class GAgentCharacter : public GCharacter
@@ -24,10 +25,15 @@ public:
 
     void SetTargets(std::vector<sf::Vector2f> newTargets) { targets = newTargets; }
 
+    // Vision-related methods
+    void SetupVisionComponent(float range = 150.f, float angle = 90.f);
+    std::vector<GEntity*> GetVisibleEntities(const std::vector<GEntity*>& potentialTargets) const;
+
 private:
     void LoadTextures();
 
     GFSMComponent* FSM = nullptr;
+    GConeVisionComponent* VisionComponent = nullptr;
 
     std::map<std::string, sf::Texture> m_textures;
     std::map<std::string, std::unique_ptr<sf::Sprite>> m_sprites;
@@ -35,7 +41,7 @@ private:
     float spriteTimer = 0.f;
     float spriteDuration = 0.5f;
 
-    std::vector<sf::Vector2f> targets;
+    std::vector<sf::Vector2f> targets = { sf::Vector2f(500, 300), sf::Vector2f(600, 400) };
     int currentTarget = 0;
     bool bFinished = false;
 };

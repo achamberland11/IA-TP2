@@ -52,6 +52,24 @@ void GWorld::Update(float deltaSeconds) {
 	}
 }
 
+GPlayerCharacter* GWorld::GetPlayerCharacter() {
+    for (GEntity* entity : Entities) {
+        if (auto player = dynamic_cast<GPlayerCharacter*>(entity))
+            return player;
+    }
+
+    return nullptr;
+}
+
+GAgentCharacter* GWorld::GetAgentCharacter() {
+    for (GEntity* entity : Entities) {
+        if (auto agent = dynamic_cast<GAgentCharacter*>(entity))
+            return agent;
+    }
+
+    return nullptr;
+}
+
 void GWorld::Render(sf::RenderWindow& window) {
 	if (Map) Map->Display(window);
 

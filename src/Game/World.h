@@ -6,6 +6,8 @@
 #include "../Core/Object.h"
 #include "Controllers/Controller.h"
 #include "Entities/Entity.h"
+#include "Entities/Characters/AgentCharacter.h"
+#include "Entities/Characters/PlayerCharacter.h"
 #include "Map/Map.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
@@ -17,6 +19,11 @@ public:
     ~GWorld() override;
 
     void Update(float deltaSeconds);
+
+    GPlayerCharacter *GetPlayerCharacter();
+
+    GAgentCharacter *GetAgentCharacter();
+
     void Render(sf::RenderWindow& window);
 
     void HandleEvent(const sf::Event& event);
