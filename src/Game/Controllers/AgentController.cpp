@@ -62,6 +62,11 @@ void GAgentController::FindPath(const sf::Vector2f &target)
         map,
         Owner->GetTransformComponent()->GetPosition(),
         target);
+     
+    if (path.empty())
+        return;
+
+    path.erase(path.begin());
 
     std::cout << Owner->GetTransformComponent()->GetPosition().x << ", " << Owner->GetTransformComponent()->GetPosition().y << std::endl;
     std::cout << target.x << ", " << target.y << std::endl;

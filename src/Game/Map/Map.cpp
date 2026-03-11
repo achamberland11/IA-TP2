@@ -227,5 +227,4 @@ void GMap::BuildNavGraph()
 
             }
         }
-
 }

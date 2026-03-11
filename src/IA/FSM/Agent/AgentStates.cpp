@@ -11,125 +11,125 @@
 /**
  * Global State
  */
-AgentGlobalStates *AgentGlobalStates::Instance()
+AgentGlobalStates* AgentGlobalStates::Instance()
 {
-    static AgentGlobalStates instance;
+	static AgentGlobalStates instance;
 
-    return &instance;
+	return &instance;
 }
 
-void AgentGlobalStates::Enter(GEntity *agent)
+void AgentGlobalStates::Enter(GEntity* agent)
 {
-    Agent = static_cast<GAgentCharacter *>(agent);
+	Agent = static_cast<GAgentCharacter*>(agent);
 }
 
-void AgentGlobalStates::Execute(GEntity *agent)
+void AgentGlobalStates::Execute(GEntity* agent)
 {
 }
 
-void AgentGlobalStates::Exit(GEntity *agent)
+void AgentGlobalStates::Exit(GEntity* agent)
 {
 }
 
 /**
  * Patrol State
  */
-AgentPatrolState *AgentPatrolState::Instance()
+AgentPatrolState* AgentPatrolState::Instance()
 {
-    static AgentPatrolState instance;
+	static AgentPatrolState instance;
 
-    return &instance;
+	return &instance;
 }
 
-void AgentPatrolState::Enter(GEntity *agent)
+void AgentPatrolState::Enter(GEntity* agent)
 {
-    Agent = static_cast<GAgentCharacter *>(agent);
-    PatrolIndex = Agent->GetPatrolIndex();
+	Agent = static_cast<GAgentCharacter*>(agent);
+	PatrolIndex = Agent->GetPatrolIndex();
 
-    std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
 
-    Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex + 1]);
+	Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex + 1]);
 }
 
-void AgentPatrolState::Execute(GEntity *agent)
+void AgentPatrolState::Execute(GEntity* agent)
 {
-    if (!Agent)
-        return;
+	if (!Agent)
+		return;
 
-    std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
-    if (patrolPoints.empty())
-        return;
+	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+	if (patrolPoints.empty())
+		return;
 
-    std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
-    if (waypoints.empty())
-    {
-        PatrolIndex = (PatrolIndex + 1) % patrolPoints.size();
-        Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex]);
-        Agent->SetPatrolIndex(PatrolIndex);
-    }
+	std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
+	if (waypoints.empty())
+	{
+		PatrolIndex = (PatrolIndex + 1) % patrolPoints.size();
+		Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex]);
+		Agent->SetPatrolIndex(PatrolIndex);
+	}
 }
 
-void AgentPatrolState::Exit(GEntity *agent)
+void AgentPatrolState::Exit(GEntity* agent)
 {
 }
 
 /**
  * Chase State
  */
-AgentChaseState *AgentChaseState::Instance()
+AgentChaseState* AgentChaseState::Instance()
 {
-    static AgentChaseState instance;
+	static AgentChaseState instance;
 
-    return &instance;
+	return &instance;
 }
 
-void AgentChaseState::Enter(GEntity *agent)
+void AgentChaseState::Enter(GEntity* agent)
 {
-    Agent = static_cast<GAgentCharacter *>(agent);
+	Agent = static_cast<GAgentCharacter*>(agent);
 }
 
-void AgentChaseState::Execute(GEntity *agent)
+void AgentChaseState::Execute(GEntity* agent)
 {
-    if (!Agent)
-        return;
+	if (!Agent)
+		return;
 
-    sf::Vector2f targetPos = Agent->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition();
+	sf::Vector2f targetPos = Agent->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition();
 
-    Agent->GetAgentController()->FindPath(targetPos);
+	Agent->GetAgentController()->FindPath(targetPos);
 }
 
-void AgentChaseState::Exit(GEntity *agent)
+void AgentChaseState::Exit(GEntity* agent)
 {
 }
 
 /**
  * Return State
  */
-AgentReturnState *AgentReturnState::Instance()
+AgentReturnState* AgentReturnState::Instance()
 {
-    static AgentReturnState instance;
+	static AgentReturnState instance;
 
-    return &instance;
+	return &instance;
 }
 
-void AgentReturnState::Enter(GEntity *agent)
+void AgentReturnState::Enter(GEntity* agent)
 {
-    Agent = static_cast<GAgentCharacter *>(agent);
+	Agent = static_cast<GAgentCharacter*>(agent);
 
-    std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
 
-    Agent->GetAgentController()->FindPath(patrolPoints[Agent->GetPatrolIndex()]);
+	Agent->GetAgentController()->FindPath(patrolPoints[Agent->GetPatrolIndex()]);
 }
 
-void AgentReturnState::Execute(GEntity *agent)
+void AgentReturnState::Execute(GEntity* agent)
 {
-    std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
-    if (waypoints.empty())
-    {
-        Agent->GetFSM()->ChangeState(AgentPatrolState::Instance());
-    }
+	std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
+	if (waypoints.empty())
+	{
+		Agent->GetFSM()->ChangeState(AgentPatrolState::Instance());
+	}
 }
 
-void AgentReturnState::Exit(GEntity *agent)
+void AgentReturnState::Exit(GEntity* agent)
 {
 }
