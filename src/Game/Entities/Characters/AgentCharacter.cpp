@@ -311,14 +311,5 @@ sf::Vector2f GAgentCharacter::ComputeSteering(float dt)
 
 	Direction /= distance;
 
-	if (FSM->GetCurrentState() == AgentChaseState::Instance()) {
-		//Arrive behavior
-		float speed = MovementSpeed;
-		if (distance < SlowingRadius)
-			speed *= distance / SlowingRadius;
-
-		return Direction * speed;
-	}
-	else
-		return Direction * MovementSpeed;
+	return Direction * MovementSpeed;
 }
