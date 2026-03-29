@@ -275,6 +275,7 @@ void GAgentCharacter::SetupVisionComponent(float range, float angle)
 
 void GAgentCharacter::SetPatrolWaypoints()
 {
+	//TP3-Set waypoints to the corners of the room that the agent is patrolling.
 	PatrolPoints.push_back(sf::Vector2f(1000.f, 550.f));
 	PatrolPoints.push_back(sf::Vector2f(975.f, 100.f));
 	PatrolPoints.push_back(sf::Vector2f(730.f, 100.f));

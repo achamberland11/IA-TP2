@@ -23,6 +23,23 @@ struct FNavNode {
     std::vector<int> Neighbors;
 };
 
+struct FRoom {
+    sf::Vector2f Origin;
+    sf::Vector2f Size;
+
+    sf::Vector2f TopLeft() { return Origin; }
+    sf::Vector2f TopRight() { return Origin + sf::Vector2f(Size.x, 0); }
+    sf::Vector2f BottomLeft() { return Origin + sf::Vector2f(0, Size.y); }
+    sf::Vector2f BottomRight() { return Origin + Size; }
+    sf::Vector2f Center() { return Origin + Size / 2.f; }
+
+    //To know in which room the player is currently in.
+    bool Contains(sf::Vector2f Pos) const {
+        return Pos.x >= Origin.x && Pos.x <= Origin.x + Size.x &&
+            Pos.y >= Origin.y && Pos.y <= Origin.y + Size.y;
+    }
+};
+
 class GMap : public GObject {
 public:
     GMap(int width, int height);
@@ -47,6 +64,9 @@ public:
 
     int GetNavIndex(int row, int col) const { return row * Width + col; }
 
+    void AddRoom(FRoom Room) { Rooms.push_back(Room); }
+    const std::vector<FRoom>& GetRooms() const { return Rooms; }
+
 private:
     static const int PixelsPerTile = 32;
 
@@ -60,4 +80,6 @@ private:
     int GetRand(int max, int chance) const;
 
     void BuildNavGraph();
+
+    std::vector<FRoom> Rooms;
 };

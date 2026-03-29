@@ -24,7 +24,6 @@ public:
     void Render(sf::RenderWindow &window) override;
     void DrawDebug(sf::RenderWindow &window);
 
-
     std::vector<sf::Vector2f> GetWaypoints() const { return Waypoints; }
     void SetWaypoints(const std::vector<sf::Vector2f>& waypoints);
 
