@@ -7,6 +7,7 @@
 #include "../../Controllers/PlayerController.h"
 #include "SFML/Window/Event.hpp"
 #include <map>
+#include <Game/GameEventListener.h>
 
 
 class GPlayerCharacter : public GCharacter
@@ -18,6 +19,8 @@ public:
     void Start() override;
     void Update(float dt) override;
 
+    void SetListener(IGameEventListener* l) { Listener = l; }
+
 private:
     void LoadTextures();
 
@@ -26,4 +29,6 @@ private:
 
     float SpriteTimer = 0.f;
     float SpriteDuration = 0.05f;
+
+    IGameEventListener* Listener;
 };

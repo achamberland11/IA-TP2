@@ -9,8 +9,10 @@
 #include "Map/AStar.h"
 #include "Controllers/AgentController.h"
 
-GWorld::GWorld(sf::Vector2u windowSize) : WindowSize(windowSize)
+GWorld::GWorld(sf::Vector2u windowSize, IGameEventListener*l) : WindowSize(windowSize)
 {
+    Listener = l;
+
     CreateMap();
     CreateEntities();
 }
@@ -73,6 +75,7 @@ void GWorld::CreateEntities() {
 void GWorld::CreatePlayer()
 {
     GPlayerCharacter *player = new GPlayerCharacter();
+    player->SetListener(Listener);
     player->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
     Entities.push_back(player);
     Controllers.push_back(player->GetController());
@@ -82,6 +85,7 @@ void GWorld::CreatePlayer()
 void GWorld::CreateAgent()
 {
     GAgentCharacter *agent = new GAgentCharacter();
+    agent->SetListener(Listener);
 	agent->GetTransformComponent()->SetScale(sf::Vector2f(1.25f, 1.25f));
 	Entities.push_back(agent);
 	Controllers.push_back(agent->GetController());

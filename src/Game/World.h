@@ -11,11 +11,12 @@
 #include "Map/Map.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
+#include "GameEventListener.h"
 
 class GWorld : public GObject
 {
 public:
-    GWorld(sf::Vector2u windowSize);
+    GWorld(sf::Vector2u windowSize, IGameEventListener* l);
     ~GWorld() override;
 
     void Start();
@@ -43,4 +44,6 @@ private:
 
     GPlayerCharacter *Player;
     GAgentCharacter *Agent;
+
+    IGameEventListener* Listener = nullptr;
 };

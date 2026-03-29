@@ -18,7 +18,7 @@ GGame::~GGame() {
 }
 
 void GGame::Initialize() {
-    World = std::make_unique<GWorld>(WindowSize);
+    World = std::make_unique<GWorld>(WindowSize, this);
     World->Start();
 }
 
@@ -57,4 +57,16 @@ void GGame::Render() {
     }
 
     Window.display();
+}
+
+void GGame::OnGameOver()
+{
+    std::cout << "Agent collided with player! Exiting program.\n";
+    Window.close();
+}
+
+void GGame::OnGameWon()
+{
+    std::cout << "Player exited the mine! Exiting program.\n";
+    Window.close();
 }

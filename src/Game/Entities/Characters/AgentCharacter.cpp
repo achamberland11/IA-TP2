@@ -24,7 +24,7 @@ GAgentCharacter::GAgentCharacter()
 
 	// Initialize vision component
 	VisionComponent = new GConeVisionComponent(this);
-	SetupVisionComponent(300.f, 90.f);
+	SetupVisionComponent(150.f, 75.f);
 	AddComponent(VisionComponent);
 
 	LoadTextures();
@@ -105,11 +105,10 @@ void GAgentCharacter::Update(float dt)
 
 	SetVelocity(ComputeSteering(dt));
 
+	//Game over
 	if (IsCollidingWith(AgentController->GetPlayer(), 8.f))
-	{
-		std::cout << "Agent collided with player! Exiting program.\n";
-		std::exit(0);
-	}
+		if (Listener)
+			Listener->OnGameOver();
 }
 
 void GAgentCharacter::Render(sf::RenderWindow& window)
@@ -123,13 +122,15 @@ void GAgentCharacter::Render(sf::RenderWindow& window)
 		std::string text = "Current State : " + stateName;
 
 		sf::Text stateText(Font);
+		sf::Vector2f stateTextPos = stateText.getPosition();
 
 		stateText.setString(text);
-		stateText.setCharacterSize(24);
-		stateText.setFillColor(sf::Color::Magenta);
-		stateText.setStyle(sf::Text::Bold | sf::Text::Underlined);
+		stateText.setCharacterSize(18);
+		stateText.setFillColor(sf::Color::White);
+		stateText.setStyle(sf::Text::Bold);
 		stateText.setOutlineColor(sf::Color::Black);
-		stateText.setOutlineThickness(2.f);
+		stateText.setOutlineThickness(1.5f);
+		stateText.setPosition(sf::Vector2f(stateTextPos.x + 20, stateTextPos.y + 10));
 
 		window.draw(stateText);
 	}
@@ -178,7 +179,7 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 	// Draw vision cone
 	if (VisionComponent)
 	{
-		const sf::Color ColorVisionCone(255, 0, 0, 180);
+		const sf::Color ColorVisionCone = sf::Color::White;
 		float rangeBuffer = VisionComponent->GetVisionRange() * 0.07f;
 		float range = VisionComponent->GetVisionRange() + rangeBuffer;
 		float angle = VisionComponent->GetVisionAngle();

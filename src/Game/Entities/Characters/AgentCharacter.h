@@ -9,6 +9,7 @@
 #include "Game/Components/FSMComponent.h"
 #include "Game/Components/ConeVisionComponent.h"
 #include "Game/Controllers/AgentController.h"
+#include "Game/GameEventListener.h"
 
 class GConeVisionComponent;
 
@@ -36,6 +37,8 @@ public:
 
     GAgentController* GetAgentController() const { return AgentController; }
     GFSMComponent* GetFSM() const { return FSM; }
+
+    void SetListener(IGameEventListener* l) { Listener = l; }
 
 private:
     void LoadTextures();
@@ -66,4 +69,6 @@ private:
     //Steering
     const float SlowingRadius = 50.f;
     sf::Vector2f Direction;
+
+    IGameEventListener* Listener = nullptr;
 };

@@ -7,9 +7,9 @@
 #include "../Core/Object.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
+#include "GameEventListener.h"
 
-
-class GGame : public GObject
+class GGame : public GObject, public IGameEventListener
 {
 public:
     GGame(sf::Vector2u windowSize);
@@ -24,6 +24,9 @@ public:
     sf::RenderWindow& GetWindow() { return Window; }
     GPlayerCharacter* GetPlayerCharacter() const { return World->GetPlayerCharacter(); }
     GAgentCharacter* GetAgentCharacter() const { return World->GetAgentCharacter(); }
+
+    void OnGameOver() override;
+    void OnGameWon() override;
 
 private:
     void Initialize();
