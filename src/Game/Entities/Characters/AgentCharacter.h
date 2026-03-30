@@ -24,12 +24,18 @@ public:
     void Render(sf::RenderWindow &window) override;
     void DrawDebug(sf::RenderWindow &window);
 
+    void SetRoom(FRoom r) {
+        Room = r;
+        bHasRoom = true;
+    }
+
     std::vector<sf::Vector2f> GetWaypoints() const { return Waypoints; }
     void SetWaypoints(const std::vector<sf::Vector2f>& waypoints);
 
     std::vector<sf::Vector2f> GetPatrolPoints() const { return PatrolPoints; }
     int GetPatrolIndex() const { return PatrolIndex; }
     void SetPatrolIndex(int index) { PatrolIndex = index; }
+    void SetPatrolWaypoints(int PixelsPerTile);
 
     // Vision-related methods
     void SetupVisionComponent(float range = 150.f, float angle = 90.f);
@@ -42,7 +48,6 @@ public:
 private:
     void LoadTextures();
 
-    void SetPatrolWaypoints();
     sf::Vector2f ComputeSteering(float dt);
 
     GFSMComponent *FSM = nullptr;
@@ -70,4 +75,6 @@ private:
     sf::Vector2f Direction;
 
     IGameEventListener* Listener = nullptr;
+    FRoom Room;
+    bool bHasRoom = false;
 };

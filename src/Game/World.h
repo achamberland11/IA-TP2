@@ -28,13 +28,13 @@ public:
 
     GMap *GetMap() const { return Map.get(); }
     GPlayerCharacter *GetPlayerCharacter() const { return Player; }
-    GAgentCharacter *GetAgentCharacter() const { return Agent; }
+    std::vector<GAgentCharacter*> GetAgentsCharacter() const { return Agents; }
 
 private:
     void CreateMap();
     void CreateEntities();
     void CreatePlayer();
-    void CreateAgent();
+    void CreateAgents();
 
     sf::Vector2u WindowSize;
     std::unique_ptr<GMap> Map;
@@ -43,7 +43,7 @@ private:
     std::vector<GController*> Controllers;
 
     GPlayerCharacter *Player;
-    GAgentCharacter *Agent;
+    std::vector<GAgentCharacter*> Agents;
 
     IGameEventListener* Listener = nullptr;
 };

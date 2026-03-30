@@ -69,7 +69,7 @@ void GWorld::CreateMap()
 
 void GWorld::CreateEntities() {
 	CreatePlayer();
-	CreateAgent();
+	CreateAgents();
 }
 
 void GWorld::CreatePlayer()
@@ -82,12 +82,19 @@ void GWorld::CreatePlayer()
     Player = player;
 }
 
-void GWorld::CreateAgent()
+void GWorld::CreateAgents()
 {
-    GAgentCharacter *agent = new GAgentCharacter();
-    agent->SetListener(Listener);
-	agent->GetTransformComponent()->SetScale(sf::Vector2f(1.25f, 1.25f));
-	Entities.push_back(agent);
-	Controllers.push_back(agent->GetController());
-    Agent = agent;
+    const std::vector<FRoom>& Rooms = Map->GetRooms();
+
+    for (int i = 0; i < Rooms.size(); i++) {
+        GAgentCharacter* agent = new GAgentCharacter();
+        agent->SetListener(Listener);
+        agent->SetRoom(Rooms[i]);
+        agent->SetPatrolWaypoints(GMap::PixelsPerTile);
+        agent->GetTransformComponent()->SetScale(sf::Vector2f(1.25f, 1.25f));
+        agent->GetTransformComponent()->SetPosition(Rooms[i].Center());
+        Entities.push_back(agent);
+        Controllers.push_back(agent->GetController());
+        Agents.push_back(agent);
+    }
 }

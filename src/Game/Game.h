@@ -23,7 +23,7 @@ public:
     GMap* GetMap() const { return World->GetMap(); }
     sf::RenderWindow& GetWindow() { return Window; }
     GPlayerCharacter* GetPlayerCharacter() const { return World->GetPlayerCharacter(); }
-    GAgentCharacter* GetAgentCharacter() const { return World->GetAgentCharacter(); }
+    std::vector<GAgentCharacter*> GetAgentsCharacter() const { return World->GetAgentsCharacter(); }
 
     void OnGameOver() override;
     void OnGameWon() override;

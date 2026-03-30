@@ -31,7 +31,7 @@ private:
     GConeVisionComponent* Vision = nullptr;
 
     GPlayerCharacter* Player = nullptr;
-    GAgentCharacter* Agent = nullptr;
+    GAgentCharacter* Agent;
 
     int CurrentTarget = 0;
     bool bFinished = false;

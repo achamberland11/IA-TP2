@@ -19,7 +19,7 @@ void GAgentController::Start()
     if (!Owner) return;
 
     Player = GGame::GetInstance()->GetPlayerCharacter();
-    Agent = GGame::GetInstance()->GetAgentCharacter();
+    Agent = static_cast<GAgentCharacter*>(Owner);
 
     FSM = Owner->GetComponent<GFSMComponent>();
     Vision = Owner->GetComponent<GConeVisionComponent>();

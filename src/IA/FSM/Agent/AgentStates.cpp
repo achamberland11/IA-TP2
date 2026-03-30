@@ -44,28 +44,24 @@ AgentPatrolState* AgentPatrolState::Instance()
 void AgentPatrolState::Enter(GEntity* agent)
 {
 	Agent = static_cast<GAgentCharacter*>(agent);
-	PatrolIndex = Agent->GetPatrolIndex();
-
 	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
 
-	Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex + 1]);
+	Agent->GetAgentController()->FindPath(patrolPoints[Agent->GetPatrolIndex()]);
 }
 
 void AgentPatrolState::Execute(GEntity* agent)
 {
-	if (!Agent)
-		return;
+	Agent = static_cast<GAgentCharacter*>(agent);
 
 	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
 	if (patrolPoints.empty())
 		return;
 
-	std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
-	if (waypoints.empty())
+	if (Agent->GetWaypoints().empty())
 	{
-		PatrolIndex = (PatrolIndex + 1) % patrolPoints.size();
-		Agent->GetAgentController()->FindPath(patrolPoints[PatrolIndex]);
-		Agent->SetPatrolIndex(PatrolIndex);
+		int nextIndex = (Agent->GetPatrolIndex() + 1) % patrolPoints.size();
+		Agent->SetPatrolIndex(nextIndex);
+		Agent->GetAgentController()->FindPath(patrolPoints[nextIndex]);
 	}
 }
 

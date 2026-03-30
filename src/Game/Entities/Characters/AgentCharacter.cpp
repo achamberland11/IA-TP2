@@ -36,7 +36,6 @@ GAgentCharacter::GAgentCharacter()
 		std::cerr << "Error : E_F1 sprite not found" << std::endl;
 
 	MovementSpeed = 50.f; // Agent is slower
-	SetPatrolWaypoints();
 
 	if (Font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
 		bFontLoaded = true;
@@ -94,7 +93,7 @@ void GAgentCharacter::Update(float dt)
 
 			sf::Vector2f toPlayer = AgentController->GetPlayer()->GetTransformComponent()->GetPosition() - Transform->GetPosition();
 			float dist = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
-			if (dist < VisionComponent->GetVisionRange()) 
+			if (dist < VisionComponent->GetVisionRange())
 			{
 				sf::Vector2f dir = toPlayer / dist;
 				float angleDeg = std::atan2(dir.y, dir.x) * 180.f / 3.14159265359f;
@@ -116,7 +115,7 @@ void GAgentCharacter::Render(sf::RenderWindow& window)
 	GEntity::Render(window);
 	DrawDebug(window);
 
-	if (bFontLoaded && FSM && FSM->GetCurrentState())
+	/*if (bFontLoaded && FSM && FSM->GetCurrentState())
 	{
 		std::string stateName = FSM->GetCurrentState()->GetName();
 		std::string text = "Current State : " + stateName;
@@ -133,7 +132,7 @@ void GAgentCharacter::Render(sf::RenderWindow& window)
 		stateText.setPosition(sf::Vector2f(stateTextPos.x + 20, stateTextPos.y + 10));
 
 		window.draw(stateText);
-	}
+	}*/
 }
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
@@ -176,10 +175,14 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 		prevDir = dir;
 	}
 
+	sf::Color ColorVisionCone = sf::Color::White;
+
+	if (GetFSM()->isInState(*AgentChaseState::Instance()))
+		ColorVisionCone = sf::Color::Red;
+
 	// Draw vision cone
 	if (VisionComponent)
 	{
-		const sf::Color ColorVisionCone = sf::Color::White;
 		float rangeBuffer = VisionComponent->GetVisionRange() * 0.07f;
 		float range = VisionComponent->GetVisionRange() + rangeBuffer;
 		float angle = VisionComponent->GetVisionAngle();
@@ -273,10 +276,13 @@ void GAgentCharacter::SetupVisionComponent(float range, float angle)
 }
 
 
-void GAgentCharacter::SetPatrolWaypoints()
+void GAgentCharacter::SetPatrolWaypoints(int PixelsPerTile)
 {
-	//TP3-Set waypoints to the corners of the room that the agent is patrolling.
-	PatrolPoints.push_back(sf::Vector2f(1000.f, 550.f));
+	if (bHasRoom)
+		for (sf::Vector2f Corner : Room.Corners)
+			PatrolPoints.push_back(Corner);
+
+	/*PatrolPoints.push_back(sf::Vector2f(1000.f, 550.f));
 	PatrolPoints.push_back(sf::Vector2f(975.f, 100.f));
 	PatrolPoints.push_back(sf::Vector2f(730.f, 100.f));
 	PatrolPoints.push_back(sf::Vector2f(625.f, 375.f));
@@ -287,7 +293,7 @@ void GAgentCharacter::SetPatrolWaypoints()
 	PatrolPoints.push_back(sf::Vector2f(275.f, 375.f));
 	PatrolPoints.push_back(sf::Vector2f(275.f, 575.f));
 	PatrolPoints.push_back(sf::Vector2f(650.f, 575.f));
-	PatrolPoints.push_back(sf::Vector2f(875.f, 575.f));
+	PatrolPoints.push_back(sf::Vector2f(875.f, 575.f));*/
 }
 
 sf::Vector2f GAgentCharacter::ComputeSteering(float dt)
