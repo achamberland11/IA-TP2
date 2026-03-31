@@ -52,7 +52,7 @@ public:
 	~GMap() override = default;
 
 	void LoadFolder(const std::string folderPath);
-	FTile CreateTile(const std::string& rawValue);
+	FTile CreateTile(const std::string& rawValue, int row, int col);
 	void LoadMap(const std::string mapPath);
 
 	void Display(sf::RenderWindow& window);
@@ -79,7 +79,15 @@ public:
 
 	sf::Vector2f GetRandomPosition();
 
-	void ChangeExitVisibility();
+	bool HasExit() { return bHasExit; }
+	sf::Vector2f GetExitTilePos() { return ExitTile; }
+	void ChangeExitVisibility(bool bIsOn);
+
+	void SetTileToObstacle(int row, int col) {
+		Map[row][col].Walkable = false;
+		Map[row][col].Type = ETileType::Obstacle;
+		BuildNavGraph();
+	}
 
 	static const int PixelsPerTile = 32;
 
@@ -97,5 +105,6 @@ private:
 
 	std::vector<FRoom> Rooms;
 
-	std::vector<FTile> ExitTiles;
+	sf::Vector2f ExitTile;
+	bool bHasExit = false;
 };

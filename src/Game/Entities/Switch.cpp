@@ -40,17 +40,20 @@ void GSwitch::Update(float dt)
 
 void GSwitch::Interact()
 {
-	std::cout << "Switch status: ";
+	if (Listener) {
+		std::cout << "Switch status: ";
 
-	if (Status == SwitchStatus::On) {
-		Status = SwitchStatus::Off;
-		std::cout << "Off \n";
+		if (Status == SwitchStatus::On) {
+			Status = SwitchStatus::Off;
+			std::cout << "Off \n";
+			Listener->OnSwitchToggled(false);
+		}
+		else {
+			Status = SwitchStatus::On;
+			std::cout << "On \n";
+			Listener->OnSwitchToggled(true);
+		}
 	}
-	else {
-		Status = SwitchStatus::On;
-		std::cout << "On \n";
-	}
-
 }
 
 void GSwitch::LoadTextures()

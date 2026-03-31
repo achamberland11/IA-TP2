@@ -118,7 +118,54 @@ void GWorld::CreateAgents()
 void GWorld::CreateSwitch()
 {
 	GSwitch *sw = new GSwitch();
-	sw->GetTransformComponent()->SetPosition(Map->GetRandomPosition());
+
+	sf::Vector2f Pos;
+	sf::Vector2f GridPos;
+
+	int row = 0;
+	int col = 0;
+
+	bool bFoundValidPos = false;
+
+	for (int attempt = 0; attempt < 50; attempt++) {
+		Pos = Map->GetRandomPosition();
+		GridPos = GetMap()->WorldToGrid(Pos);
+
+		row = static_cast<int>(GridPos.y);
+		col = static_cast<int>(GridPos.x);
+
+		bool bOccupied = false;
+
+		for (GEntity* Entity : Entities) {
+			sf::Vector2f EntityPos = Entity->GetTransformComponent()->GetPosition();
+			sf::Vector2f EntityGrid = GetMap()->WorldToGrid(EntityPos);
+
+			int eRow = static_cast<int>(EntityGrid.y);
+			int eCol = static_cast<int>(EntityGrid.x);
+
+			if (eRow == row && eCol == col) {
+				bOccupied = true;
+				break;
+			}
+		}
+
+		if (bOccupied)
+			continue;
+
+		bFoundValidPos = true;
+		break;
+	}
+
+	if (!bFoundValidPos) {
+		std::cerr << "Failed to find valid position for switch\n";
+		delete sw;
+		return;
+	}
+
+	sw->GetTransformComponent()->SetPosition(Pos);
+	sw->SetListener(Listener);
 	Entities.push_back(sw);
 	GameSwitch = sw;
+
+	GetMap()->SetTileToObstacle(row, col);
 }

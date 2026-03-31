@@ -35,6 +35,9 @@ public:
 
     void OnGameOver() override;
     void OnGameWon() override;
+    void OnSwitchToggled(bool bIsOn) override;
+
+    void CheckWinCondition();
 
 private:
     void Initialize();

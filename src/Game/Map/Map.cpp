@@ -32,7 +32,7 @@ void GMap::LoadFolder(const std::string folderPath)
 	}
 }
 
-FTile GMap::CreateTile(const std::string& rawValue)
+FTile GMap::CreateTile(const std::string& rawValue, int row, int col)
 {
 	FTile tile{};
 
@@ -44,16 +44,17 @@ FTile GMap::CreateTile(const std::string& rawValue)
 
 	tile.TextureID = base;
 
-	if (tile.ObjectID == "Exit")
-	{
-		tile.ObjectID = "";
-		tile.TextureID = "Dirt";
-		tile.Type = ETileType::Dirt;
-		tile.Walkable = false;
-		tile.BlocksVision = false;
-		tile.MovementCost = 10;
-	}
+	if (rawValue.find("row-10-column-8") == 0) {
+		bHasExit = true;
+		ExitTile = sf::Vector2f(row, col);
 
+		tile.Type = ETileType::Floor;
+		tile.Walkable = true;
+		tile.BlocksVision = false;
+		tile.MovementCost = 1;
+
+		return tile;
+	}
 
 	if (rawValue == "Dirt")
 	{
@@ -111,7 +112,7 @@ void GMap::LoadMap(const std::string mapPath)
 			if (!value.empty() && value.back() == '\r')
 				value.pop_back();
 
-			Map[row][col] = CreateTile(value);
+			Map[row][col] = CreateTile(value, row, col);
 		}
 	}
 
@@ -182,7 +183,6 @@ bool GMap::IsWalkable(int row, int col)
 		return false;
 
 	return Map[row][col].Walkable && Map[row][col].Type != ETileType::Obstacle;
-	// return Map[row][col].Walkable;
 }
 
 bool GMap::BlocksVision(int row, int col)
@@ -342,7 +342,7 @@ sf::Vector2f GMap::GetRandomPosition()
 		int col = Room.Origin.x / PixelsPerTile + rand() % (int)(Room.Size.x / PixelsPerTile);
 		int row = Room.Origin.y / PixelsPerTile + rand() % (int)(Room.Size.y / PixelsPerTile);
 
-		if (IsWalkable(row, col) && Room.Contains(GridToWorld(sf::Vector2f(col, row)))) {
+		if (IsWalkable(row, col) && Room.Contains(GridToWorld(sf::Vector2f(col, row))) && Map[row][col].TextureID == "F_M") {
 			Map[row][col].Walkable = false;
 			Map[row][col].Type = ETileType::Obstacle;
 			BuildNavGraph();
@@ -353,26 +353,23 @@ sf::Vector2f GMap::GetRandomPosition()
 	return Room.Center();
 }
 
-void GMap::ChangeExitVisibility()
+void GMap::ChangeExitVisibility(bool bIsOn)
 {
-	for (FTile ExitTile : ExitTiles)
-	{
-		if (ExitTile.Type == ETileType::Floor) {
-			ExitTile.TextureID = "Dirt";
-			ExitTile.Type = ETileType::Dirt;
-			ExitTile.Walkable = false;
-			ExitTile.BlocksVision = false;
-			ExitTile.MovementCost = 10;
-		}
-		else {
-			ExitTile.TextureID = "F_J";
-			ExitTile.TextureID += std::to_string(GetRand(5, 10));
-			ExitTile.Type = ETileType::Floor;
-			ExitTile.Walkable = true;
-			ExitTile.BlocksVision = false;
-			ExitTile.MovementCost = 1;
-		}
+	int row = ExitTile.x;
+	int col = ExitTile.y;
+
+	FTile& Tile = Map[row][col];
+
+	if (bIsOn) {
+		Tile.ObjectID = "row-10-column-9";
+		bHasExit = true;
 	}
+	else {
+		Tile.ObjectID = "row-10-column-8";
+		bHasExit = false;
+	}
+
+	BuildNavGraph();
 }
 
 int GMap::GetRand(int max, int chance) const
