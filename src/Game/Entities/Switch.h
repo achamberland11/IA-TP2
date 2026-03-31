@@ -6,6 +6,7 @@
 enum SwitchStatus {
     On, Off
 };
+
 class GSwitch : public GEntity {
 public:
     GSwitch();

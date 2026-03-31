@@ -61,6 +61,8 @@ void GGame::Update(float dt) {
     if (GlobalBB) {
         GlobalBB->SyncRadio();
     }
+
+    CheckWinCondition();
 }
 
 void GGame::Render() {
@@ -102,4 +104,35 @@ void GGame::OnGameWon()
     EndText.setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
 
     std::cout << "Player exited the mine! Exiting program.\n";
+}
+
+void GGame::OnSwitchToggled(bool bIsOn)
+{
+    if (World && World->GetMap())
+        World->GetMap()->ChangeExitVisibility(bIsOn);
+}
+
+void GGame::CheckWinCondition()
+{
+    if (GameState != EGameState::Running)
+        return;
+
+    if (!World || !World->GetMap() || !World->GetPlayerCharacter())
+        return;
+
+    GMap* Map = World->GetMap();
+    GPlayerCharacter* Player = World->GetPlayerCharacter();
+
+    sf::Vector2f PlayerPos = Player->GetTransformComponent()->GetPosition();
+
+    sf::Vector2f GridPos = Map->WorldToGrid(PlayerPos);
+
+    int row = static_cast<int>(GridPos.y);
+    int col = static_cast<int>(GridPos.x);
+
+    if (!Map->HasExit())
+        return;
+
+    if (row == Map->GetExitTilePos().x && col == Map->GetExitTilePos().y)
+        OnGameWon();
 }
