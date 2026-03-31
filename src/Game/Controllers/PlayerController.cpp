@@ -47,6 +47,9 @@ void GPlayerController::HandleEvent(const sf::Event &event) {
                 break;
             case sf::Keyboard::Key::D: bMoveRight = true;
                 break;
+            case sf::Keyboard::Key::Q: 
+                GGame::GetInstance()->GetWorld()->TryInteractSwitch();
+                break;
             default: break;
         }
     }
@@ -64,10 +67,12 @@ void GPlayerController::HandleEvent(const sf::Event &event) {
             default: break;
         }
     }
+
     if (const auto *mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>()) {
         sf::Vector2f worldPos = GGame::GetInstance()->GetWindow().mapPixelToCoords(
         mouseButtonPressed->position
     );
+
     std::cout << "World pos: (" << worldPos.x << ", " << worldPos.y << ")" << std::endl;
     }
 }

@@ -61,6 +61,15 @@ void GWorld::HandleEvent(const sf::Event &event)
     }
 }
 
+void GWorld::TryInteractSwitch()
+{
+    if (!GameSwitch)
+        return;
+
+    if (GameSwitch->IsCollidingWith(Player, Player->GetRendererComponent()->GetShape().getSize().x))
+        GameSwitch->Interact();
+}
+
 void GWorld::CreateMap()
 {
     Map = std::make_unique<GMap>(WindowSize.x, WindowSize.y);
@@ -70,6 +79,7 @@ void GWorld::CreateMap()
 void GWorld::CreateEntities() {
 	CreatePlayer();
 	CreateAgents();
+    CreateSwitch();
 }
 
 void GWorld::CreatePlayer()
@@ -97,4 +107,12 @@ void GWorld::CreateAgents()
         Controllers.push_back(agent->GetController());
         Agents.push_back(agent);
     }
+}
+
+void GWorld::CreateSwitch()
+{
+    GSwitch* sw = new GSwitch();
+    sw->GetTransformComponent()->SetPosition(Map->GetRandomPosition());
+    Entities.push_back(sw);
+    GameSwitch = sw;
 }

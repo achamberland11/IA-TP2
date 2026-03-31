@@ -68,9 +68,9 @@ void GAgentController::FindPath(const sf::Vector2f &target)
 
     path.erase(path.begin());
 
-    std::cout << Owner->GetTransformComponent()->GetPosition().x << ", " << Owner->GetTransformComponent()->GetPosition().y << std::endl;
+    /*std::cout << Owner->GetTransformComponent()->GetPosition().x << ", " << Owner->GetTransformComponent()->GetPosition().y << std::endl;
     std::cout << target.x << ", " << target.y << std::endl;
-    std::cout << path.size() << std::endl;
+    std::cout << path.size() << std::endl;*/
 
     Agent->SetWaypoints(path);
 }

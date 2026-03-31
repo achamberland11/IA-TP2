@@ -89,7 +89,7 @@ void GAgentCharacter::Update(float dt)
 	if (VisionComponent && AgentController->GetPlayer())
 	{
 		if (VisionComponent->CanSeeEntity(AgentController->GetPlayer())) {
-			std::cout << "Player detected!" << std::endl;
+			//std::cout << "Player detected!" << std::endl;
 
 			sf::Vector2f toPlayer = AgentController->GetPlayer()->GetTransformComponent()->GetPosition() - Transform->GetPosition();
 			float dist = std::sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
@@ -175,12 +175,12 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 		prevDir = dir;
 	}
 
+	// Draw vision cone
 	sf::Color ColorVisionCone = sf::Color::White;
 
 	if (GetFSM()->isInState(*AgentChaseState::Instance()))
 		ColorVisionCone = sf::Color::Red;
 
-	// Draw vision cone
 	if (VisionComponent)
 	{
 		float rangeBuffer = VisionComponent->GetVisionRange() * 0.07f;
@@ -235,7 +235,7 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 
 void GAgentCharacter::SetWaypoints(const std::vector<sf::Vector2f>& waypoints)
 {
-	std::cout << "Waypoints set!" << std::endl;
+	//std::cout << "Waypoints set!" << std::endl;
 	Waypoints = waypoints;
 	WaypointIndex = 0;
 }

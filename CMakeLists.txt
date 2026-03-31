@@ -52,7 +52,8 @@ add_executable(IA-TP2
         src/IA/FSM/Agent/AgentStates.h
         src/Game/Components/ConeVisionComponent.cpp
         src/Game/Components/ConeVisionComponent.h
-        
+        src/Game/Entities/Switch.cpp
+        src/Game/Entities/Switch.h     
 )
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)

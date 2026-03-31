@@ -116,23 +116,6 @@ void GMap::LoadMap(const std::string mapPath)
 
 	DetectRooms();
 	MergeRooms();
-	int roomIndex = 0;
-	for (auto Room : Rooms) {
-		bool isMerged = Room.SubRooms.size() > 1;
-
-		std::cout << "=== Room " << roomIndex++ << " ===\n";
-		std::cout << "  Origin:   (" << Room.Origin.x << ", " << Room.Origin.y << ")\n";
-		std::cout << "  Size:     (" << Room.Size.x << ", " << Room.Size.y << ")\n";
-		std::cout << "  Center:   (" << Room.Center().x << ", " << Room.Center().y << ")\n";
-		std::cout << "  Merged:   " << (isMerged ? "yes" : "no") << "\n";
-		std::cout << "  SubRooms: " << Room.SubRooms.size() << "\n";
-		for (int s = 0; s < Room.SubRooms.size(); s++)
-			std::cout << "    [" << s << "] Origin: (" << Room.SubRooms[s].Origin.x << ", " << Room.SubRooms[s].Origin.y
-			<< ") Size: (" << Room.SubRooms[s].Size.x << ", " << Room.SubRooms[s].Size.y << ")\n";
-		std::cout << "  Corners: " << Room.Corners.size() << "\n";
-		for (int c = 0; c < Room.Corners.size(); c++)
-			std::cout << "    [" << c << "] (" << Room.Corners[c].x << ", " << Room.Corners[c].y << ")\n";
-	}
 	BuildNavGraph();
 }
 
@@ -311,6 +294,29 @@ bool GMap::Intersects(const FRoom& RoomA, const FRoom& RoomB)
 		RoomA.Origin.x + RoomA.Size.x > RoomB.Origin.x &&
 		RoomA.Origin.y < RoomB.Origin.y + RoomB.Size.y &&
 		RoomA.Origin.y + RoomA.Size.y > RoomB.Origin.y;
+}
+
+sf::Vector2f GMap::GetRandomPosition()
+{
+	if (Rooms.empty())
+		return sf::Vector2f(0, 0);
+
+	int roomIndex = rand() % Rooms.size();
+
+	const FRoom& Room = Rooms[roomIndex];
+
+	for (int attempt = 0; attempt < 100; attempt++) {
+		int col = Room.Origin.x / PixelsPerTile + rand() % (int)(Room.Size.x / PixelsPerTile);
+		int row = Room.Origin.y / PixelsPerTile + rand() % (int)(Room.Size.y / PixelsPerTile);
+
+		if (IsWalkable(row, col) && Room.Contains(GridToWorld(sf::Vector2f(col, row)))) {
+			Map[row][col].Walkable = false;
+			Map[row][col].Type = ETileType::Obstacle;
+			return GridToWorld(sf::Vector2f(col, row));
+		}
+	}
+
+	return Room.Center();
 }
 
 int GMap::GetRand(int max, int chance) const

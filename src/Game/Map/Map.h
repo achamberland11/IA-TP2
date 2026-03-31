@@ -74,6 +74,8 @@ public:
 	bool Intersects(const FRoom& RoomA, const FRoom& RoomB);
 	const std::vector<FRoom>& GetRooms() const { return Rooms; }
 
+	sf::Vector2f GetRandomPosition();
+
 	static const int PixelsPerTile = 32;
 
 private:

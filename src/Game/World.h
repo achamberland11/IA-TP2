@@ -12,6 +12,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "GameEventListener.h"
+#include "Entities/Switch.h"
 
 class GWorld : public GObject
 {
@@ -30,11 +31,14 @@ public:
     GPlayerCharacter *GetPlayerCharacter() const { return Player; }
     std::vector<GAgentCharacter*> GetAgentsCharacter() const { return Agents; }
 
+    void TryInteractSwitch();
+
 private:
     void CreateMap();
     void CreateEntities();
     void CreatePlayer();
     void CreateAgents();
+    void CreateSwitch();
 
     sf::Vector2u WindowSize;
     std::unique_ptr<GMap> Map;
@@ -44,6 +48,7 @@ private:
 
     GPlayerCharacter *Player;
     std::vector<GAgentCharacter*> Agents;
+    GSwitch* GameSwitch;
 
     IGameEventListener* Listener = nullptr;
 };
