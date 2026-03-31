@@ -16,8 +16,11 @@ GAgentCharacter::GAgentCharacter()
 	Transform->SetScale(sf::Vector2f(1, 1));
 	Renderer->SetColor(sf::Color::Magenta);
 
-	FSM = new GFSMComponent(this);
-	AddComponent(FSM);
+	// FSM = new GFSMComponent(this);
+	// AddComponent(FSM);
+
+	GOB = new GGOBComponent(this);
+	AddComponent(GOB);
 
 	AgentController = new GAgentController(this);
 	Controller = AgentController;
@@ -79,7 +82,7 @@ void GAgentCharacter::Update(float dt)
 	}
 
 	// Update vision direction based on movement
-	if (GetFSM()->GetCurrentState() != AgentChaseState::Instance() && VisionComponent && Velocity != sf::Vector2f(0.f, 0.f))
+	if (VisionComponent && Velocity != sf::Vector2f(0.f, 0.f))
 	{
 		float facingAngle = std::atan2(Velocity.y, Velocity.x) * 180.f / 3.14159265359f;
 		VisionComponent->SetDirection(facingAngle);
@@ -177,7 +180,9 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 
 	sf::Color ColorVisionCone = sf::Color::White;
 
-	if (GetFSM()->isInState(*AgentChaseState::Instance()))
+	// if (GetFSM()->isInState(*AgentChaseState::Instance()))
+		// ColorVisionCone = sf::Color::Red;
+	if (VisionComponent->CanSeeEntity(GetAgentController()->GetPlayer()))
 		ColorVisionCone = sf::Color::Red;
 
 	// Draw vision cone
@@ -236,6 +241,8 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 void GAgentCharacter::SetWaypoints(const std::vector<sf::Vector2f>& waypoints)
 {
 	std::cout << "Waypoints set!" << std::endl;
+	if (waypoints.empty())
+		return;
 	Waypoints = waypoints;
 	WaypointIndex = 0;
 }

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Controller.h"
-#include "Game/Components/FSMComponent.h"
+#include "../Components/AI/FSMComponent.h"
 #include "Game/Entities/Characters/Character.h"
 #include "IA/FSM/Agent/AgentStates.h"
 #include <Game/Entities/Characters/PlayerCharacter.h>
@@ -27,7 +27,7 @@ public:
     GPlayerCharacter* GetPlayer() { return Player; }
 
 private:
-    GFSMComponent* FSM = nullptr;
+    // GFSMComponent* FSM = nullptr;
     GConeVisionComponent* Vision = nullptr;
 
     GPlayerCharacter* Player = nullptr;

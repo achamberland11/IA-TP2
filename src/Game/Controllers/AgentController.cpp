@@ -21,11 +21,11 @@ void GAgentController::Start()
     Player = GGame::GetInstance()->GetPlayerCharacter();
     Agent = static_cast<GAgentCharacter*>(Owner);
 
-    FSM = Owner->GetComponent<GFSMComponent>();
+    // FSM = Owner->GetComponent<GFSMComponent>();
     Vision = Owner->GetComponent<GConeVisionComponent>();
 
-    assert(FSM && "<GAgentController> : FSMComponent not found !");
-    FSM->ChangeState(AgentPatrolState::Instance());
+    // assert(FSM && "<GAgentController> : FSMComponent not found !");
+    // FSM->ChangeState(AgentPatrolState::Instance());
 }
 
 void GAgentController::Update(float dt)
@@ -33,18 +33,18 @@ void GAgentController::Update(float dt)
     GController::Update(dt);
 
     if (!Owner) return;
-    if (!FSM)
-        return;
+    /*if (!FSM)
+        return;*/
 
     if (Vision->CanSeeEntity(Player))
     {
-        if (FSM->GetCurrentState() != AgentChaseState::Instance())
-            FSM->ChangeState(AgentChaseState::Instance());
+        /*if (FSM->GetCurrentState() != AgentChaseState::Instance())
+            FSM->ChangeState(AgentChaseState::Instance());*/
     }
-    else if (FSM->GetCurrentState() == AgentChaseState::Instance())
+    /*else if (FSM->GetCurrentState() == AgentChaseState::Instance())
     {
         FSM->ChangeState(AgentReturnState::Instance());
-    }
+    }*/
 }
 
 void GAgentController::HandleEvent(const sf::Event &event)

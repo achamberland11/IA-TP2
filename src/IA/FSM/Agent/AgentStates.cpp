@@ -122,7 +122,7 @@ void AgentReturnState::Execute(GEntity* agent)
 	std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
 	if (waypoints.empty())
 	{
-		Agent->GetFSM()->ChangeState(AgentPatrolState::Instance());
+		// Agent->GetFSM()->ChangeState(AgentPatrolState::Instance());
 	}
 }
 

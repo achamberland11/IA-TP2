@@ -46,13 +46,19 @@ add_executable(IA-TP2
         src/Game/Controllers/PlayerController.h
         src/Game/Controllers/AgentController.cpp
         src/Game/Controllers/AgentController.h
-        src/Game/Components/FsmComponent.cpp
-        src/Game/Components/FsmComponent.h
+        src/Game/Components/AI/FSMComponent.cpp
+        src/Game/Components/AI/FSMComponent.h
         src/IA/FSM/Agent/AgentStates.cpp
         src/IA/FSM/Agent/AgentStates.h
         src/Game/Components/ConeVisionComponent.cpp
         src/Game/Components/ConeVisionComponent.h
-        
+        src/Game/Components/AI/GOBComponent.cpp
+        src/Game/Components/AI/GOBComponent.h
+        src/IA/GOB/Goal.cpp
+        src/IA/GOB/Goal.h
+        src/IA/GOB/Agent/AgentGoals.cpp
+        src/IA/GOB/Agent/AgentGoals.h
+
 )
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)

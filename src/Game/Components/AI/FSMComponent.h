@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "Component.h"
+#include "../Component.h"
 #include "IA/FSM/State.h"
 #include <assert.h>
 #include <iostream>
