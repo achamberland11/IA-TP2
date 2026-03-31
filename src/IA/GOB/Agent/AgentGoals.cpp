@@ -80,10 +80,13 @@ void TakeBreakGoal::Activate()
 
 void TakeBreakGoal::Execute(float dt)
 {
+    if (!Owner->GetWaypoints().empty())
+        return;
+
     sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
     float sqrdDist = std::pow(agentPos.x - BreakLocation.x, 2) + std::pow(agentPos.y - BreakLocation.y, 2);
 
-    if (sqrdDist < 100.f)
+    if (sqrdDist < DetectionRangeSqrd)
     {
         CurrentBreakTime += dt;
         if (CurrentBreakTime >= BreakDuration)
