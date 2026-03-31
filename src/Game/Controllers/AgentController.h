@@ -8,7 +8,7 @@
 #include "Game/Entities/Characters/Character.h"
 #include "IA/FSM/Agent/AgentStates.h"
 #include <Game/Entities/Characters/PlayerCharacter.h>
-
+#include "IA/GlobalBlackboard.h"
 #include "Game/Components/ConeVisionComponent.h"
 
 class GAgentController : public GController
@@ -31,7 +31,7 @@ private:
     GConeVisionComponent* Vision = nullptr;
 
     GPlayerCharacter* Player = nullptr;
-    GAgentCharacter* Agent;
+    GAgentCharacter* Agent = nullptr;
 
     int CurrentTarget = 0;
     bool bFinished = false;

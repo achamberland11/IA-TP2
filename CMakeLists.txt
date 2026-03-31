@@ -59,8 +59,10 @@ add_executable(IA-TP2
         src/IA/GOB/Agent/AgentGoals.cpp
         src/IA/GOB/Agent/AgentGoals.h
 
+        src/IA/GlobalBlackboard.h
+        src/IA/GlobalBlackboard.cpp
         src/Game/Entities/Switch.cpp
-        src/Game/Entities/Switch.h     
+        src/Game/Entities/Switch.h
 )
 
 target_compile_features(IA-TP2 PRIVATE cxx_std_17)

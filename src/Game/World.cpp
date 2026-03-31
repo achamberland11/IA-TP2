@@ -98,6 +98,7 @@ void GWorld::CreateAgents()
 
     for (int i = 0; i < Rooms.size(); i++) {
         GAgentCharacter* agent = new GAgentCharacter();
+        agent->SetAgentID(i);
         agent->SetListener(Listener);
         agent->SetRoom(Rooms[i]);
         agent->SetPatrolWaypoints(GMap::PixelsPerTile);
