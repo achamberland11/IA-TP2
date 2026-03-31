@@ -51,7 +51,7 @@ float PatrolGoal::CalculateUtility()
     // Score élevé si pas d'alerte, faible sinon
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
         return 3.f;
-    return 80.f;
+    return 70.f;
 }
 
 float PatrolGoal::CalculateCost()
@@ -127,6 +127,11 @@ void RespondToAlertGoal::Execute(float dt)
 {
     if (Owner->IsPlayerVisible())
         Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
+
+    sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
+    float sqrdDist = std::pow(agentPos.x - AlertLocation.x, 2) + std::pow(agentPos.y - AlertLocation.y, 2);
+    if (sqrdDist < 1000.f && !Owner->IsPlayerVisible() && !Blackboard->ListenToRadio().bPlayerSeen)
+        Terminate();
 }
 
 void RespondToAlertGoal::Terminate()
@@ -161,10 +166,16 @@ void InterceptGoal::Activate()
 
 void InterceptGoal::Execute(float dt)
 {
+    // TODO: Intercept movement
     if (Owner->IsPlayerVisible())
         Owner->GetAgentController()->FindPath(Owner->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition());
     else
         Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
+
+    sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
+    float sqrdDist = std::pow(agentPos.x - LastKnownPosition.x, 2) + std::pow(agentPos.y - LastKnownPosition.y, 2);
+    if (sqrdDist < 1000.f && !Owner->IsPlayerVisible() && !Blackboard->ListenToRadio().bPlayerSeen)
+        Terminate();
 }
 
 void InterceptGoal::Terminate()
@@ -178,7 +189,7 @@ float InterceptGoal::CalculateUtility()
     // Score maximal si l'intrus est proche ou visible
     if (Owner->IsPlayerVisible())
         return 250.f;
-    else if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
+    if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
         return 150.f;
     return 0;
 }
@@ -223,8 +234,8 @@ float ReturnGoal::CalculateUtility()
     // Score faible mais positif lorsque hors zone
     if (Owner->IsInRoom())
         return -10.f;
-    else
-        return 75.f;
+
+    return 75.f;
 }
 
 float ReturnGoal::CalculateCost()

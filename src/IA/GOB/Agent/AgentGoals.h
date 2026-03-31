@@ -11,7 +11,10 @@
 class PatrolGoal : public Goal
 {
 public:
-    PatrolGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Patrol, blackboard) {}
+    PatrolGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Patrol, blackboard)
+    {
+        Name = "PatrolGoal";
+    }
 
     void Activate() override;
     void Execute(float dt) override;
@@ -30,7 +33,10 @@ private:
 class TakeBreakGoal : public Goal
 {
 public:
-    TakeBreakGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::TakeBreak, blackboard) {}
+    TakeBreakGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::TakeBreak, blackboard)
+    {
+        Name = "TakeBreakGoal";
+    }
 
     void Activate() override;
     void Execute(float dt) override;
@@ -52,7 +58,10 @@ private:
 class RespondToAlertGoal : public Goal
 {
 public:
-    RespondToAlertGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::RespondToAlert, blackboard) {}
+    RespondToAlertGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::RespondToAlert, blackboard)
+    {
+        Name = "RespondToAlertGoal";
+    }
 
     void Activate() override;
     void Execute(float dt) override;
@@ -60,12 +69,18 @@ public:
 
     float CalculateUtility() override;
     float CalculateCost() override;
+
+private:
+    sf::Vector2f AlertLocation;
 };
 
 class InterceptGoal : public Goal
 {
 public:
-    InterceptGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Intercept, blackboard) {}
+    InterceptGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Intercept, blackboard)
+    {
+        Name = "InterceptGoal";
+    }
 
     void Activate() override;
     void Execute(float dt) override;
@@ -73,12 +88,18 @@ public:
 
     float CalculateUtility() override;
     float CalculateCost() override;
+
+private:
+    sf::Vector2f LastKnownPosition;
 };
 
 class ReturnGoal : public Goal
 {
 public:
-    ReturnGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Return, blackboard) {}
+    ReturnGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Return, blackboard)
+    {
+        Name = "ReturnGoal";
+    }
 
     void Activate() override;
     void Execute(float dt) override;

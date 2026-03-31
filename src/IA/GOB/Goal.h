@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include <string>
+
 #include "IA/GlobalBlackboard.h"
 
 class GAgentCharacter;
@@ -24,6 +26,7 @@ public:
     {
         Owner = nullptr;
         Blackboard = nullptr;
+        Name = "Goal";
     }
 
     virtual void Activate() = 0;
@@ -35,12 +38,14 @@ public:
     EGoalType GetType() const { return Type; }
     bool IsActive() const { return bActive; }
     bool IsFinished() const { return bFinished; }
+    std::string GetName() const { return Name; }
 
 protected:
     virtual float CalculateUtility() = 0;
     virtual float CalculateCost() = 0;
 
     GAgentCharacter* Owner;
+    std::string Name = "Goal";
     EGoalType Type;
     float Utility = 0.f;
     bool bActive = false;

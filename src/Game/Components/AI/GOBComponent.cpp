@@ -31,9 +31,6 @@ void GGOBComponent::Update(float deltaSeconds)
 {
     if (!ActiveGoal) return;
 
-    if (!ActiveGoal->IsActive())
-        ActivateGoal(Goals[0]);
-
     ActiveGoal->Execute(deltaSeconds);
 
     EvaluateGoals();
@@ -49,9 +46,6 @@ void GGOBComponent::EvaluateGoals()
     for (Goal *goal : Goals)
     {
         if (!goal)
-            continue;
-
-        if (goal->IsActive() || goal->IsFinished())
             continue;
 
         const float score = goal->GetEffectiveScore();
