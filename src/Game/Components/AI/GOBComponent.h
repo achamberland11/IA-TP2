@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Game/Components/Component.h"
+#include "IA/GlobalBlackboard.h"
 #include "SFML/Network/SocketHandle.hpp"
 #include "SFML/System/Vector2.hpp"
 
@@ -16,11 +17,7 @@ class GGOBComponent : public GComponent
 public:
     GENERATE_COMPONENT(false, true, true)
 
-    GGOBComponent(GEntity* owner) : GComponent(owner)
-    {
-        Name = "GOP";
-
-    }
+    GGOBComponent(GEntity* owner) : GComponent(owner) { Name = "GOP"; }
 
     void Start() override;
     void Update(float deltaSeconds) override;
@@ -31,6 +28,8 @@ private:
     void EvaluateGoals();
     void ActivateGoal(Goal* goal);
     void TerminateActiveGoal();
+
+    GlobalBlackboard* Blackboard = nullptr;
 
     std::vector<Goal*> Goals;
     Goal* ActiveGoal = nullptr;

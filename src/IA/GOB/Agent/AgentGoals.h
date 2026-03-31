@@ -11,7 +11,7 @@
 class PatrolGoal : public Goal
 {
 public:
-    PatrolGoal(GAgentCharacter* agent) : Goal(agent, EGoalType::Patrol) {}
+    PatrolGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Patrol, blackboard) {}
 
     void Activate() override;
     void Execute(float dt) override;
@@ -30,7 +30,7 @@ private:
 class TakeBreakGoal : public Goal
 {
 public:
-    TakeBreakGoal(GAgentCharacter* agent) : Goal(agent, EGoalType::TakeBreak) {}
+    TakeBreakGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::TakeBreak, blackboard) {}
 
     void Activate() override;
     void Execute(float dt) override;
@@ -52,7 +52,7 @@ private:
 class RespondToAlertGoal : public Goal
 {
 public:
-    RespondToAlertGoal(GAgentCharacter* agent) : Goal(agent, EGoalType::RespondToAlert) {}
+    RespondToAlertGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::RespondToAlert, blackboard) {}
 
     void Activate() override;
     void Execute(float dt) override;
@@ -65,7 +65,7 @@ public:
 class InterceptGoal : public Goal
 {
 public:
-    InterceptGoal(GAgentCharacter* agent) : Goal(agent, EGoalType::Intercept) {}
+    InterceptGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Intercept, blackboard) {}
 
     void Activate() override;
     void Execute(float dt) override;
@@ -78,7 +78,7 @@ public:
 class ReturnGoal : public Goal
 {
 public:
-    ReturnGoal(GAgentCharacter* agent) : Goal(agent, EGoalType::Return) {}
+    ReturnGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Return, blackboard) {}
 
     void Activate() override;
     void Execute(float dt) override;

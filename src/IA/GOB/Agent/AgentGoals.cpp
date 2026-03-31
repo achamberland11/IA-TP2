@@ -49,7 +49,8 @@ void PatrolGoal::Terminate()
 float PatrolGoal::CalculateUtility()
 {
     // Score élevé si pas d'alerte, faible sinon
-    // TODO: Intégrer le Blackboard pour le ifelse
+    if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
+        return 3.f;
     return 80.f;
 }
 
@@ -117,23 +118,28 @@ float TakeBreakGoal::CalculateCost()
  */
 void RespondToAlertGoal::Activate()
 {
+    Owner->IncreaseTireness(4);
     bActive = true;
     bFinished = false;
-    Owner->IncreaseTireness(4);
 }
 
 void RespondToAlertGoal::Execute(float dt)
 {
+    if (Owner->IsPlayerVisible())
+        Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
 }
 
 void RespondToAlertGoal::Terminate()
 {
+    bActive = false;
+    bFinished = true;
 }
 
 float RespondToAlertGoal::CalculateUtility()
 {
     // Très haut score tant que l'alerte est active
-    // TODO: Intégrer le blackboard pour l'alerte et le ifelse
+    if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
+        return 100.f;
     return 0;
 }
 
@@ -148,14 +154,23 @@ float RespondToAlertGoal::CalculateCost()
  */
 void InterceptGoal::Activate()
 {
+    bActive = true;
+    bFinished = false;
+    Owner->IncreaseTireness(6);
 }
 
 void InterceptGoal::Execute(float dt)
 {
+    if (Owner->IsPlayerVisible())
+        Owner->GetAgentController()->FindPath(Owner->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition());
+    else
+        Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
 }
 
 void InterceptGoal::Terminate()
 {
+    bActive = false;
+    bFinished = true;
 }
 
 float InterceptGoal::CalculateUtility()
@@ -163,6 +178,8 @@ float InterceptGoal::CalculateUtility()
     // Score maximal si l'intrus est proche ou visible
     if (Owner->IsPlayerVisible())
         return 250.f;
+    else if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
+        return 150.f;
     return 0;
 }
 
@@ -179,6 +196,7 @@ void ReturnGoal::Activate()
 {
     bActive = true;
     bFinished = false;
+    Owner->IncreaseTireness(3);
 
     std::vector<sf::Vector2f> patrolPoints = Owner->GetPatrolPoints();
     if (!patrolPoints.empty())

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <ostream>
 
+#include "Game/Game.h"
 #include "Game/Components/ConeVisionComponent.h"
 #include "IA/GOB/Goal.h"
 #include "IA/GOB/Agent/AgentGoals.h"
@@ -15,11 +16,13 @@ void GGOBComponent::Start()
 {
     GAgentCharacter* agent = (GAgentCharacter*)Owner;
 
-    Goals.push_back(new PatrolGoal(agent));
-    Goals.push_back(new TakeBreakGoal(agent));
-    Goals.push_back(new InterceptGoal(agent));
-    Goals.push_back(new RespondToAlertGoal(agent));
-    Goals.push_back(new ReturnGoal(agent));
+    Blackboard = GGame::GetInstance()->GetGlobalBlackboard();
+
+    Goals.push_back(new PatrolGoal(agent, Blackboard));
+    Goals.push_back(new TakeBreakGoal(agent, Blackboard));
+    Goals.push_back(new InterceptGoal(agent, Blackboard));
+    Goals.push_back(new RespondToAlertGoal(agent, Blackboard));
+    Goals.push_back(new ReturnGoal(agent, Blackboard));
 
     ActiveGoal = Goals[0];
 }
@@ -33,21 +36,46 @@ void GGOBComponent::Update(float deltaSeconds)
 
     ActiveGoal->Execute(deltaSeconds);
 
-    if (ActiveGoal->IsFinished())
-    {
-        TerminateActiveGoal();
-        EvaluateGoals();
-    }
+    EvaluateGoals();
 }
 
 void GGOBComponent::EvaluateGoals()
 {
-    ActivateGoal(Goals[0]);
+    if (Goals.empty()) return;
+
+    Goal *bestGoal = Goals[0];
+    float bestScore = -std::numeric_limits<float>::infinity();
+
+    for (Goal *goal : Goals)
+    {
+        if (!goal)
+            continue;
+
+        if (goal->IsActive() || goal->IsFinished())
+            continue;
+
+        const float score = goal->GetEffectiveScore();
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestGoal = goal;
+        }
+    }
+
+    if (bestGoal)
+        ActivateGoal(bestGoal);
 }
 
 void GGOBComponent::ActivateGoal(Goal *goal)
 {
     if (!goal) return;
+
+    if (ActiveGoal == goal)
+        return;
+
+    if (ActiveGoal)
+        ActiveGoal->Terminate();
+
     ActiveGoal = goal;
     ActiveGoal->Activate();
 }

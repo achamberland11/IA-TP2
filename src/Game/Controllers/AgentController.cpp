@@ -35,7 +35,7 @@ void GAgentController::Update(float dt)
 {
     GController::Update(dt);
 
-    if (!Owner || !FSM || !Vision || !Player || !Agent)
+    if (!Owner /*|| !FSM*/ || !Vision || !Player || !Agent)
         return;
 
     GGame *game = GGame::GetInstance();
@@ -48,11 +48,11 @@ void GAgentController::Update(float dt)
 
     const RadioInfo &radioInfo = GlobalBB->ListenToRadio();
 
-    if (Vision->CanSeeEntity(Player))
+    if (Agent->IsPlayerVisible())
     {
         GlobalBB->TryBroadcastToRadio(Player->GetTransformComponent()->GetPosition(), Agent->GetAgentID());
-        if (FSM->GetCurrentState() != AgentChaseState::Instance())
-            FSM->ChangeState(AgentChaseState::Instance());
+        // if (FSM->GetCurrentState() != AgentChaseState::Instance())
+            // FSM->ChangeState(AgentChaseState::Instance());
     }
     else if (radioInfo.bPlayerSeen)
     {
@@ -62,15 +62,15 @@ void GAgentController::Update(float dt)
         {
             if (distToReport <= GlobalBB->RadioMaxDist * GlobalBB->RadioMaxDist)
             {
-                if (FSM->GetCurrentState() != AgentChaseState::Instance())
-                    FSM->ChangeState(AgentChaseState::Instance());
+                // if (FSM->GetCurrentState() != AgentChaseState::Instance())
+                    // FSM->ChangeState(AgentChaseState::Instance());
             }
         }
     }
-    else if (FSM->GetCurrentState() == AgentChaseState::Instance())
+    /*else if (FSM->GetCurrentState() == AgentChaseState::Instance())
     {
         FSM->ChangeState(AgentReturnState::Instance());
-    }
+    }*/
 }
 
 void GAgentController::HandleEvent(const sf::Event &event)

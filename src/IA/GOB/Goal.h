@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "IA/GlobalBlackboard.h"
 
 class GAgentCharacter;
 
@@ -18,8 +19,12 @@ enum class EGoalType
 class Goal
 {
 public:
-    Goal(GAgentCharacter* owner, EGoalType type) : Owner(owner), Type(type) {}
-    virtual ~Goal() = default;
+    Goal(GAgentCharacter* owner, EGoalType type, GlobalBlackboard* blackboard) : Owner(owner), Type(type), Blackboard(blackboard) {}
+    virtual ~Goal()
+    {
+        Owner = nullptr;
+        Blackboard = nullptr;
+    }
 
     virtual void Activate() = 0;
     virtual void Execute(float dt) = 0;
@@ -40,4 +45,6 @@ protected:
     float Utility = 0.f;
     bool bActive = false;
     bool bFinished = false;
+
+    GlobalBlackboard* Blackboard;
 };
