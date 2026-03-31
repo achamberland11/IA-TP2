@@ -14,6 +14,9 @@ public:
     PatrolGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Patrol, blackboard)
     {
         Name = "PatrolGoal";
+        BaseUtility = 8.f;
+        MaxUtility = 30.f;
+        Cost = 5.f;
     }
 
     void Activate() override;
@@ -36,6 +39,9 @@ public:
     TakeBreakGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::TakeBreak, blackboard)
     {
         Name = "TakeBreakGoal";
+        BaseUtility = 18.f;
+        MaxUtility = 90.f;
+        Cost = 10.f;
     }
 
     void Activate() override;
@@ -61,6 +67,9 @@ public:
     RespondToAlertGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::RespondToAlert, blackboard)
     {
         Name = "RespondToAlertGoal";
+        BaseUtility = 0.f;
+        MaxUtility = 105.f;
+        Cost = 10.f;
     }
 
     void Activate() override;
@@ -80,6 +89,9 @@ public:
     InterceptGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Intercept, blackboard)
     {
         Name = "InterceptGoal";
+        BaseUtility = 10.f;
+        MaxUtility = 150.f;
+        Cost = 30.f;
     }
 
     void Activate() override;
@@ -99,6 +111,9 @@ public:
     ReturnGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::Return, blackboard)
     {
         Name = "ReturnGoal";
+        BaseUtility = -10.f;
+        MaxUtility = 90.f;
+        Cost = 8.f;
     }
 
     void Activate() override;

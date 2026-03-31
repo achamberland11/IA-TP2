@@ -50,6 +50,9 @@ protected:
     float Utility = 0.f;
     bool bActive = false;
     bool bFinished = false;
+    float BaseUtility = 0.f;
+    float MaxUtility = 0.f;
+    float Cost = 0.f;
 
     GlobalBlackboard* Blackboard;
 };

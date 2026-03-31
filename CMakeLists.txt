@@ -54,7 +54,6 @@ add_executable(IA-TP2
         src/Game/Components/ConeVisionComponent.h
         src/Game/Components/AI/GOBComponent.cpp
         src/Game/Components/AI/GOBComponent.h
-        src/IA/GOB/Goal.cpp
         src/IA/GOB/Goal.h
         src/IA/GOB/Agent/AgentGoals.cpp
         src/IA/GOB/Agent/AgentGoals.h

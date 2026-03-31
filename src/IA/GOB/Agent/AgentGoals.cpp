@@ -50,14 +50,14 @@ float PatrolGoal::CalculateUtility()
 {
     // Score élevé si pas d'alerte, faible sinon
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
-        return 3.f;
-    return 70.f;
+        return BaseUtility;
+    return MaxUtility;
 }
 
 float PatrolGoal::CalculateCost()
 {
     // Coût faible.
-    return 5.f;
+    return Cost;
 }
 
 /**
@@ -102,15 +102,13 @@ void TakeBreakGoal::Terminate()
 float TakeBreakGoal::CalculateUtility()
 {
     // Score modéré, variable selon la fatigue/temps écoulé
-    float baseUtility = 10.f;
-    return std::min(baseUtility * Owner->GetTireness(), 100.f);
+    return std::min(BaseUtility * Owner->GetTireness(), MaxUtility);
 }
 
 float TakeBreakGoal::CalculateCost()
 {
     // Coût faible-modéré (dépend de la distance)
-    float baseCost = 8.f;
-    return baseCost * (distToBreakRoom * 0.05f);
+    return Cost * (distToBreakRoom * 0.05f);
 }
 
 /**
@@ -144,14 +142,21 @@ float RespondToAlertGoal::CalculateUtility()
 {
     // Très haut score tant que l'alerte est active
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
-        return 100.f;
-    return 0;
+    {
+        return MaxUtility;
+        float distToReportSqrd = Blackboard->GetDistToReportingAgent(Owner->GetTransformComponent()->GetPosition(),
+                                                                 Owner->GetAgentID());
+        if (distToReportSqrd != -1.f)
+            if (distToReportSqrd <= Blackboard->RadioMaxDist * Blackboard->RadioMaxDist)
+                return MaxUtility;
+    }
+    return BaseUtility;
 }
 
 float RespondToAlertGoal::CalculateCost()
 {
     // Coût modéré
-    return 15.f;
+    return Cost;
 }
 
 /**
@@ -168,7 +173,8 @@ void InterceptGoal::Execute(float dt)
 {
     // TODO: Intercept movement
     if (Owner->IsPlayerVisible())
-        Owner->GetAgentController()->FindPath(Owner->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition());
+        Owner->GetAgentController()->FindPath(
+            Owner->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition());
     else
         Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
 
@@ -188,16 +194,27 @@ float InterceptGoal::CalculateUtility()
 {
     // Score maximal si l'intrus est proche ou visible
     if (Owner->IsPlayerVisible())
-        return 250.f;
+        return MaxUtility;
+
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
-        return 150.f;
-    return 0;
+    {
+        return MaxUtility;
+        float distToReportSqrd = Blackboard->GetDistToReportingAgent(Owner->GetTransformComponent()->GetPosition(),
+                                                                     Owner->GetAgentID());
+        if (distToReportSqrd != -1.f)
+            if (distToReportSqrd <= Blackboard->RadioMaxDist * Blackboard->RadioMaxDist)
+                return MaxUtility;
+    }
+
+    return BaseUtility;
 }
 
 float InterceptGoal::CalculateCost()
 {
     // Coût élevé
-    return 30.f;
+    if (!Owner->IsPlayerVisible())
+        return Cost * 2;
+    return Cost;
 }
 
 /**
@@ -232,14 +249,14 @@ void ReturnGoal::Terminate()
 float ReturnGoal::CalculateUtility()
 {
     // Score faible mais positif lorsque hors zone
-    if (Owner->IsInRoom())
-        return -10.f;
+    if (!Owner->IsInRoom())
+        return MaxUtility;
 
-    return 75.f;
+    return BaseUtility;
 }
 
 float ReturnGoal::CalculateCost()
 {
     // Coût faible-modéré
-    return 8.f;
+    return Cost;
 }
