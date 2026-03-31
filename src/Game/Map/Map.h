@@ -29,6 +29,8 @@ struct FRoom {
 	std::vector<sf::Vector2f> Corners;
 	std::vector<FRoom> SubRooms;
 
+	bool bIsBreakRoom = false;
+
 	sf::Vector2f Center() const { return Origin + Size / 2.f; }
 
 	//To know in which room the player is currently in.
@@ -70,11 +72,14 @@ public:
 
 	void DetectRooms();
 	void MergeRooms();
+	void FindBreakRoom();
 	FRoom Merge(const FRoom& RoomA, const FRoom& RoomB);
 	bool Intersects(const FRoom& RoomA, const FRoom& RoomB);
 	const std::vector<FRoom>& GetRooms() const { return Rooms; }
 
 	sf::Vector2f GetRandomPosition();
+
+	void ChangeExitVisibility();
 
 	static const int PixelsPerTile = 32;
 
@@ -91,4 +96,6 @@ private:
 	void BuildNavGraph();
 
 	std::vector<FRoom> Rooms;
+
+	std::vector<FTile> ExitTiles;
 };

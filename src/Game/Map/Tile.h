@@ -10,6 +10,7 @@ enum class ETileType {
     Wall,
     Dirt,
     Obstacle,
+    Exit
 };
 
 struct FTile {

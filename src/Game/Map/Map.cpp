@@ -44,6 +44,17 @@ FTile GMap::CreateTile(const std::string& rawValue)
 
 	tile.TextureID = base;
 
+	if (tile.ObjectID == "Exit")
+	{
+		tile.ObjectID = "";
+		tile.TextureID = "Dirt";
+		tile.Type = ETileType::Dirt;
+		tile.Walkable = false;
+		tile.BlocksVision = false;
+		tile.MovementCost = 10;
+	}
+
+
 	if (rawValue == "Dirt")
 	{
 		tile.TextureID += std::to_string(GetRand(22, 85));
@@ -116,6 +127,7 @@ void GMap::LoadMap(const std::string mapPath)
 
 	DetectRooms();
 	MergeRooms();
+	FindBreakRoom();
 	BuildNavGraph();
 }
 
@@ -261,6 +273,27 @@ void GMap::MergeRooms()
 	}
 }
 
+void GMap::FindBreakRoom()
+{
+	if (Rooms.empty())
+		return;
+
+	float maxArea = 0.f;
+	int bestIndex = -1;
+
+	for (int i = 0; i < Rooms.size(); i++) {
+		float area = Rooms[i].Size.x * Rooms[i].Size.y;
+
+		if (area > maxArea) {
+			maxArea = area;
+			bestIndex = i;
+		}
+	}
+
+	if (bestIndex != -1)
+		Rooms[bestIndex].bIsBreakRoom = true;
+}
+
 FRoom GMap::Merge(const FRoom& RoomA, const FRoom& RoomB)
 {
 	sf::Vector2f MinCorner(
@@ -312,11 +345,34 @@ sf::Vector2f GMap::GetRandomPosition()
 		if (IsWalkable(row, col) && Room.Contains(GridToWorld(sf::Vector2f(col, row)))) {
 			Map[row][col].Walkable = false;
 			Map[row][col].Type = ETileType::Obstacle;
+			BuildNavGraph();
 			return GridToWorld(sf::Vector2f(col, row));
 		}
 	}
 
 	return Room.Center();
+}
+
+void GMap::ChangeExitVisibility()
+{
+	for (FTile ExitTile : ExitTiles)
+	{
+		if (ExitTile.Type == ETileType::Floor) {
+			ExitTile.TextureID = "Dirt";
+			ExitTile.Type = ETileType::Dirt;
+			ExitTile.Walkable = false;
+			ExitTile.BlocksVision = false;
+			ExitTile.MovementCost = 10;
+		}
+		else {
+			ExitTile.TextureID = "F_J";
+			ExitTile.TextureID += std::to_string(GetRand(5, 10));
+			ExitTile.Type = ETileType::Floor;
+			ExitTile.Walkable = true;
+			ExitTile.BlocksVision = false;
+			ExitTile.MovementCost = 1;
+		}
+	}
 }
 
 int GMap::GetRand(int max, int chance) const
