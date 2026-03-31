@@ -9,7 +9,7 @@
 #include "Map/AStar.h"
 #include "Controllers/AgentController.h"
 
-GWorld::GWorld(sf::Vector2u windowSize, IGameEventListener* l) : WindowSize(windowSize)
+GWorld::GWorld(sf::Vector2u windowSize, IGameEventListener *l) : WindowSize(windowSize)
 {
 	Listener = l;
 
@@ -19,12 +19,12 @@ GWorld::GWorld(sf::Vector2u windowSize, IGameEventListener* l) : WindowSize(wind
 
 GWorld::~GWorld()
 {
-	for (GController* controller : Controllers)
+	for (GController *controller : Controllers)
 	{
 		controller = nullptr;
 	}
 
-	for (GEntity* entity : Entities)
+	for (GEntity *entity : Entities)
 	{
 		delete entity;
 	}
@@ -32,30 +32,32 @@ GWorld::~GWorld()
 
 void GWorld::Start()
 {
-	for (GEntity* entity : Entities)
+	for (GEntity *entity : Entities)
 		entity->Start();
 }
 
 void GWorld::Update(float deltaSeconds)
 {
-	for (GEntity* entity : Entities) {
+	for (GEntity *entity : Entities)
+	{
 		entity->Update(deltaSeconds);
 	}
 }
 
-void GWorld::Render(sf::RenderWindow& window)
+void GWorld::Render(sf::RenderWindow &window)
 {
-	if (Map) Map->Display(window);
+	if (Map)
+		Map->Display(window);
 
-	for (GEntity* entity : Entities)
+	for (GEntity *entity : Entities)
 	{
 		entity->Render(window);
 	}
 }
 
-void GWorld::HandleEvent(const sf::Event& event)
+void GWorld::HandleEvent(const sf::Event &event)
 {
-	for (GController* controller : Controllers)
+	for (GController *controller : Controllers)
 	{
 		controller->HandleEvent(event);
 	}
@@ -76,7 +78,8 @@ void GWorld::CreateMap()
 	Map->LoadMap("Assets/map.csv");
 }
 
-void GWorld::CreateEntities() {
+void GWorld::CreateEntities()
+{
 	CreatePlayer();
 	CreateAgents();
 	CreateSwitch();
@@ -84,7 +87,7 @@ void GWorld::CreateEntities() {
 
 void GWorld::CreatePlayer()
 {
-	GPlayerCharacter* player = new GPlayerCharacter();
+	GPlayerCharacter *player = new GPlayerCharacter();
 	player->SetListener(Listener);
 	player->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
 	Entities.push_back(player);
@@ -94,11 +97,13 @@ void GWorld::CreatePlayer()
 
 void GWorld::CreateAgents()
 {
-	const std::vector<FRoom>& Rooms = Map->GetRooms();
+	const std::vector<FRoom> &Rooms = Map->GetRooms();
 
 	for (int i = 0; i < Rooms.size(); i++)
-		if (!Rooms[i].bIsBreakRoom) {
-			GAgentCharacter* agent = new GAgentCharacter();
+		if (!Rooms[i].bIsBreakRoom)
+		{
+			GAgentCharacter *agent = new GAgentCharacter();
+			agent->SetAgentID(i);
 			agent->SetListener(Listener);
 			agent->SetRoom(Rooms[i]);
 			agent->SetPatrolWaypoints(GMap::PixelsPerTile);
@@ -112,7 +117,7 @@ void GWorld::CreateAgents()
 
 void GWorld::CreateSwitch()
 {
-	GSwitch* sw = new GSwitch();
+	GSwitch *sw = new GSwitch();
 	sw->GetTransformComponent()->SetPosition(Map->GetRandomPosition());
 	Entities.push_back(sw);
 	GameSwitch = sw;

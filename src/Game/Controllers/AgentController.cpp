@@ -18,8 +18,11 @@ void GAgentController::Start()
 
     if (!Owner) return;
 
-    Player = GGame::GetInstance()->GetPlayerCharacter();
-    Agent = static_cast<GAgentCharacter*>(Owner);
+    GGame *game = GGame::GetInstance();
+    if (!game) return;
+
+    Player = game->GetPlayerCharacter();
+    Agent = dynamic_cast<GAgentCharacter *>(Owner);
 
     FSM = Owner->GetComponent<GFSMComponent>();
     Vision = Owner->GetComponent<GConeVisionComponent>();
@@ -32,14 +35,37 @@ void GAgentController::Update(float dt)
 {
     GController::Update(dt);
 
-    if (!Owner) return;
-    if (!FSM)
+    if (!Owner || !FSM || !Vision || !Player || !Agent)
         return;
+
+    GGame *game = GGame::GetInstance();
+    if (!game)
+        return;
+
+    GlobalBlackboard *GlobalBB = game->GetGlobalBlackboard();
+    if (!GlobalBB)
+        return;
+
+    const RadioInfo &radioInfo = GlobalBB->ListenToRadio();
 
     if (Vision->CanSeeEntity(Player))
     {
+        GlobalBB->TryBroadcastToRadio(Player->GetTransformComponent()->GetPosition(), Agent->GetAgentID());
         if (FSM->GetCurrentState() != AgentChaseState::Instance())
             FSM->ChangeState(AgentChaseState::Instance());
+    }
+    else if (radioInfo.bPlayerSeen)
+    {
+        float distToReport = GlobalBB->GetDistToReportingAgent(Agent->GetTransformComponent()->GetPosition(),
+                                                               Agent->GetAgentID());
+        if (distToReport != -1.f)
+        {
+            if (distToReport <= GlobalBB->RadioMaxDist * GlobalBB->RadioMaxDist)
+            {
+                if (FSM->GetCurrentState() != AgentChaseState::Instance())
+                    FSM->ChangeState(AgentChaseState::Instance());
+            }
+        }
     }
     else if (FSM->GetCurrentState() == AgentChaseState::Instance())
     {
@@ -55,7 +81,10 @@ void GAgentController::HandleEvent(const sf::Event &event)
 
 void GAgentController::FindPath(const sf::Vector2f &target)
 {
-    GMap* map = GGame::GetInstance()->GetMap();
+    GGame *game = GGame::GetInstance();
+    if (!game || !Owner || !Agent) return;
+
+    GMap *map = game->GetMap();
     if (!map) return;
 
     auto path = AStar::FindPath(

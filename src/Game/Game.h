@@ -8,6 +8,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "GameEventListener.h"
+#include "IA/GlobalBlackboard.h"
 
 enum class EGameState {
     Running,
@@ -30,6 +31,7 @@ public:
     sf::RenderWindow& GetWindow() { return Window; }
     GPlayerCharacter* GetPlayerCharacter() const { return World->GetPlayerCharacter(); }
     std::vector<GAgentCharacter*> GetAgentsCharacter() const { return World->GetAgentsCharacter(); }
+    GlobalBlackboard* GetGlobalBlackboard() const { return GlobalBB.get(); }
 
     void OnGameOver() override;
     void OnGameWon() override;
@@ -51,4 +53,5 @@ private:
 
     sf::Font Font;
     sf::Text EndText;
+    std::unique_ptr<GlobalBlackboard> GlobalBB;
 };

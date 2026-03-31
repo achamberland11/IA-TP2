@@ -18,6 +18,8 @@ GGame::~GGame() {
 }
 
 void GGame::Initialize() {
+    GlobalBB = std::make_unique<GlobalBlackboard>();
+
     World = std::make_unique<GWorld>(WindowSize, this);
     World->Start();
 
@@ -54,6 +56,10 @@ void GGame::HandleEvents() {
 void GGame::Update(float dt) {
     if (GameState == EGameState::Running && World) {
         World->Update(dt);
+    }
+
+    if (GlobalBB) {
+        GlobalBB->SyncRadio();
     }
 }
 

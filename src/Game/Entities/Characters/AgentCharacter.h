@@ -45,8 +45,13 @@ public:
 
     void SetListener(IGameEventListener* l) { Listener = l; }
 
+    void SetAgentID(int id) { AgentID = id; }
+    int GetAgentID() const { return AgentID; }
+
 private:
     void LoadTextures();
+
+    int AgentID = 0;
 
     sf::Vector2f ComputeSteering(float dt);
 
