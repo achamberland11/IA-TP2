@@ -7,7 +7,7 @@
 GGame *GGame::Instance = nullptr;
 
 GGame::GGame(sf::Vector2u windowSize)
-    : WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI") {
+    : WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI"), EndText(Font) {
     Instance = this;
     Window.setFramerateLimit(120);
     Initialize();
@@ -22,6 +22,14 @@ void GGame::Initialize() {
 
     World = std::make_unique<GWorld>(WindowSize, this);
     World->Start();
+
+    if (!Font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
+        std::cerr << "Failed to load font" << std::endl;
+
+    EndText.setFont(Font);
+    EndText.setCharacterSize(80);
+    EndText.setFillColor(sf::Color::White);
+    EndText.setStyle(sf::Text::Bold);
 }
 
 void GGame::Run() {
@@ -46,7 +54,7 @@ void GGame::HandleEvents() {
 }
 
 void GGame::Update(float dt) {
-    if (World) {
+    if (GameState == EGameState::Running && World) {
         World->Update(dt);
     }
 
@@ -58,21 +66,40 @@ void GGame::Update(float dt) {
 void GGame::Render() {
     Window.clear(sf::Color::Black);
 
-    if (World) {
-        World->Render(Window);
+    if (GameState == EGameState::Running) {
+        if (World)
+            World->Render(Window);
     }
+    else
+        Window.draw(EndText);
 
     Window.display();
 }
 
 void GGame::OnGameOver()
 {
+    GameState = EGameState::Lost;
+
+    EndText.setFillColor(sf::Color::Red);
+    EndText.setString("GAME OVER!");
+
+    sf::FloatRect Bounds = EndText.getLocalBounds();
+    EndText.setOrigin(sf::Vector2f(Bounds.size.x / 2, Bounds.size.y / 2));
+    EndText.setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
+
     std::cout << "Agent collided with player! Exiting program.\n";
-    Window.close();
 }
 
 void GGame::OnGameWon()
 {
+    GameState = EGameState::Won;
+
+    EndText.setFillColor(sf::Color::Green);
+    EndText.setString("YOU WON!");
+
+    sf::FloatRect Bounds = EndText.getLocalBounds();
+    EndText.setOrigin(sf::Vector2f(Bounds.size.x / 2, Bounds.size.y / 2));
+    EndText.setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
+
     std::cout << "Player exited the mine! Exiting program.\n";
-    Window.close();
 }

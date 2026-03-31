@@ -10,6 +10,12 @@
 #include "GameEventListener.h"
 #include "IA/GlobalBlackboard.h"
 
+enum class EGameState {
+    Running,
+    Won,
+    Lost
+};
+
 class GGame : public GObject, public IGameEventListener
 {
 public:
@@ -42,5 +48,10 @@ private:
     sf::Vector2u WindowSize;
     sf::RenderWindow Window;
     std::unique_ptr<GWorld> World;
+
+    EGameState GameState = EGameState::Running;
+
+    sf::Font Font;
+    sf::Text EndText;
     std::unique_ptr<GlobalBlackboard> GlobalBB;
 };
