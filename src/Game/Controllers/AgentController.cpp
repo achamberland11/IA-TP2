@@ -87,10 +87,41 @@ void GAgentController::FindPath(const sf::Vector2f &target)
     GMap *map = game->GetMap();
     if (!map) return;
 
+    sf::Vector2f gridTarget = map->WorldToGrid(target);
+    int targetRow = (int)gridTarget.y;
+    int targetCol = (int)gridTarget.x;
+
+    if (!map->IsWalkable(targetRow, targetCol))
+    {
+        const int rowOffsets[] = { -1, 1, 0, 0 };
+        const int colOffsets[] = { 0, 0, -1, -1 };
+
+        bool foundValidNeighbor = false;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            int neighborRow = targetRow + rowOffsets[i];
+            int neighborCol = targetCol + colOffsets[i];
+
+            if (map->IsWalkable(neighborRow, neighborCol))
+            {
+                gridTarget = sf::Vector2f((float)(neighborCol), static_cast<float>(neighborRow));
+                foundValidNeighbor = true;
+                break;
+            }
+        }
+
+        if (!foundValidNeighbor)
+            return;
+
+    }
+
+    sf::Vector2f validTarget = map->GridToWorld(gridTarget);
+
     auto path = AStar::FindPath(
         map,
         Owner->GetTransformComponent()->GetPosition(),
-        target);
+        validTarget);
      
     if (path.empty())
         return;

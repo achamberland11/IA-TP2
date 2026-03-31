@@ -73,6 +73,7 @@ public:
 	void DetectRooms();
 	void MergeRooms();
 	void FindBreakRoom();
+	FRoom* GetBreakRoom() const { return BreakRoom; }
 	FRoom Merge(const FRoom& RoomA, const FRoom& RoomB);
 	bool Intersects(const FRoom& RoomA, const FRoom& RoomB);
 	const std::vector<FRoom>& GetRooms() const { return Rooms; }
@@ -104,6 +105,7 @@ private:
 	void BuildNavGraph();
 
 	std::vector<FRoom> Rooms;
+	FRoom* BreakRoom = nullptr;
 
 	sf::Vector2f ExitTile;
 	bool bHasExit = false;

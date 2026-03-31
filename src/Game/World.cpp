@@ -102,7 +102,7 @@ void GWorld::CreateAgents()
 	for (int i = 0; i < Rooms.size(); i++)
 		if (!Rooms[i].bIsBreakRoom)
 		{
-			GAgentCharacter *agent = new GAgentCharacter();
+			GAgentCharacter *agent = new GAgentCharacter(GetMap()->GetBreakRoom());
 			agent->SetAgentID(i);
 			agent->SetListener(Listener);
 			agent->SetRoom(Rooms[i]);

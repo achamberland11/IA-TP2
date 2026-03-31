@@ -291,7 +291,10 @@ void GMap::FindBreakRoom()
 	}
 
 	if (bestIndex != -1)
+	{
 		Rooms[bestIndex].bIsBreakRoom = true;
+		BreakRoom = &Rooms[bestIndex];
+	}
 }
 
 FRoom GMap::Merge(const FRoom& RoomA, const FRoom& RoomB)

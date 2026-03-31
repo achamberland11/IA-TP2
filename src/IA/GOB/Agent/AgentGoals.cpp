@@ -13,6 +13,7 @@
 void PatrolGoal::Activate()
 {
     bActive = true;
+    tirenessTimer = 0.f;
 
     std::vector<sf::Vector2f> patrolPoints = Owner->GetPatrolPoints();
     if (!patrolPoints.empty())
@@ -69,11 +70,11 @@ void TakeBreakGoal::Activate()
     bFinished = false;
     CurrentBreakTime = 0.f;
 
+    BreakLocation = Owner->GetBreakRoom()->Center();
+
     sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
     distToBreakRoom = std::sqrt(std::pow(agentPos.x - BreakLocation.x, 2) + std::pow(agentPos.y - BreakLocation.y, 2));
 
-    // TODO: définir la position du breakroom
-    BreakLocation = sf::Vector2f(100.f, 100.f);
     Owner->GetAgentController()->FindPath(BreakLocation);
 }
 
@@ -119,17 +120,43 @@ void RespondToAlertGoal::Activate()
     Owner->IncreaseTireness(4);
     bActive = true;
     bFinished = false;
+
+    if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
+        AlertLocation = Blackboard->ListenToRadio().PlayerLastPosition;
+
+    if (Owner->GetAgentController())
+        Owner->GetAgentController()->FindPath(AlertLocation);
 }
 
 void RespondToAlertGoal::Execute(float dt)
 {
+    if (!Blackboard)
+    {
+        Terminate();
+        return;
+    }
+
+    const RadioInfo &radioInfo = Blackboard->ListenToRadio();
+
     if (Owner->IsPlayerVisible())
-        Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
+    {
+        AlertLocation = radioInfo.PlayerLastPosition;
+        Owner->GetAgentController()->FindPath(AlertLocation);
+    } else if (radioInfo.bPlayerSeen)
+    {
+        AlertLocation = radioInfo.PlayerLastPosition;
+        Owner->GetAgentController()->FindPath(AlertLocation);
+    }
+
 
     sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
     float sqrdDist = std::pow(agentPos.x - AlertLocation.x, 2) + std::pow(agentPos.y - AlertLocation.y, 2);
-    if (sqrdDist < 1000.f && !Owner->IsPlayerVisible() && !Blackboard->ListenToRadio().bPlayerSeen)
+
+    if (sqrdDist < DetectionRangeSqrd && !Owner->IsPlayerVisible())
+    {
+        Blackboard->ResetRadio();
         Terminate();
+    }
 }
 
 void RespondToAlertGoal::Terminate()
@@ -143,12 +170,12 @@ float RespondToAlertGoal::CalculateUtility()
     // Très haut score tant que l'alerte est active
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
     {
-        return MaxUtility;
-        float distToReportSqrd = Blackboard->GetDistToReportingAgent(Owner->GetTransformComponent()->GetPosition(),
-                                                                 Owner->GetAgentID());
-        if (distToReportSqrd != -1.f)
-            if (distToReportSqrd <= Blackboard->RadioMaxDist * Blackboard->RadioMaxDist)
-                return MaxUtility;
+        float distToReportSqrd = Blackboard->GetDistToReportingAgent(
+            Owner->GetTransformComponent()->GetPosition(),
+            Owner->GetAgentID());
+
+        if (distToReportSqrd != -1.f && distToReportSqrd <= Blackboard->RadioMaxDist * Blackboard->RadioMaxDist)
+            return MaxUtility;
     }
     return BaseUtility;
 }
@@ -167,21 +194,44 @@ void InterceptGoal::Activate()
     bActive = true;
     bFinished = false;
     Owner->IncreaseTireness(6);
+
+    if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
+        LastKnownPosition = Blackboard->ListenToRadio().PlayerLastPosition;
+    else if (Owner->IsPlayerVisible())
+        LastKnownPosition = Blackboard->ListenToRadio().PlayerLastPosition;
+
+    if (Owner->GetAgentController())
+        Owner->GetAgentController()->FindPath(LastKnownPosition);
 }
 
 void InterceptGoal::Execute(float dt)
 {
-    // TODO: Intercept movement
+    if (!Blackboard)
+    {
+        Terminate();
+        return;
+    }
+
+    LastKnownPosition = Blackboard->ListenToRadio().PlayerLastPosition;
+    sf::Vector2f predictedPos = LastKnownPosition;
+
     if (Owner->IsPlayerVisible())
-        Owner->GetAgentController()->FindPath(
-            Owner->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition());
-    else
-        Owner->GetAgentController()->FindPath(Blackboard->ListenToRadio().PlayerLastPosition);
+    {
+        LastKnownPosition = Owner->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition();
+        sf::Vector2f playerPos = LastKnownPosition;
+        sf::Vector2f playerVel = Owner->GetAgentController()->GetPlayer()->GetVelocity();
+        float predictionTime = 0.5f;
+        predictedPos = playerPos + playerVel * predictionTime;
+    }
+
+    Owner->GetAgentController()->FindPath(predictedPos);
 
     sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
     float sqrdDist = std::pow(agentPos.x - LastKnownPosition.x, 2) + std::pow(agentPos.y - LastKnownPosition.y, 2);
-    if (sqrdDist < 1000.f && !Owner->IsPlayerVisible() && !Blackboard->ListenToRadio().bPlayerSeen)
+    if (sqrdDist < DetectionRangeSqrd && !Owner->IsPlayerVisible())
+    {
         Terminate();
+    }
 }
 
 void InterceptGoal::Terminate()
@@ -198,11 +248,10 @@ float InterceptGoal::CalculateUtility()
 
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
     {
-        return MaxUtility;
         float distToReportSqrd = Blackboard->GetDistToReportingAgent(Owner->GetTransformComponent()->GetPosition(),
                                                                      Owner->GetAgentID());
         if (distToReportSqrd != -1.f)
-            if (distToReportSqrd <= Blackboard->RadioMaxDist * Blackboard->RadioMaxDist)
+            if (distToReportSqrd <= DetectionRangeSqrd)
                 return MaxUtility;
     }
 
@@ -212,8 +261,6 @@ float InterceptGoal::CalculateUtility()
 float InterceptGoal::CalculateCost()
 {
     // Coût élevé
-    if (!Owner->IsPlayerVisible())
-        return Cost * 2;
     return Cost;
 }
 

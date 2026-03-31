@@ -39,6 +39,11 @@ public:
         writeBuffer.reportingAgentID = agentID;
     }
 
+    void ResetRadio() {
+        writeBuffer.bPlayerSeen = false;
+        writeBuffer.reportingAgentID = -1;
+    }
+
     void SyncRadio() //done at end of frame
     {
         if (rand() % 100 > interferenceChance) {

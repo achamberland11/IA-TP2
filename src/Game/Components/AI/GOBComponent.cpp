@@ -76,6 +76,8 @@ void GGOBComponent::ActivateGoal(Goal *goal)
 
 void GGOBComponent::TerminateActiveGoal()
 {
+    if (!ActiveGoal) return;
+
     ActiveGoal->Terminate();
     ActiveGoal = nullptr;
 }

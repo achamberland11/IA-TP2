@@ -39,6 +39,7 @@ public:
     void SetSprite(const sf::Sprite& sprite, std::string name) { Sprite = std::make_unique<sf::Sprite>(sprite); SpriteName = name; }
 
     std::string GetSpriteName() { return SpriteName; }
+    sf::Sprite* GetSprite() { return Sprite.get(); }
 
 private:
     /*const std::unique_ptr<::sf::Texture> Texture;

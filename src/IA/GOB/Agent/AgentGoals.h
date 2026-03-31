@@ -40,7 +40,7 @@ public:
     {
         Name = "TakeBreakGoal";
         BaseUtility = 18.f;
-        MaxUtility = 90.f;
+        MaxUtility = 150.f;
         Cost = 10.f;
     }
 

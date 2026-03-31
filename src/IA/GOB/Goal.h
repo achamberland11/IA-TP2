@@ -53,6 +53,7 @@ protected:
     float BaseUtility = 0.f;
     float MaxUtility = 0.f;
     float Cost = 0.f;
+    float DetectionRangeSqrd = 1000.f;
 
     GlobalBlackboard* Blackboard;
 };

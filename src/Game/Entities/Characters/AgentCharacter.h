@@ -17,7 +17,7 @@ class GConeVisionComponent;
 class GAgentCharacter : public GCharacter
 {
 public:
-    GAgentCharacter();
+    GAgentCharacter(FRoom* breakRoom);
 
     ~GAgentCharacter() override;
 
@@ -63,6 +63,9 @@ public:
     void SetAgentID(int id) { AgentID = id; }
     int GetAgentID() const { return AgentID; }
 
+    FRoom GetRoom() const { return Room; }
+    FRoom* GetBreakRoom() const { return BreakRoom; }
+
 private:
     void LoadTextures();
 
@@ -79,7 +82,7 @@ private:
 
     GAgentController *AgentController = nullptr;
 
-    int Tireness = 0.0f;
+    int Tireness = 1.0f;
     bool bPlayerVisible = false;
 
     sf::Font Font;
@@ -100,5 +103,6 @@ private:
 
     IGameEventListener *Listener = nullptr;
     FRoom Room;
+    FRoom* BreakRoom;
     bool bHasRoom = false;
 };
