@@ -32,6 +32,13 @@ void PatrolGoal::Execute(float dt)
         Owner->SetPatrolIndex(nextIndex);
         Owner->GetAgentController()->FindPath(patrolPoints[nextIndex]);
     }
+
+    tirenessTimer += dt;
+    if (tirenessTimer >= 3.f)
+    {
+        Owner->IncreaseTireness(1);
+        tirenessTimer = 0.f;
+    }
 }
 
 void PatrolGoal::Terminate()
@@ -42,12 +49,13 @@ void PatrolGoal::Terminate()
 float PatrolGoal::CalculateUtility()
 {
     // Score élevé si pas d'alerte, faible sinon
-    // TODO: Intégrer le Blackboard
+    // TODO: Intégrer le Blackboard pour le ifelse
     return 80.f;
 }
 
 float PatrolGoal::CalculateCost()
 {
+    // Coût faible.
     return 5.f;
 }
 
@@ -85,19 +93,22 @@ void TakeBreakGoal::Execute(float dt)
 
 void TakeBreakGoal::Terminate()
 {
+    Owner->ResetTireness();
     bActive = false;
     bFinished = true;
 }
 
 float TakeBreakGoal::CalculateUtility()
 {
+    // Score modéré, variable selon la fatigue/temps écoulé
     float baseUtility = 10.f;
-    return baseUtility * (std::clamp(BreakDuration, 40.f, 60.f));
+    return std::min(baseUtility * Owner->GetTireness(), 100.f);
 }
 
 float TakeBreakGoal::CalculateCost()
 {
-    float baseCost = 15.f;
+    // Coût faible-modéré (dépend de la distance)
+    float baseCost = 8.f;
     return baseCost * (distToBreakRoom * 0.05f);
 }
 
@@ -108,6 +119,7 @@ void RespondToAlertGoal::Activate()
 {
     bActive = true;
     bFinished = false;
+    Owner->IncreaseTireness(4);
 }
 
 void RespondToAlertGoal::Execute(float dt)
@@ -120,12 +132,15 @@ void RespondToAlertGoal::Terminate()
 
 float RespondToAlertGoal::CalculateUtility()
 {
+    // Très haut score tant que l'alerte est active
+    // TODO: Intégrer le blackboard pour l'alerte et le ifelse
     return 0;
 }
 
 float RespondToAlertGoal::CalculateCost()
 {
-    return 0;
+    // Coût modéré
+    return 15.f;
 }
 
 /**
@@ -145,12 +160,16 @@ void InterceptGoal::Terminate()
 
 float InterceptGoal::CalculateUtility()
 {
+    // Score maximal si l'intrus est proche ou visible
+    if (Owner->IsPlayerVisible())
+        return 250.f;
     return 0;
 }
 
 float InterceptGoal::CalculateCost()
 {
-    return 0;
+    // Coût élevé
+    return 30.f;
 }
 
 /**
@@ -183,10 +202,15 @@ void ReturnGoal::Terminate()
 
 float ReturnGoal::CalculateUtility()
 {
-    return 0;
+    // Score faible mais positif lorsque hors zone
+    if (Owner->IsInRoom())
+        return -10.f;
+    else
+        return 75.f;
 }
 
 float ReturnGoal::CalculateCost()
 {
-    return 0;
+    // Coût faible-modéré
+    return 8.f;
 }

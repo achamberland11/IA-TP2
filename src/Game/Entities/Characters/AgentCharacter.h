@@ -54,6 +54,12 @@ public:
 
     void SetListener(IGameEventListener *l) { Listener = l; }
 
+    int GetTireness() const { return Tireness; }
+    void IncreaseTireness(int amount) { Tireness += amount; }
+    void ResetTireness() { Tireness = 0; }
+    bool IsPlayerVisible() const { return bPlayerVisible; }
+    bool IsInRoom() const { return Room.Contains(GetTransformComponent()->GetPosition()); }
+
 private:
     void LoadTextures();
 
@@ -67,6 +73,9 @@ private:
     std::map<std::string, std::unique_ptr<sf::Sprite> > Sprites;
 
     GAgentController *AgentController = nullptr;
+
+    int Tireness = 0.0f;
+    bool bPlayerVisible = false;
 
     sf::Font Font;
     bool bFontLoaded = false;

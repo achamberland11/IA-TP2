@@ -36,12 +36,12 @@ void GAgentController::Update(float dt)
     /*if (!FSM)
         return;*/
 
-    if (Vision->CanSeeEntity(Player))
+    /*if (Agent->IsPlayerVisible())
     {
-        /*if (FSM->GetCurrentState() != AgentChaseState::Instance())
-            FSM->ChangeState(AgentChaseState::Instance());*/
+        if (FSM->GetCurrentState() != AgentChaseState::Instance())
+            FSM->ChangeState(AgentChaseState::Instance());
     }
-    /*else if (FSM->GetCurrentState() == AgentChaseState::Instance())
+    else if (FSM->GetCurrentState() == AgentChaseState::Instance())
     {
         FSM->ChangeState(AgentReturnState::Instance());
     }*/

@@ -91,7 +91,9 @@ void GAgentCharacter::Update(float dt)
 	// Debug vision
 	if (VisionComponent && AgentController->GetPlayer())
 	{
-		if (VisionComponent->CanSeeEntity(AgentController->GetPlayer())) {
+		bPlayerVisible = VisionComponent->CanSeeEntity(AgentController->GetPlayer());
+
+		if (IsPlayerVisible()) {
 			//std::cout << "Player detected!" << std::endl;
 
 			sf::Vector2f toPlayer = AgentController->GetPlayer()->GetTransformComponent()->GetPosition() - Transform->GetPosition();
@@ -183,7 +185,7 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow& window)
 
 	// if (GetFSM()->isInState(*AgentChaseState::Instance()))
 		// ColorVisionCone = sf::Color::Red;
-	if (VisionComponent->CanSeeEntity(GetAgentController()->GetPlayer()))
+	if (IsPlayerVisible())
 		ColorVisionCone = sf::Color::Red;
 
 	if (VisionComponent)

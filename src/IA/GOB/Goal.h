@@ -25,9 +25,6 @@ public:
     virtual void Execute(float dt) = 0;
     virtual void Terminate() = 0;
 
-    virtual float CalculateUtility() = 0;
-    virtual float CalculateCost() = 0;
-
     float GetEffectiveScore() { return CalculateUtility() - CalculateCost(); }
 
     EGoalType GetType() const { return Type; }
@@ -35,6 +32,9 @@ public:
     bool IsFinished() const { return bFinished; }
 
 protected:
+    virtual float CalculateUtility() = 0;
+    virtual float CalculateCost() = 0;
+
     GAgentCharacter* Owner;
     EGoalType Type;
     float Utility = 0.f;
