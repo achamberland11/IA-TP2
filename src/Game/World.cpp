@@ -80,9 +80,9 @@ void GWorld::CreateMap()
 
 void GWorld::CreateEntities()
 {
-	CreatePlayer();
-	CreateAgents();
 	CreateSwitch();
+	CreatePlayer();
+	//CreateAgents();
 }
 
 void GWorld::CreatePlayer()
@@ -108,7 +108,20 @@ void GWorld::CreateAgents()
 			agent->SetRoom(Rooms[i]);
 			agent->SetPatrolWaypoints(GMap::PixelsPerTile);
 			agent->GetTransformComponent()->SetScale(sf::Vector2f(1.25f, 1.25f));
-			agent->GetTransformComponent()->SetPosition(Rooms[i].Center());
+			
+			sf::Vector2f Pos = Rooms[i].Center();
+			sf::Vector2f SwitchPos = GameSwitch->GetTransformComponent()->GetPosition();
+			if (Rooms[i].Center() == SwitchPos) {
+
+				int j = 0;
+
+				while (Rooms[i].Corners[j] == SwitchPos)
+					j++;
+
+				Pos = Rooms[i].Corners[j];
+			}
+
+			agent->GetTransformComponent()->SetPosition(Pos);
 			Entities.push_back(agent);
 			Controllers.push_back(agent->GetController());
 			Agents.push_back(agent);
@@ -134,22 +147,7 @@ void GWorld::CreateSwitch()
 		row = static_cast<int>(GridPos.y);
 		col = static_cast<int>(GridPos.x);
 
-		bool bOccupied = false;
-
-		for (GEntity* Entity : Entities) {
-			sf::Vector2f EntityPos = Entity->GetTransformComponent()->GetPosition();
-			sf::Vector2f EntityGrid = GetMap()->WorldToGrid(EntityPos);
-
-			int eRow = static_cast<int>(EntityGrid.y);
-			int eCol = static_cast<int>(EntityGrid.x);
-
-			if (eRow == row && eCol == col) {
-				bOccupied = true;
-				break;
-			}
-		}
-
-		if (bOccupied)
+		if (!GetMap()->IsWalkable(row, col))
 			continue;
 
 		bFoundValidPos = true;

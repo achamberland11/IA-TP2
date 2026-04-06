@@ -35,6 +35,17 @@ void GEntity::Render(sf::RenderWindow &window)
 {
     if (!bActive || Transform == nullptr) return;
 
+    // Debug: draw collider bounds
+    sf::FloatRect bounds = this->GetRendererComponent()->GetSprite()->getGlobalBounds();
+    sf::RectangleShape DebugRect;
+    DebugRect.setPosition(sf::Vector2f(bounds.position.x, bounds.position.y));
+    DebugRect.setSize(sf::Vector2f(bounds.size.x, bounds.size.y));
+    DebugRect.setFillColor(sf::Color::Transparent);
+    DebugRect.setOutlineColor(sf::Color::Red);
+    DebugRect.setOutlineThickness(1.f);
+
+    window.draw(DebugRect);
+
     Renderer->Render(window);
 }
 

@@ -75,8 +75,8 @@ std::vector<sf::Vector2f> AStar::FindPath(GMap* map, sf::Vector2f worldStart, sf
 		int currentIndex = map->GetNavIndex(currentNode->row, currentNode->col);
 
 		for (int neighborIndex : map->NavGraph[currentIndex].Neighbors) {
-			int neighborRow = map->NavGraph[neighborIndex].Row;
-			int neighborCol = map->NavGraph[neighborIndex].Col;
+			int neighborRow = map->NavGraph[neighborIndex].row;
+			int neighborCol = map->NavGraph[neighborIndex].col;
 
 			if (!map->IsWalkable(neighborRow, neighborCol))
 				continue;

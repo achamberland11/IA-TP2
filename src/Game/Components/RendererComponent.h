@@ -33,7 +33,6 @@ public:
 
     void Render(sf::RenderWindow& window);
 
-    // sf::Sprite* GetSprite() const { return Sprite; }
     sf::RectangleShape& GetShape() { return Shape; }
     void SetColor(const sf::Color& color) { Color = color; }
     void SetSprite(const sf::Sprite& sprite, std::string name) { Sprite = std::make_unique<sf::Sprite>(sprite); SpriteName = name; }

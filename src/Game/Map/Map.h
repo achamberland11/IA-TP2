@@ -19,8 +19,15 @@
 #include "SFML/Graphics/Texture.hpp"
 
 struct FNavNode {
-	int Row, Col;
+	int row, col;
 	std::vector<int> Neighbors;
+};
+
+struct FGenRoom {
+	int row, col;
+	int width, height;
+	bool bVisited = false;
+	std::vector<int> ConnectedTo;
 };
 
 struct FRoom {
@@ -32,6 +39,16 @@ struct FRoom {
 	bool bIsBreakRoom = false;
 
 	sf::Vector2f Center() const { return Origin + Size / 2.f; }
+	sf::Vector2f CenterTile() const { 
+		sf::Vector2f C = Center();
+
+		int TileSize = 32;
+
+		return sf::Vector2f(
+			std::floor(C.x / TileSize) * TileSize + TileSize / 2.f,
+			std::floor(C.y / TileSize) * TileSize + TileSize / 2.f
+		);
+	}
 
 	//To know in which room the player is currently in.
 	bool Contains(sf::Vector2f Pos) const {
@@ -90,6 +107,9 @@ public:
 		BuildNavGraph();
 	}
 
+	//Procedural Generation
+	void GenerateRooms();
+
 	static const int PixelsPerTile = 32;
 
 private:
@@ -109,4 +129,9 @@ private:
 
 	sf::Vector2f ExitTile;
 	bool bHasExit = false;
+
+	//Procedural Generation
+	void CarveRoom(int row, int col, int width, int height);
+	void CarveCorridor(int r1, int c1, int r2, int c2);
+	void PlaceRoomBorders(int row, int col, int width, int height);
 };

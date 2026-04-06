@@ -3,6 +3,7 @@
 //
 
 #include "Map.h"
+#include <stack>
 
 GMap::GMap(int width, int height)
 {
@@ -92,7 +93,7 @@ FTile GMap::CreateTile(const std::string& rawValue, int row, int col)
 
 void GMap::LoadMap(const std::string mapPath)
 {
-	Map.assign(Height, std::vector<FTile>(Width));
+	/*Map.assign(Height, std::vector<FTile>(Width));
 
 	std::ifstream file(mapPath);
 	if (!file)
@@ -124,8 +125,9 @@ void GMap::LoadMap(const std::string mapPath)
 		float scaleX = static_cast<float>(PixelsPerTile) / textureSize.x;
 		float scaleY = static_cast<float>(PixelsPerTile) / textureSize.y;
 		Sprites[tile]->setScale(sf::Vector2f(scaleX, scaleY));
-	}
+	}*/
 
+	GenerateRooms();
 	DetectRooms();
 	MergeRooms();
 	FindBreakRoom();
@@ -353,7 +355,7 @@ sf::Vector2f GMap::GetRandomPosition()
 		}
 	}
 
-	return Room.Center();
+	return Room.CenterTile();
 }
 
 void GMap::ChangeExitVisibility(bool bIsOn)
@@ -375,6 +377,57 @@ void GMap::ChangeExitVisibility(bool bIsOn)
 	BuildNavGraph();
 }
 
+void GMap::GenerateRooms()
+{
+	Map.assign(Height, std::vector<FTile>(Width));
+
+	for (int row = 0; row < Height; row++)
+		for (int col = 0; col < Width; col++)
+			Map[row][col] = CreateTile("Dirt", row, col);
+
+	std::vector<FGenRoom> GenRooms;
+
+	int attempts = 0;
+
+	while (GenRooms.size() < 15 && attempts < 200) {
+		int w = 4 + rand() % 5;
+		int h = 4 + rand() % 5;
+		int r = 1 + rand() % (Height - h - 2);
+		int c = 1 + rand() % (Width - w - 2);
+
+		bool overlaps = false;
+
+		for(auto& R : GenRooms)
+			if (c < R.col + R.width + 2 && c + w + 2 > R.col &&
+				r < R.row + R.height + 2 && r + h + 2 > R.row) {
+				overlaps = true;
+				break;
+			}
+
+		if (!overlaps)
+			GenRooms.push_back({ r, c, w, h });
+
+		attempts++;
+	}
+
+	for (auto& R : GenRooms)
+		CarveRoom(R.row, R.col, R.width, R.height);
+
+	/*GenRooms[0].bVisited = true;
+	std::stack<int> Stack;
+	Stack.push(0);*/
+
+	for (auto& [tile, texture] : Textures)
+	{
+		Sprites[tile] = std::make_unique<sf::Sprite>(texture);
+
+		sf::Vector2u textureSize = texture.getSize();
+		float scaleX = static_cast<float>(PixelsPerTile) / textureSize.x;
+		float scaleY = static_cast<float>(PixelsPerTile) / textureSize.y;
+		Sprites[tile]->setScale(sf::Vector2f(scaleX, scaleY));
+	}
+}
+
 int GMap::GetRand(int max, int chance) const
 {
 	if (rand() % 100 <= chance)
@@ -392,8 +445,8 @@ void GMap::BuildNavGraph()
 
 	for (int r = 0; r < Height; r++)
 		for (int c = 0; c < Width; c++) {
-			NavGraph[GetNavIndex(r, c)].Row = r;
-			NavGraph[GetNavIndex(r, c)].Col = c;
+			NavGraph[GetNavIndex(r, c)].row = r;
+			NavGraph[GetNavIndex(r, c)].col = c;
 
 			if (!IsWalkable(r, c))
 				continue;
@@ -407,4 +460,19 @@ void GMap::BuildNavGraph()
 
 			}
 		}
+}
+
+void GMap::CarveRoom(int row, int col, int width, int height)
+{
+	for (int r = row; r < row + height; r++)
+		for (int c = col; c < col + width; c++)
+			Map[r][c] = CreateTile("F_M", r, c);
+}
+
+void GMap::CarveCorridor(int r1, int c1, int r2, int c2)
+{
+}
+
+void GMap::PlaceRoomBorders(int row, int col, int width, int height)
+{
 }
