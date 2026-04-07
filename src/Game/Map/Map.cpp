@@ -455,7 +455,7 @@ void GMap::GenerateRooms()
 		int r2 = GenRooms[next].row + GenRooms[next].height / 2.f;
 		int c2 = GenRooms[next].col + GenRooms[next].width / 2.f;
 
-		CarveCorridor(r1, c1, r2, c2);
+		//CarveCorridor(r1, c1, r2, c2);
 	}
 
 	for (auto& R : GenRooms)
@@ -558,38 +558,50 @@ void GMap::PlaceRoomBorders(int row, int col, int width, int height)
 			std::string tileName = Map[r][c].TextureID;
 
 			if (tileName == "F_UL") {
-				Map[r - 2][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_UL], r - 2, c - 1);
-				Map[r - 2][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UTop], r - 2, c);
-				Map[r - 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UBottom], r - 1, c);
-				Map[r - 1][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r - 1, c - 1);
-				Map[r][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r, c - 1);
+				Map[r - 2][c - 1] = CreateTile(StoneWallTileNames[EWallTileType::E_UL], r - 2, c - 1);
+				Map[r - 2][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UTop]), r - 2, c);
+				Map[r - 1][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UBottom]), r - 1, c);
+				Map[r - 1][c - 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_L]), r - 1, c - 1);
+				Map[r][c - 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_L]), r, c - 1);
 			}
 			else if (tileName == "F_UR") {
-				Map[r - 2][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_UR], r - 2, c + 1);
-				Map[r - 2][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UTop], r - 2, c);
-				Map[r - 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UBottom], r - 1, c);
-				Map[r - 1][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r - 1, c + 1);
-				Map[r][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r, c + 1);
+				Map[r - 2][c + 1] = CreateTile(StoneWallTileNames[EWallTileType::E_UR], r - 2, c + 1);
+				Map[r - 2][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UTop]), r - 2, c);
+				Map[r - 1][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UBottom]), r - 1, c);
+				Map[r - 1][c + 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_R]), r - 1, c + 1);
+				Map[r][c + 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_R]), r, c + 1);
 			}
 			else if (tileName == "F_BL") {
-				Map[r + 1][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_BL], r + 1, c - 1);
-				Map[r][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r, c - 1);
-				Map[r + 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_B], r + 1, c);
+				Map[r + 1][c - 1] = CreateTile(StoneWallTileNames[EWallTileType::E_BL], r + 1, c - 1);
+				Map[r][c - 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_L]), r, c - 1);
+				Map[r + 1][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_B]), r + 1, c);
 			}
 			else if (tileName == "F_BR") {
-				Map[r + 1][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_BR], r + 1, c + 1);
-				Map[r][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r, c + 1);
-				Map[r + 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_B], r + 1, c);
+				Map[r + 1][c + 1] = CreateTile(StoneWallTileNames[EWallTileType::E_BR], r + 1, c + 1);
+				Map[r][c + 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_R]), r, c + 1);
+				Map[r + 1][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_B]), r + 1, c);
 			}
 			else if (tileName == "F_U" && Map[r - 1][c].TextureID.find("F_J") == std::string::npos) {
-				Map[r - 2][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UTop], r - 2, c);
-				Map[r - 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UBottom], r - 1, c);
+				Map[r - 2][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UTop]), r - 2, c);
+				Map[r - 1][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UBottom]), r - 1, c);
 			}
 			else if (tileName == "F_B" && Map[r + 1][c].TextureID.find("F_J") == std::string::npos)
-				Map[r + 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_B], r + 1, c);
+				Map[r + 1][c] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_B]), r + 1, c);
 			else if (tileName == "F_L" && Map[r][c - 1].TextureID.find("F_J") == std::string::npos)
-				Map[r][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r, c - 1);
+				Map[r][c - 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_L]), r, c - 1);
 			else if (tileName == "F_R" && Map[r][c + 1].TextureID.find("F_J") == std::string::npos)
-				Map[r][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r, c + 1);
+				Map[r][c + 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_R]), r, c + 1);
 		}
+}
+
+std::string GMap::GetRandomizedImage(std::string imagesName)
+{
+	std::vector<std::string> options;
+	std::stringstream ss(imagesName);
+	std::string token;
+
+	while (std::getline(ss, token, '|'))
+		options.push_back(token);
+
+	return options[rand() % options.size()];
 }

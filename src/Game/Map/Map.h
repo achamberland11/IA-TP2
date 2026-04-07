@@ -133,24 +133,24 @@ private:
 
 	std::map<EWallTileType, std::string> StoneWallTileNames = {
 		{EWallTileType::E_UL, "row-4-column-6"},
-		{EWallTileType::E_UTop, "row-9-column-4"},
-		{EWallTileType::E_UBottom, "row-10-column-4"},
+		{EWallTileType::E_UTop, "row-9-column-3|row-9-column-4|row-9-column-5|row-9-column-6|row-9-column-7|row-9-column-8"},
+		{EWallTileType::E_UBottom, "row-10-column-1|row-10-column-2|row-10-column-3|row-10-column-4|row-10-column-5|row-10-column-6|row-10-column-7|row-10-column-10|row-10-column-11"},
 		{EWallTileType::E_UR, "row-4-column-7"},
-		{EWallTileType::E_L, "row-4-column-3"},
-		{EWallTileType::E_R, "row-4-column-1"},
-		{EWallTileType::E_B, "row-3-column-2"},
+		{EWallTileType::E_L, "row-4-column-3|row-8-column-10|row-8-column-12|row-9-column-10|row-9-column-12"},
+		{EWallTileType::E_R, "row-4-column-1|row-8-column-9|row-8-column-11|row-9-column-9|row-9-column-11"},
+		{EWallTileType::E_B, "row-3-column-2|row-8-column-3|row-8-column-4|row-8-column-5|row-8-column-6|row-8-column-7|row-8-column-8"},
 		{EWallTileType::E_BL, "row-5-column-6"},
 		{EWallTileType::E_BR, "row-5-column-7"}
 	};
 
 	std::map<EWallTileType, std::string> ClayWallTileNames = {
 		{EWallTileType::E_UL, "row-14-column-6"},
-		{EWallTileType::E_UTop, "row-19-column-3"},
-		{EWallTileType::E_UBottom, "row-20-column-2"},
+		{EWallTileType::E_UTop, "row-19-column-3|row-19-column-4|row-19-column-5"},
+		{EWallTileType::E_UBottom, "row-20-column-1|row-20-column-2|row-20-column-3|row-20-column-4|row-20-column-5"},
 		{EWallTileType::E_UR, "row-14-column-7"},
-		{EWallTileType::E_L, "row-14-column-3"},
-		{EWallTileType::E_R, "row-14-column-1"},
-		{EWallTileType::E_B, "row-18-column-7"},
+		{EWallTileType::E_L, "row-14-column-3|row-18-column-10|row-18-column-12|row-19-column-12"},
+		{EWallTileType::E_R, "row-14-column-1|row-18-column-9|row-18-column-11|row-19-column-11"},
+		{EWallTileType::E_B, "row-18-column-6|row-18-column-7|row-18-column-8"},
 		{EWallTileType::E_BL, "row-15-column-6"},
 		{EWallTileType::E_BR, "row-15-column-7"}
 	};
@@ -165,4 +165,5 @@ private:
 	void CarveRoom(int row, int col, int width, int height);
 	void CarveCorridor(int r1, int c1, int r2, int c2);
 	void PlaceRoomBorders(int row, int col, int width, int height);
+	std::string GetRandomizedImage(std::string imagesName);
 };
