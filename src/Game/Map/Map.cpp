@@ -45,6 +45,7 @@ FTile GMap::CreateTile(const std::string& rawValue, int row, int col)
 
 	tile.TextureID = base;
 
+	//Exit
 	if (rawValue.find("row-10-column-8") == 0) {
 		bHasExit = true;
 		ExitTile = sf::Vector2f(row, col);
@@ -406,12 +407,18 @@ void GMap::GenerateRooms()
 
 		bool overlaps = false;
 
-		for (auto& R : GenRooms)
+		for (auto& R : GenRooms) {
 			if (c < R.col + R.width + 2 && c + w + 2 > R.col &&
 				r < R.row + R.height + 2 && r + h + 2 > R.row) {
 				overlaps = true;
 				break;
 			}
+
+			if (GetRand(1, 75) == 0)
+				R.WallType = EWallType::Stone;
+			else 
+				R.WallType = EWallType::Clay;
+		}
 
 		if (!overlaps)
 			GenRooms.push_back({ r, c, w, h });
@@ -419,15 +426,40 @@ void GMap::GenerateRooms()
 		attempts++;
 	}
 
-	for (auto& R : GenRooms) {
+	for (auto& R : GenRooms) 
 		CarveRoom(R.row, R.col, R.width, R.height);
-		//CarveCorridor(R.row, R.col, R.col + R.width, R.row + R.height);
-		PlaceRoomBorders(R.row, R.col, R.width, R.height);
+
+	GenRooms[0].bVisited = true;
+	std::stack<int> Stack;
+	Stack.push(0);
+
+	while (!Stack.empty()) {
+		int cur = Stack.top();
+		std::vector<int> unvisited;
+
+		for (int i = 0; i < GenRooms.size(); i++)
+			if (!GenRooms[i].bVisited)
+				unvisited.push_back(i);
+
+		if (unvisited.empty()) {
+			Stack.pop();
+			continue;
+		}
+
+		int next = unvisited[rand() % unvisited.size()];
+		GenRooms[next].bVisited = true;
+		Stack.push(next);
+
+		int r1 = GenRooms[cur].row + GenRooms[cur].height / 2.f;
+		int c1 = GenRooms[cur].col + GenRooms[cur].width / 2.f;
+		int r2 = GenRooms[next].row + GenRooms[next].height / 2.f;
+		int c2 = GenRooms[next].col + GenRooms[next].width / 2.f;
+
+		CarveCorridor(r1, c1, r2, c2);
 	}
 
-	/*GenRooms[0].bVisited = true;
-	std::stack<int> Stack;
-	Stack.push(0);*/
+	for (auto& R : GenRooms)
+		PlaceRoomBorders(R.row, R.col, R.width, R.height);
 
 	for (auto& [tile, texture] : Textures)
 	{
@@ -469,7 +501,6 @@ void GMap::BuildNavGraph()
 
 				if (IsWalkable(neighborRow, neighborCol))
 					NavGraph[GetNavIndex(r, c)].Neighbors.push_back(GetNavIndex(neighborRow, neighborCol));
-
 			}
 		}
 }
@@ -527,38 +558,38 @@ void GMap::PlaceRoomBorders(int row, int col, int width, int height)
 			std::string tileName = Map[r][c].TextureID;
 
 			if (tileName == "F_UL") {
-				Map[r - 2][c - 1] = CreateTile("row-4-column-6", r - 2, c - 1);
-				Map[r - 2][c] = CreateTile("row-9-column-4", r - 2, c);
-				Map[r - 1][c] = CreateTile("row-10-column-4", r - 1, c);
-				Map[r - 1][c - 1] = CreateTile("row-4-column-3", r - 1, c - 1);
-				Map[r][c - 1] = CreateTile("row-4-column-3", r, c - 1);
+				Map[r - 2][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_UL], r - 2, c - 1);
+				Map[r - 2][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UTop], r - 2, c);
+				Map[r - 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UBottom], r - 1, c);
+				Map[r - 1][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r - 1, c - 1);
+				Map[r][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r, c - 1);
 			}
 			else if (tileName == "F_UR") {
-				Map[r - 2][c + 1] = CreateTile("row-4-column-7", r - 2, c + 1);
-				Map[r - 2][c] = CreateTile("row-9-column-4", r - 2, c);
-				Map[r - 1][c] = CreateTile("row-10-column-4", r - 1, c);
-				Map[r - 1][c + 1] = CreateTile("row-4-column-1", r - 1, c + 1);
-				Map[r][c + 1] = CreateTile("row-4-column-1", r, c + 1);
+				Map[r - 2][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_UR], r - 2, c + 1);
+				Map[r - 2][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UTop], r - 2, c);
+				Map[r - 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UBottom], r - 1, c);
+				Map[r - 1][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r - 1, c + 1);
+				Map[r][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r, c + 1);
 			}
 			else if (tileName == "F_BL") {
-				Map[r + 1][c - 1] = CreateTile("row-5-column-6", r + 1, c - 1);
-				Map[r][c - 1] = CreateTile("row-4-column-3", r, c - 1);
-				Map[r + 1][c] = CreateTile("row-3-column-2", r + 1, c);
+				Map[r + 1][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_BL], r + 1, c - 1);
+				Map[r][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r, c - 1);
+				Map[r + 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_B], r + 1, c);
 			}
 			else if (tileName == "F_BR") {
-				Map[r + 1][c + 1] = CreateTile("row-5-column-7", r + 1, c + 1);
-				Map[r + 1][c] = CreateTile("row-3-column-2", r + 1, c);
-				Map[r][c + 1] = CreateTile("row-4-column-1", r, c + 1);
+				Map[r + 1][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_BR], r + 1, c + 1);
+				Map[r][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r, c + 1);
+				Map[r + 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_B], r + 1, c);
 			}
-			else if (tileName == "F_U" && Map[r - 1][c].TextureID != "F_J") {
-				Map[r - 2][c] = CreateTile("row-9-column-4", r - 2, c);
-				Map[r - 1][c] = CreateTile("row-10-column-4", r - 1, c);
+			else if (tileName == "F_U" && Map[r - 1][c].TextureID.find("F_J") == std::string::npos) {
+				Map[r - 2][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UTop], r - 2, c);
+				Map[r - 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_UBottom], r - 1, c);
 			}
-			else if (tileName == "F_B" && Map[r + 1][c].TextureID != "F_J")
-				Map[r + 1][c] = CreateTile("row-3-column-2", r + 1, c);
-			else if (tileName == "F_L" && Map[r][c - 1].TextureID != "F_J")
-				Map[r][c - 1] = CreateTile("row-4-column-3", r, c - 1);
-			else if (tileName == "F_R" && Map[r][c + 1].TextureID != "F_J")
-				Map[r][c + 1] = CreateTile("row-4-column-1", r, c + 1);
+			else if (tileName == "F_B" && Map[r + 1][c].TextureID.find("F_J") == std::string::npos)
+				Map[r + 1][c] = CreateTile(ClayWallTileNames[EWallTileType::E_B], r + 1, c);
+			else if (tileName == "F_L" && Map[r][c - 1].TextureID.find("F_J") == std::string::npos)
+				Map[r][c - 1] = CreateTile(ClayWallTileNames[EWallTileType::E_L], r, c - 1);
+			else if (tileName == "F_R" && Map[r][c + 1].TextureID.find("F_J") == std::string::npos)
+				Map[r][c + 1] = CreateTile(ClayWallTileNames[EWallTileType::E_R], r, c + 1);
 		}
 }

@@ -13,6 +13,12 @@ enum class ETileType {
 	Obstacle
 };
 
+enum class EWallTileType {
+	E_UL, E_UR, E_BL, E_BR,
+	E_L, E_R,
+	E_UTop, E_UBottom, E_B
+};
+
 struct FTile {
 	ETileType Type;
 	std::string TextureID;

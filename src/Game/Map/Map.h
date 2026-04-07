@@ -18,6 +18,11 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
+enum class EWallType {
+	Stone, 
+	Clay
+};
+
 struct FNavNode {
 	int row, col;
 	std::vector<int> Neighbors;
@@ -26,6 +31,7 @@ struct FNavNode {
 struct FGenRoom {
 	int row, col;
 	int width, height;
+	EWallType WallType;
 	bool bVisited = false;
 	std::vector<int> ConnectedTo;
 };
@@ -124,6 +130,30 @@ private:
 	int GetRand(int max, int chance) const;
 
 	void BuildNavGraph();
+
+	std::map<EWallTileType, std::string> StoneWallTileNames = {
+		{EWallTileType::E_UL, "row-4-column-6"},
+		{EWallTileType::E_UTop, "row-9-column-4"},
+		{EWallTileType::E_UBottom, "row-10-column-4"},
+		{EWallTileType::E_UR, "row-4-column-7"},
+		{EWallTileType::E_L, "row-4-column-3"},
+		{EWallTileType::E_R, "row-4-column-1"},
+		{EWallTileType::E_B, "row-3-column-2"},
+		{EWallTileType::E_BL, "row-5-column-6"},
+		{EWallTileType::E_BR, "row-5-column-7"}
+	};
+
+	std::map<EWallTileType, std::string> ClayWallTileNames = {
+		{EWallTileType::E_UL, "row-14-column-6"},
+		{EWallTileType::E_UTop, "row-19-column-3"},
+		{EWallTileType::E_UBottom, "row-20-column-2"},
+		{EWallTileType::E_UR, "row-14-column-7"},
+		{EWallTileType::E_L, "row-14-column-3"},
+		{EWallTileType::E_R, "row-14-column-1"},
+		{EWallTileType::E_B, "row-18-column-7"},
+		{EWallTileType::E_BL, "row-15-column-6"},
+		{EWallTileType::E_BR, "row-15-column-7"}
+	};
 
 	std::vector<FRoom> Rooms;
 	FRoom* BreakRoom = nullptr;
