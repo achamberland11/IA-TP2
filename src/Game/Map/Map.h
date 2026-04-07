@@ -109,6 +109,7 @@ public:
 
 	//Procedural Generation
 	void GenerateRooms();
+	sf::Vector2f GetPlayerSpawnPos() { return Rooms[0].Corners[0] + sf::Vector2f(PixelsPerTile / 2.f, PixelsPerTile / 2.f); }
 
 	static const int PixelsPerTile = 32;
 

@@ -261,7 +261,7 @@ void GMap::MergeRooms()
 					std::sort(Rooms[i].Corners.begin(), Rooms[i].Corners.end(),
 						[&Center](const sf::Vector2f& a, const sf::Vector2f& b) {
 							return std::atan2(a.y - Center.y, a.x - Center.x) <
-								   std::atan2(b.y - Center.y, b.x - Center.x);
+								std::atan2(b.y - Center.y, b.x - Center.x);
 						});
 
 					Rooms.erase(Rooms.begin() + j);
@@ -389,15 +389,24 @@ void GMap::GenerateRooms()
 
 	int attempts = 0;
 
-	while (GenRooms.size() < 15 && attempts < 200) {
+	while (GenRooms.size() < 10 && attempts < 200) {
 		int w = 4 + rand() % 5;
 		int h = 4 + rand() % 5;
-		int r = 1 + rand() % (Height - h - 2);
-		int c = 1 + rand() % (Width - w - 2);
+
+		int rowRange = Height - h - 4;
+		int colRange = Width - w - 3;
+
+		if (rowRange <= 0 || colRange <= 0) {
+			attempts++;
+			continue;
+		}
+
+		int r = 3 + rand() % rowRange;
+		int c = 2 + rand() % colRange;
 
 		bool overlaps = false;
 
-		for(auto& R : GenRooms)
+		for (auto& R : GenRooms)
 			if (c < R.col + R.width + 2 && c + w + 2 > R.col &&
 				r < R.row + R.height + 2 && r + h + 2 > R.row) {
 				overlaps = true;
@@ -410,8 +419,11 @@ void GMap::GenerateRooms()
 		attempts++;
 	}
 
-	for (auto& R : GenRooms)
+	for (auto& R : GenRooms) {
 		CarveRoom(R.row, R.col, R.width, R.height);
+		//CarveCorridor(R.row, R.col, R.col + R.width, R.row + R.height);
+		PlaceRoomBorders(R.row, R.col, R.width, R.height);
+	}
 
 	/*GenRooms[0].bVisited = true;
 	std::stack<int> Stack;
@@ -464,15 +476,89 @@ void GMap::BuildNavGraph()
 
 void GMap::CarveRoom(int row, int col, int width, int height)
 {
+	std::string tileName;
+
 	for (int r = row; r < row + height; r++)
-		for (int c = col; c < col + width; c++)
-			Map[r][c] = CreateTile("F_M", r, c);
+		for (int c = col; c < col + width; c++) {
+			if (r == row) {
+				if (c == col)
+					tileName = "F_UL";
+				else if (c == col + width - 1)
+					tileName = "F_UR";
+				else
+					tileName = "F_U";
+			}
+			else if (r == row + height - 1) {
+				if (c == col)
+					tileName = "F_BL";
+				else if (c == col + width - 1)
+					tileName = "F_BR";
+				else
+					tileName = "F_B";
+			}
+			else if (r > row && r < row + height - 1) {
+				if (c == col)
+					tileName = "F_L";
+				else if (c == col + width - 1)
+					tileName = "F_R";
+				else
+					tileName = "F_M";
+			}
+
+			Map[r][c] = CreateTile(tileName, r, c);
+		}
 }
 
 void GMap::CarveCorridor(int r1, int c1, int r2, int c2)
 {
+	for(int c = std::min(c1, c2); c <= std::max(c1, c2); c++)
+		if(Map[r1][c].Type != ETileType::Floor)
+			Map[r1][c] = CreateTile("F_J", r1, c);
+
+	for (int r = std::min(r1, r2); r <= std::max(r1, r2); r++)
+		if (Map[r][c2].Type != ETileType::Floor)
+			Map[r][c2] = CreateTile("F_J", r, c2);
 }
 
 void GMap::PlaceRoomBorders(int row, int col, int width, int height)
 {
+	for (int r = row; r < row + height; r++)
+		for (int c = col; c < col + width; c++) {
+			std::string tileName = Map[r][c].TextureID;
+
+			if (tileName == "F_UL") {
+				Map[r - 2][c - 1] = CreateTile("row-4-column-6", r - 2, c - 1);
+				Map[r - 2][c] = CreateTile("row-9-column-4", r - 2, c);
+				Map[r - 1][c] = CreateTile("row-10-column-4", r - 1, c);
+				Map[r - 1][c - 1] = CreateTile("row-4-column-3", r - 1, c - 1);
+				Map[r][c - 1] = CreateTile("row-4-column-3", r, c - 1);
+			}
+			else if (tileName == "F_UR") {
+				Map[r - 2][c + 1] = CreateTile("row-4-column-7", r - 2, c + 1);
+				Map[r - 2][c] = CreateTile("row-9-column-4", r - 2, c);
+				Map[r - 1][c] = CreateTile("row-10-column-4", r - 1, c);
+				Map[r - 1][c + 1] = CreateTile("row-4-column-1", r - 1, c + 1);
+				Map[r][c + 1] = CreateTile("row-4-column-1", r, c + 1);
+			}
+			else if (tileName == "F_BL") {
+				Map[r + 1][c - 1] = CreateTile("row-5-column-6", r + 1, c - 1);
+				Map[r][c - 1] = CreateTile("row-4-column-3", r, c - 1);
+				Map[r + 1][c] = CreateTile("row-3-column-2", r + 1, c);
+			}
+			else if (tileName == "F_BR") {
+				Map[r + 1][c + 1] = CreateTile("row-5-column-7", r + 1, c + 1);
+				Map[r + 1][c] = CreateTile("row-3-column-2", r + 1, c);
+				Map[r][c + 1] = CreateTile("row-4-column-1", r, c + 1);
+			}
+			else if (tileName == "F_U" && Map[r - 1][c].TextureID != "F_J") {
+				Map[r - 2][c] = CreateTile("row-9-column-4", r - 2, c);
+				Map[r - 1][c] = CreateTile("row-10-column-4", r - 1, c);
+			}
+			else if (tileName == "F_B" && Map[r + 1][c].TextureID != "F_J")
+				Map[r + 1][c] = CreateTile("row-3-column-2", r + 1, c);
+			else if (tileName == "F_L" && Map[r][c - 1].TextureID != "F_J")
+				Map[r][c - 1] = CreateTile("row-4-column-3", r, c - 1);
+			else if (tileName == "F_R" && Map[r][c + 1].TextureID != "F_J")
+				Map[r][c + 1] = CreateTile("row-4-column-1", r, c + 1);
+		}
 }

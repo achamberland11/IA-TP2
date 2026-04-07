@@ -82,13 +82,14 @@ void GWorld::CreateEntities()
 {
 	CreateSwitch();
 	CreatePlayer();
-	//CreateAgents();
+	CreateAgents();
 }
 
 void GWorld::CreatePlayer()
 {
-	GPlayerCharacter *player = new GPlayerCharacter();
+	GPlayerCharacter* player = new GPlayerCharacter();
 	player->SetListener(Listener);
+	player->GetTransformComponent()->SetPosition(GetMap()->GetPlayerSpawnPos());
 	player->GetTransformComponent()->SetScale(sf::Vector2f(2, 2));
 	Entities.push_back(player);
 	Controllers.push_back(player->GetController());
