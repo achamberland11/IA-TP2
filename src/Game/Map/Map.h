@@ -23,6 +23,10 @@ enum class EWallType {
 	Clay
 };
 
+enum class ECorridorTileType {
+	Horizontal, Vertical, Corner
+};
+
 struct FNavNode {
 	int row, col;
 	std::vector<int> Neighbors;
@@ -67,6 +71,10 @@ struct FRoom {
 
 		return false;
 	}
+};
+
+struct FCorridor {
+	std::multimap<ECorridorTileType, sf::Vector2f> Tiles;
 };
 
 class GMap : public GObject {
@@ -157,6 +165,7 @@ private:
 
 	std::vector<FRoom> Rooms;
 	FRoom* BreakRoom = nullptr;
+	std::vector<FCorridor> Corridors;
 
 	sf::Vector2f ExitTile;
 	bool bHasExit = false;
@@ -165,5 +174,8 @@ private:
 	void CarveRoom(int row, int col, int width, int height);
 	void CarveCorridor(int r1, int c1, int r2, int c2);
 	void PlaceRoomBorders(int row, int col, int width, int height);
+	void PlaceCorridorBorders(const FCorridor& Corridor);
 	std::string GetRandomizedImage(std::string imagesName);
+
+	sf::Font DebugFont;
 };

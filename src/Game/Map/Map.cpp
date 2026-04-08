@@ -17,6 +17,7 @@ GMap::GMap(int width, int height)
 	LoadFolder("Assets/Images/Tileset/Mix");
 	LoadFolder("Assets/Images/Tileset/Floor");
 	LoadFolder("Assets/Images/Objects");
+	DebugFont.openFromFile("Assets/Fonts/Roboto/Roboto.ttf");
 }
 
 void GMap::LoadFolder(const std::string folderPath)
@@ -178,6 +179,25 @@ void GMap::Display(sf::RenderWindow& window)
 			}
 		}
 	}
+
+	for (auto& Corridor : Corridors)
+		for (auto& [type, pos] : Corridor.Tiles)
+		{
+			std::string label;
+			switch (type)
+			{
+			case ECorridorTileType::Horizontal: label = "H"; break;
+			case ECorridorTileType::Vertical:   label = "V"; break;
+			case ECorridorTileType::Corner:     label = "C"; break;
+			}
+
+			sf::Text text(DebugFont);
+			text.setString(label);
+			text.setCharacterSize(10);
+			text.setFillColor(sf::Color::Red);
+			text.setPosition(sf::Vector2f(pos.y * PixelsPerTile + 2, pos.x * PixelsPerTile + 2));
+			window.draw(text);
+		}
 }
 
 bool GMap::IsWalkable(int row, int col)
@@ -416,7 +436,7 @@ void GMap::GenerateRooms()
 
 			if (GetRand(1, 75) == 0)
 				R.WallType = EWallType::Stone;
-			else 
+			else
 				R.WallType = EWallType::Clay;
 		}
 
@@ -426,7 +446,7 @@ void GMap::GenerateRooms()
 		attempts++;
 	}
 
-	for (auto& R : GenRooms) 
+	for (auto& R : GenRooms)
 		CarveRoom(R.row, R.col, R.width, R.height);
 
 	GenRooms[0].bVisited = true;
@@ -455,11 +475,14 @@ void GMap::GenerateRooms()
 		int r2 = GenRooms[next].row + GenRooms[next].height / 2.f;
 		int c2 = GenRooms[next].col + GenRooms[next].width / 2.f;
 
-		//CarveCorridor(r1, c1, r2, c2);
+		CarveCorridor(r1, c1, r2, c2);
 	}
 
 	for (auto& R : GenRooms)
 		PlaceRoomBorders(R.row, R.col, R.width, R.height);
+
+	for (auto& C : Corridors)
+		PlaceCorridorBorders(C);
 
 	for (auto& [tile, texture] : Textures)
 	{
@@ -542,13 +565,50 @@ void GMap::CarveRoom(int row, int col, int width, int height)
 
 void GMap::CarveCorridor(int r1, int c1, int r2, int c2)
 {
-	for(int c = std::min(c1, c2); c <= std::max(c1, c2); c++)
-		if(Map[r1][c].Type != ETileType::Floor)
+	FCorridor Corridor;
+
+	for (int c = std::min(c1, c2); c <= std::max(c1, c2); c++) {
+		if (c == c2)
+			continue;
+
+		if (Map[r1][c].Type != ETileType::Floor) {
+			if (Map[r1 - 1][c].TextureID.find("F_J") != std::string::npos ||
+				Map[r1 + 1][c].TextureID.find("F_J") != std::string::npos)
+				continue;
+
 			Map[r1][c] = CreateTile("F_J", r1, c);
 
-	for (int r = std::min(r1, r2); r <= std::max(r1, r2); r++)
-		if (Map[r][c2].Type != ETileType::Floor)
+			bool bNearFloorHorizontality = Map[r1 - 2][c].Type == ETileType::Floor ||Map[r1 + 1][c].Type == ETileType::Floor;
+
+			Corridor.Tiles.insert({ bNearFloorHorizontality ? ECorridorTileType::Corner : ECorridorTileType::Horizontal,
+				sf::Vector2f(r1, c) });
+		}
+	}
+
+	for (int r = std::min(r1, r2); r <= std::max(r1, r2); r++) {
+		if (r == r1)
+			continue;
+
+		if (Map[r][c2].Type != ETileType::Floor) {
+			if (Map[r][c2 - 1].TextureID.find("F_J") != std::string::npos ||
+				Map[r][c2 + 1].TextureID.find("F_J") != std::string::npos)
+				continue;
+
 			Map[r][c2] = CreateTile("F_J", r, c2);
+
+			bool bNearFloorHorizontality =  Map[r][c2 - 1].Type == ETileType::Floor || Map[r][c2 + 1].Type == ETileType::Floor;
+
+				Corridor.Tiles.insert({ bNearFloorHorizontality ? ECorridorTileType::Corner : ECorridorTileType::Vertical, 
+					sf::Vector2f(r, c2) });
+		}
+	}
+
+	if (Map[r1][c2].Type != ETileType::Floor) {
+		Map[r1][c2] = CreateTile("F_J", r1, c2);
+		Corridor.Tiles.insert({ ECorridorTileType::Corner, sf::Vector2f(r1, c2) });
+	}
+
+	Corridors.push_back(Corridor);
 }
 
 void GMap::PlaceRoomBorders(int row, int col, int width, int height)
@@ -592,6 +652,26 @@ void GMap::PlaceRoomBorders(int row, int col, int width, int height)
 			else if (tileName == "F_R" && Map[r][c + 1].TextureID.find("F_J") == std::string::npos)
 				Map[r][c + 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_R]), r, c + 1);
 		}
+}
+
+void GMap::PlaceCorridorBorders(const FCorridor& Corridor)
+{
+	for (auto& Tile : Corridor.Tiles) {
+		if (Tile.first == ECorridorTileType::Horizontal) {
+			if (Map[Tile.second.x - 1][Tile.second.y].Type != ETileType::Floor)
+				Map[Tile.second.x - 1][Tile.second.y] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_UTop]), Tile.second.x - 1, Tile.second.y);
+
+			if (Map[Tile.second.x + 1][Tile.second.y].Type != ETileType::Floor)
+				Map[Tile.second.x + 1][Tile.second.y] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_B]), Tile.second.x + 1, Tile.second.y);
+		}
+		else if (Tile.first == ECorridorTileType::Vertical) {
+			if (Map[Tile.second.x][Tile.second.y - 1].Type != ETileType::Floor)
+				Map[Tile.second.x][Tile.second.y - 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_L]), Tile.second.x, Tile.second.y - 1);
+
+			if (Map[Tile.second.x][Tile.second.y + 1].Type != ETileType::Floor)
+				Map[Tile.second.x][Tile.second.y + 1] = CreateTile(GetRandomizedImage(StoneWallTileNames[EWallTileType::E_R]), Tile.second.x, Tile.second.y + 1);
+		}
+	}
 }
 
 std::string GMap::GetRandomizedImage(std::string imagesName)
