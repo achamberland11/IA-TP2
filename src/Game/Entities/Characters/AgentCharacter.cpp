@@ -162,11 +162,6 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
             window.draw(goalText);
         }
     }
-
-
-    if (bFontLoaded)
-    {
-    }
 }
 
 void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
@@ -176,7 +171,6 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
 
     sf::Vector2f from = Transform->GetPosition();
     sf::Vector2f prevDir(0.f, 0.f);
-
 
     for (int i = WaypointIndex; i < Waypoints.size(); i++)
     {
@@ -314,9 +308,29 @@ void GAgentCharacter::SetupVisionComponent(float range, float angle)
 
 void GAgentCharacter::SetPatrolWaypoints(int PixelsPerTile)
 {
-    if (bHasRoom)
-        for (sf::Vector2f Corner: Room.Corners)
-            PatrolPoints.push_back(Corner);
+    int Offset = PixelsPerTile / 2.f;
+
+    if (bHasRoom) {
+        PatrolPoints.push_back(sf::Vector2f(
+            Room.Origin.x + Offset,
+            Room.Origin.y + Offset
+        ));
+
+        PatrolPoints.push_back(sf::Vector2f(
+            Room.Origin.x + Room.Size.x - Offset,
+            Room.Origin.y + Offset
+        ));
+
+        PatrolPoints.push_back(sf::Vector2f(
+            Room.Origin.x + Room.Size.x - Offset,
+            Room.Origin.y + Room.Size.y - Offset
+        ));
+
+        PatrolPoints.push_back(sf::Vector2f(
+            Room.Origin.x + Offset,
+            Room.Origin.y + Room.Size.y - Offset
+        ));
+    }
 
     /*PatrolPoints.push_back(sf::Vector2f(1000.f, 550.f));
     PatrolPoints.push_back(sf::Vector2f(975.f, 100.f));

@@ -14,9 +14,10 @@ enum class ETileType {
 };
 
 enum class EWallTileType {
-	E_UL, E_UR, E_BL, E_BR,
-	E_L, E_R,
-	E_UTop, E_UBottom, E_B
+	IE_UL, IE_UR, IE_BL, IE_BR,
+	IE_L, IE_R,
+	IE_UTop, IE_UBottom, IE_B,
+	EE_UL, EE_UR, EE_BL, EE_BR
 };
 
 struct FTile {
