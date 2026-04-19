@@ -125,22 +125,22 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
 
     if (bFontLoaded)
     {
-        std::string textTireness = "Fatigue: " + std::to_string(Tireness);
+        std::string textTiredness = "Fatigue: " + std::to_string(Tiredness);
 
-        sf::Text tirenessText(Font);
+        sf::Text tirednessText(Font);
 
-        tirenessText.setString(textTireness);
-        tirenessText.setCharacterSize(12);
-        tirenessText.setFillColor(sf::Color::White);
-        tirenessText.setStyle(sf::Text::Bold);
-        tirenessText.setOutlineColor(sf::Color::Black);
-        tirenessText.setOutlineThickness(1.5f);
-        tirenessText.setOrigin(tirenessText.getGlobalBounds().getCenter());
+        tirednessText.setString(textTiredness);
+        tirednessText.setCharacterSize(12);
+        tirednessText.setFillColor(sf::Color::White);
+        tirednessText.setStyle(sf::Text::Bold);
+        tirednessText.setOutlineColor(sf::Color::Black);
+        tirednessText.setOutlineThickness(1.5f);
+        tirednessText.setOrigin(tirednessText.getGlobalBounds().getCenter());
         sf::Vector2f textPosition = Transform->GetPosition();
         textPosition.y = textPosition.y + Renderer->GetSprite()->getGlobalBounds().size.y;
-        tirenessText.setPosition(textPosition);
+        tirednessText.setPosition(textPosition);
 
-        window.draw(tirenessText);
+        window.draw(tirednessText);
 
         if (GOB && GOB->GetActiveGoal())
         {
@@ -156,7 +156,7 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
             goalText.setOutlineColor(sf::Color::Black);
             goalText.setOutlineThickness(1.5f);
             goalText.setOrigin(goalText.getGlobalBounds().getCenter());
-            textPosition.y = textPosition.y + tirenessText.getGlobalBounds().size.y + 3.f;
+            textPosition.y = textPosition.y + tirednessText.getGlobalBounds().size.y + 3.f;
             goalText.setPosition(textPosition);
 
             window.draw(goalText);

@@ -13,7 +13,7 @@
 void PatrolGoal::Activate()
 {
     bActive = true;
-    tirenessTimer = 0.f;
+    TirednessTimer = 0.f;
 
     std::vector<sf::Vector2f> patrolPoints = Owner->GetPatrolPoints();
     if (!patrolPoints.empty())
@@ -34,11 +34,11 @@ void PatrolGoal::Execute(float dt)
         Owner->GetAgentController()->FindPath(patrolPoints[nextIndex]);
     }
 
-    tirenessTimer += dt;
-    if (tirenessTimer >= 3.f)
+    TirednessTimer += dt;
+    if (TirednessTimer >= 3.f)
     {
-        Owner->IncreaseTireness(1);
-        tirenessTimer = 0.f;
+        Owner->IncreaseTiredness(1);
+        TirednessTimer = 0.f;
     }
 }
 
@@ -98,7 +98,7 @@ void TakeBreakGoal::Execute(float dt)
 
 void TakeBreakGoal::Terminate()
 {
-    Owner->ResetTireness();
+    Owner->ResetTiredness();
     bActive = false;
     bFinished = true;
 }
@@ -106,7 +106,7 @@ void TakeBreakGoal::Terminate()
 float TakeBreakGoal::CalculateUtility()
 {
     // Score modéré, variable selon la fatigue/temps écoulé
-    return std::min(BaseUtility * Owner->GetTireness(), MaxUtility);
+    return std::min(BaseUtility * Owner->GetTiredness(), MaxUtility);
 }
 
 float TakeBreakGoal::CalculateCost()
@@ -120,7 +120,7 @@ float TakeBreakGoal::CalculateCost()
  */
 void RespondToAlertGoal::Activate()
 {
-    Owner->IncreaseTireness(4);
+    Owner->IncreaseTiredness(4);
     bActive = true;
     bFinished = false;
 
@@ -196,7 +196,7 @@ void InterceptGoal::Activate()
 {
     bActive = true;
     bFinished = false;
-    Owner->IncreaseTireness(6);
+    Owner->IncreaseTiredness(6);
 
     if (Blackboard && Blackboard->ListenToRadio().bPlayerSeen)
         LastKnownPosition = Blackboard->ListenToRadio().PlayerLastPosition;
@@ -274,7 +274,7 @@ void ReturnGoal::Activate()
 {
     bActive = true;
     bFinished = false;
-    Owner->IncreaseTireness(3);
+    Owner->IncreaseTiredness(3);
 
     std::vector<sf::Vector2f> patrolPoints = Owner->GetPatrolPoints();
     if (!patrolPoints.empty())

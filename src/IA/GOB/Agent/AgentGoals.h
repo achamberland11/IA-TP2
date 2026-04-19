@@ -30,7 +30,7 @@ private:
     int CurrentPatrolIndex = 0;
     int NextPatrolIndex = CurrentPatrolIndex+1;
     sf::Vector2f CurrentTarget;
-    float tirenessTimer;
+    float TirednessTimer;
 };
 
 class TakeBreakGoal : public Goal

@@ -54,9 +54,9 @@ public:
 
     void SetListener(IGameEventListener *l) { Listener = l; }
 
-    int GetTireness() const { return Tireness; }
-    void IncreaseTireness(int amount) { Tireness += amount; }
-    void ResetTireness() { Tireness = 0; }
+    int GetTiredness() const { return Tiredness; }
+    void IncreaseTiredness(int amount) { Tiredness += amount; }
+    void ResetTiredness() { Tiredness = 0; }
     bool IsPlayerVisible() const { return bPlayerVisible; }
     bool IsInRoom() const { return Room.Contains(GetTransformComponent()->GetPosition()); }
 
@@ -82,7 +82,7 @@ private:
 
     GAgentController *AgentController = nullptr;
 
-    int Tireness = 1.0f;
+    int Tiredness = 1.0f;
     bool bPlayerVisible = false;
 
     sf::Font Font;
