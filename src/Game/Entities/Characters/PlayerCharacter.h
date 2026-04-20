@@ -21,6 +21,12 @@ public:
 
     void SetListener(IGameEventListener* l) { Listener = l; }
 
+    void TryRadioJamming();
+
+    bool bRadioJamming = false;
+    float RadioJamDuration = 5.f;
+    float RadioJamTimer = 0.f;
+
 private:
     void LoadTextures();
 

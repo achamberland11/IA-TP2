@@ -17,9 +17,6 @@ GAgentCharacter::GAgentCharacter(FRoom *breakRoom) : GCharacter(), BreakRoom(bre
     Transform->SetScale(sf::Vector2f(1, 1));
     Renderer->SetColor(sf::Color::Magenta);
 
-    // FSM = new GFSMComponent(this);
-    // AddComponent(FSM);
-
     GOB = new GGOBComponent(this);
     AddComponent(GOB);
 
@@ -28,7 +25,7 @@ GAgentCharacter::GAgentCharacter(FRoom *breakRoom) : GCharacter(), BreakRoom(bre
 
     // Initialize vision component
     VisionComponent = new GConeVisionComponent(this);
-    SetupVisionComponent(150.f, 75.f);
+    SetupVisionComponent(200.f, 75.f);
     AddComponent(VisionComponent);
 
     LoadTextures();
