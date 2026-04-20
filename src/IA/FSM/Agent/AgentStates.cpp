@@ -122,8 +122,12 @@ void AgentReturnState::Enter(GEntity* agent)
 	Agent = static_cast<GAgentCharacter*>(agent);
 
 	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+	sf::Vector2f targetPos = patrolPoints[Agent->GetPatrolIndex()];
 
-	Agent->GetAgentController()->FindPath(patrolPoints[Agent->GetPatrolIndex()]);
+	Agent->GetAgentController()->FindPath(targetPos);
+	
+	if (Agent->IsPlayerVisible())
+		Agent->GetFSM()->ChangeState(AgentChaseState::Instance());
 }
 
 void AgentReturnState::Execute(GEntity* agent)
