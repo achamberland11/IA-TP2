@@ -47,8 +47,14 @@ void GPlayerController::HandleEvent(const sf::Event &event) {
                 break;
             case sf::Keyboard::Key::D: bMoveRight = true;
                 break;
-            case sf::Keyboard::Key::Q: 
+            case sf::Keyboard::Key::Q:
                 GGame::GetInstance()->GetWorld()->TryInteractSwitch();
+                break;
+            case sf::Keyboard::Key::E:
+                if (auto* player = dynamic_cast<GPlayerCharacter*>(Owner))
+                {
+                    player->TryRadioJamming();
+                }
                 break;
             default: break;
         }

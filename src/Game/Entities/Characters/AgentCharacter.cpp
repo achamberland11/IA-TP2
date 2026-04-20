@@ -28,7 +28,7 @@ GAgentCharacter::GAgentCharacter(FRoom *breakRoom) : GCharacter(), BreakRoom(bre
 
     // Initialize vision component
     VisionComponent = new GConeVisionComponent(this);
-    SetupVisionComponent(150.f, 75.f);
+    SetupVisionComponent(200.f, 75.f);
     AddComponent(VisionComponent);
 
     LoadTextures();

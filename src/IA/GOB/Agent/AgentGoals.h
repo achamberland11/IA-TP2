@@ -39,7 +39,7 @@ public:
     TakeBreakGoal(GAgentCharacter* agent, GlobalBlackboard* blackboard) : Goal(agent, EGoalType::TakeBreak, blackboard)
     {
         Name = "TakeBreakGoal";
-        BaseUtility = 18.f;
+        BaseUtility = 4.f;
         MaxUtility = 150.f;
         Cost = 10.f;
     }

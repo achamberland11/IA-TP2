@@ -5,6 +5,8 @@
 #include "PlayerCharacter.h"
 #include <iostream>
 
+#include "Game/Game.h"
+
 GPlayerCharacter::GPlayerCharacter() {
     Name = "PlayerCharacter";
     Transform->SetPosition(sf::Vector2f(250, 150));
@@ -71,6 +73,17 @@ void GPlayerCharacter::Update(float dt) {
 		}
 	}
 
+	if (bRadioJamming)
+	{
+		RadioJamTimer += dt;
+		if (RadioJamTimer >= RadioJamDuration)
+		{
+			bRadioJamming = false;
+			RadioJamTimer = 0.f;
+			GGame::GetInstance()->GetGlobalBlackboard()->ResetInterferenceChance();
+		}
+	}
+
     GCharacter::Update(dt);
 }
 
@@ -93,4 +106,21 @@ void GPlayerCharacter::LoadTextures() {
 		sf::FloatRect bounds = Sprites[name]->getLocalBounds();
 		Sprites[name]->setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
 	}
+}
+
+void GPlayerCharacter::TryRadioJamming()
+{
+	if (bRadioJamming)
+		return;
+
+	GGame *game = GGame::GetInstance();
+	if (!game)
+		return;
+
+	GlobalBlackboard *GlobalBB = game->GetGlobalBlackboard();
+	if (!GlobalBB)
+		return;
+
+	GlobalBB->ChangeInterferenceChance(100.f);
+	bRadioJamming = true;
 }
