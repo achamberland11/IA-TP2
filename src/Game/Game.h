@@ -39,13 +39,15 @@ public:
 
     void CheckWinCondition();
 
+    static const sf::Font& GetFont() { return Font; }
+    bool IsFontLoaded() const { return bFontLoaded; }
+
 private:
     void Initialize();
     void HandleEvents();
     void Update(float dt);
     void Render();
 
-private:
     static GGame* Instance;
 
     sf::Vector2u WindowSize;
@@ -54,7 +56,8 @@ private:
 
     EGameState GameState = EGameState::Running;
 
-    sf::Font Font;
-    sf::Text EndText;
+    static sf::Font Font;
+    bool bFontLoaded = false;
+    sf::Text* EndText;
     std::unique_ptr<GlobalBlackboard> GlobalBB;
 };

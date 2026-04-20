@@ -8,6 +8,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include "SFML/Graphics/Text.hpp"
+
 
 class GFSMComponent : public GComponent
 {
@@ -21,10 +23,11 @@ public:
         PreviousState = nullptr;
         GlobalState = nullptr;
     }
+    ~GFSMComponent() override;
 
     void Start() override;
-
     void Update(float deltaSeconds) override;
+    void Render(sf::RenderWindow &window) override;
 
     void SetCurrentState(State<GEntity> *state) { CurrentState = state; }
     void SetGlobalState(State<GEntity> *state) { GlobalState = state; }
@@ -41,9 +44,15 @@ public:
     State<GEntity> *GetPreviousState() const { return PreviousState; }
 
     std::string GetNameOfCurrentState() const;
+    
+    sf::Vector2f GetStateTextPosition() const { return StateTextPosition; }
+    float GetStateTextHeight() const { return StateTextHeight; }
 
 private:
     State<GEntity> *CurrentState = nullptr;
     State<GEntity> *PreviousState = nullptr;
     State<GEntity> *GlobalState = nullptr;
+    
+    sf::Vector2f StateTextPosition;
+    float StateTextHeight = 0.f;
 };

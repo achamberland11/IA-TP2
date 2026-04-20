@@ -73,7 +73,7 @@ private:
 
     sf::Vector2f ComputeSteering(float dt);
 
-    // GFSMComponent *FSM = nullptr;
+    GFSMComponent *FSM = nullptr;
     GGOBComponent *GOB = nullptr;
     GConeVisionComponent *VisionComponent = nullptr;
 
@@ -84,10 +84,7 @@ private:
 
     int Tiredness = 1.0f;
     bool bPlayerVisible = false;
-
-    sf::Font Font;
-    bool bFontLoaded = false;
-
+    
     float SpriteTimer = 0.f;
     float SpriteDuration = 0.5f;
 

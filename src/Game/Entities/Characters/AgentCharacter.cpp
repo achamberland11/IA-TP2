@@ -17,11 +17,11 @@ GAgentCharacter::GAgentCharacter(FRoom *breakRoom) : GCharacter(), BreakRoom(bre
     Transform->SetScale(sf::Vector2f(1, 1));
     Renderer->SetColor(sf::Color::Magenta);
 
-    // FSM = new GFSMComponent(this);
-    // AddComponent(FSM);
+    FSM = new GFSMComponent(this);
+    AddComponent(FSM);
 
-    GOB = new GGOBComponent(this);
-    AddComponent(GOB);
+    // GOB = new GGOBComponent(this);
+    // AddComponent(GOB);
 
     AgentController = new GAgentController(this);
     Controller = AgentController;
@@ -40,11 +40,7 @@ GAgentCharacter::GAgentCharacter(FRoom *breakRoom) : GCharacter(), BreakRoom(bre
         std::cerr << "Error : E_F1 sprite not found" << std::endl;
 
     MovementSpeed = 50.f; // Agent is slower
-
-    if (Font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
-        bFontLoaded = true;
-    else
-        std::cerr << "Failed to load font" << std::endl;
+        
 }
 
 GAgentCharacter::~GAgentCharacter()
@@ -122,12 +118,16 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
 {
     GEntity::Render(window);
     DrawDebug(window);
+    
+    for (GComponent* Component : Components)
+        Component->Render(window);
 
-    if (bFontLoaded)
+    if (GGame::GetInstance()->IsFontLoaded())
     {
         std::string textTiredness = "Fatigue: " + std::to_string(Tiredness);
 
-        sf::Text tirednessText(Font);
+        const sf::Font& font = GGame::GetFont();
+        sf::Text tirednessText(font);
 
         tirednessText.setString(textTiredness);
         tirednessText.setCharacterSize(12);
@@ -137,30 +137,18 @@ void GAgentCharacter::Render(sf::RenderWindow &window)
         tirednessText.setOutlineThickness(1.5f);
         tirednessText.setOrigin(tirednessText.getGlobalBounds().getCenter());
         sf::Vector2f textPosition = Transform->GetPosition();
-        textPosition.y = textPosition.y + Renderer->GetSprite()->getGlobalBounds().size.y;
+       
+        if (GOB)
+            textPosition.y = textPosition.y + GOB->GetGoalTextHeight() + 3.f;
+        else if (FSM)
+            textPosition.y = textPosition.y + FSM->GetStateTextHeight() + 3.f;
+        else
+            textPosition.y = textPosition.y + Renderer->GetSprite()->getGlobalBounds().size.y;
+        
+        
         tirednessText.setPosition(textPosition);
 
         window.draw(tirednessText);
-
-        if (GOB && GOB->GetActiveGoal())
-        {
-            std::string stateName = GOB->GetActiveGoal()->GetName();
-            std::string textGoal = stateName;
-
-            sf::Text goalText(Font);
-
-            goalText.setString(textGoal);
-            goalText.setCharacterSize(12);
-            goalText.setFillColor(sf::Color::White);
-            goalText.setStyle(sf::Text::Bold);
-            goalText.setOutlineColor(sf::Color::Black);
-            goalText.setOutlineThickness(1.5f);
-            goalText.setOrigin(goalText.getGlobalBounds().getCenter());
-            textPosition.y = textPosition.y + tirednessText.getGlobalBounds().size.y + 3.f;
-            goalText.setPosition(textPosition);
-
-            window.draw(goalText);
-        }
     }
 }
 

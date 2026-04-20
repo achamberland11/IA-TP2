@@ -5,6 +5,7 @@
 #pragma once
 #include <string>
 #include "../../Core/Object.h"
+#include "SFML/Graphics/RenderWindow.hpp"
 
 class GEntity;
 
@@ -18,6 +19,7 @@ public:
 
     virtual void Start() = 0;
     virtual void Update(float deltaSeconds) = 0;
+    virtual void Render(sf::RenderWindow &window) {}
 
     bool CanDuplicate() const { return bCanDuplicate; }
     bool CanBeDisabled() const { return bCanBeDisabled; }
