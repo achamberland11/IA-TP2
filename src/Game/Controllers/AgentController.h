@@ -24,7 +24,8 @@ public:
     int GetCurrentTarget() { return CurrentTarget; }
     void FindPath(const sf::Vector2f &target);
 
-    GPlayerCharacter* GetPlayer() { return Player; }
+    GPlayerCharacter* GetPlayer() const { return Player; }
+    GlobalBlackboard* GetBlackboard() const { return GlobalBlackboard; }
 
 private:
     // GFSMComponent* FSM = nullptr;
@@ -32,6 +33,7 @@ private:
 
     GPlayerCharacter* Player = nullptr;
     GAgentCharacter* Agent = nullptr;
+    GlobalBlackboard* GlobalBlackboard = nullptr;
 
     int CurrentTarget = 0;
     bool bFinished = false;

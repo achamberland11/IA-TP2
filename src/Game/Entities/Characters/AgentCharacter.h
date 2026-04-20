@@ -49,7 +49,7 @@ public:
     void SetupVisionComponent(float range = 150.f, float angle = 90.f);
 
     GAgentController *GetAgentController() const { return AgentController; }
-    // GFSMComponent *GetFSM() const { return FSM; }
+    GFSMComponent *GetFSM() const { return FSM; }
     GGOBComponent *GetGOB() const { return GOB; }
 
     void SetListener(IGameEventListener *l) { Listener = l; }
@@ -65,6 +65,7 @@ public:
 
     FRoom GetRoom() const { return Room; }
     FRoom* GetBreakRoom() const { return BreakRoom; }
+    GlobalBlackboard* GetBlackboard() const { return AgentController->GetBlackboard(); }
 
 private:
     void LoadTextures();

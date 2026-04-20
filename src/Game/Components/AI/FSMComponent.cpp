@@ -79,7 +79,7 @@ void GFSMComponent::RevertToPreviousState()
     ChangeState(PreviousState);
 }
 
-bool GFSMComponent::isInState(const State<GEntity> &state) const
+bool GFSMComponent::IsInState(const State<GEntity> &state) const
 {
     return CurrentState == &state;
 }

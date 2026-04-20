@@ -194,8 +194,6 @@ void GAgentCharacter::DrawDebug(sf::RenderWindow &window)
     // Draw vision cone
     sf::Color ColorVisionCone = sf::Color::White;
 
-    // if (GetFSM()->isInState(*AgentChaseState::Instance()))
-    // ColorVisionCone = sf::Color::Red;
     if (IsPlayerVisible())
         ColorVisionCone = sf::Color::Red;
 

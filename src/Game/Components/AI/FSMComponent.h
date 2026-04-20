@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <iostream>
 
+#include "IA/GlobalBlackboard.h"
 #include "SFML/Graphics/Text.hpp"
 
 
@@ -37,7 +38,7 @@ public:
 
     void RevertToPreviousState();
 
-    bool isInState(const State<GEntity> &state) const;
+    bool IsInState(const State<GEntity> &state) const;
 
     State<GEntity> *GetCurrentState() const { return CurrentState; }
     State<GEntity> *GetGlobalState() const { return GlobalState; }

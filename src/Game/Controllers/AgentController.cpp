@@ -24,11 +24,9 @@ void GAgentController::Start()
     Player = game->GetPlayerCharacter();
     Agent = dynamic_cast<GAgentCharacter *>(Owner);
 
-    // FSM = Owner->GetComponent<GFSMComponent>();
     Vision = Owner->GetComponent<GConeVisionComponent>();
-
-    // assert(FSM && "<GAgentController> : FSMComponent not found !");
-    // FSM->ChangeState(AgentPatrolState::Instance());
+    
+    GlobalBlackboard = game->GetGlobalBlackboard();
 }
 
 void GAgentController::Update(float dt)
@@ -42,25 +40,22 @@ void GAgentController::Update(float dt)
     if (!game)
         return;
 
-    GlobalBlackboard *GlobalBB = game->GetGlobalBlackboard();
-    if (!GlobalBB)
+    if (!GlobalBlackboard)
         return;
 
-    const RadioInfo &radioInfo = GlobalBB->ListenToRadio();
+    const RadioInfo &radioInfo = GlobalBlackboard->ListenToRadio();
 
     if (Agent->IsPlayerVisible())
     {
-        GlobalBB->TryBroadcastToRadio(Player->GetTransformComponent()->GetPosition(), Agent->GetAgentID());
-        // if (FSM->GetCurrentState() != AgentChaseState::Instance())
-            // FSM->ChangeState(AgentChaseState::Instance());
+        GlobalBlackboard->TryBroadcastToRadio(Player->GetTransformComponent()->GetPosition(), Agent->GetAgentID());
     }
     else if (radioInfo.bPlayerSeen)
     {
-        float distToReport = GlobalBB->GetDistToReportingAgent(Agent->GetTransformComponent()->GetPosition(),
+        float distToReport = GlobalBlackboard->GetDistToReportingAgent(Agent->GetTransformComponent()->GetPosition(),
                                                                Agent->GetAgentID());
         if (distToReport != -1.f)
         {
-            if (distToReport <= GlobalBB->RadioMaxDist * GlobalBB->RadioMaxDist)
+            if (distToReport <= GlobalBlackboard->RadioMaxDist * GlobalBlackboard->RadioMaxDist)
             {
                 // if (FSM->GetCurrentState() != AgentChaseState::Instance())
                     // FSM->ChangeState(AgentChaseState::Instance());
