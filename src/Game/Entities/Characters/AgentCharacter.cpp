@@ -17,11 +17,11 @@ GAgentCharacter::GAgentCharacter(FRoom *breakRoom) : GCharacter(), BreakRoom(bre
     Transform->SetScale(sf::Vector2f(1, 1));
     Renderer->SetColor(sf::Color::Magenta);
 
-    FSM = new GFSMComponent(this);
-    AddComponent(FSM);
+    // FSM = new GFSMComponent(this);
+    // AddComponent(FSM);
 
-    // GOB = new GGOBComponent(this);
-    // AddComponent(GOB);
+    GOB = new GGOBComponent(this);
+    AddComponent(GOB);
 
     AgentController = new GAgentController(this);
     Controller = AgentController;
