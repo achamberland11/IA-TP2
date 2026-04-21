@@ -35,7 +35,7 @@ void GGOBComponent::Start()
     Goals.push_back(new RespondToAlertGoal(agent, Blackboard));
     Goals.push_back(new ReturnGoal(agent, Blackboard));
 
-    ActiveGoal = Goals[0];
+    ActiveGoal = Goals[1];
 }
 
 void GGOBComponent::Update(float deltaSeconds)
@@ -81,7 +81,7 @@ void GGOBComponent::EvaluateGoals()
 {
     if (Goals.empty()) return;
 
-    Goal *bestGoal = Goals[0];
+    Goal *bestGoal = Goals[1];
     float bestScore = -std::numeric_limits<float>::infinity();
 
     for (Goal *goal: Goals)
