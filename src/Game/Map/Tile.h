@@ -15,9 +15,11 @@ enum class ETileType {
 
 enum class EWallTileType {
 	IE_UL, IE_UR, IE_BL, IE_BR,
-	IE_L, IE_R,
-	IE_UTop, IE_UBottom, IE_B,
-	EE_UL, EE_UR, EE_BL, EE_BR
+	IE_L, IE_R, IE_UTop, IE_UBottom, IE_B,
+	IE_TopBottom, IE_LeftRight,
+	EE_UL, EE_UR, EE_BL, EE_BR,
+	EC_UL, EC_UR, EC_BL, EC_BR,
+	IC_UL, IC_UR, IC_BL, IC_BR
 };
 
 struct FTile {
@@ -28,6 +30,7 @@ struct FTile {
 	bool BlocksVision = false;
 	int MovementCost = 1;
 	bool bIsExit = false;
+	bool bIsRoomInterior = false;
 
 	bool CanExit(SwitchStatus Status) {
 		return bIsExit && Status == SwitchStatus::On;

@@ -110,7 +110,7 @@ void GWorld::CreateAgents()
 			agent->SetPatrolWaypoints(GMap::PixelsPerTile);
 			agent->GetTransformComponent()->SetScale(sf::Vector2f(1.25f, 1.25f));
 			
-			sf::Vector2f Pos = Rooms[i].Center();
+			sf::Vector2f Pos = Rooms[i].Origin + sf::Vector2f(32, 32);
 			sf::Vector2f SwitchPos = GameSwitch->GetTransformComponent()->GetPosition();
 			if (Rooms[i].Center() == SwitchPos) {
 

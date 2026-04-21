@@ -75,31 +75,37 @@ void GGame::Render() {
     else
         Window.draw(EndText);
 
-    sf::Text PressQText(Font);
-    sf::Text PressEText(Font);
+    if (GameState != EGameState::Lost) {
+        sf::Text PressQText(Font);
+        sf::Text PressEText(Font);
 
-    PressQText.setString("Press Q to activate the lever and open the door");
-    PressQText.setPosition(sf::Vector2f(30,30));
-    PressEText.setString("Press E to jam the enemies radio for 5 sec");
-    PressEText.setPosition(sf::Vector2f(30,85));
-    Window.draw(PressQText);
-    Window.draw(PressEText);
-    if (GetPlayerCharacter()->bRadioJamming)
-    {
-        sf::Text JamCooldownText(Font);
+        PressQText.setString("Press Q to activate the lever and open the door");
+        PressQText.setPosition(sf::Vector2f(25, 20));
+        PressQText.setCharacterSize(20);
+        PressEText.setString("Press E to jam the enemies radio for 5 sec");
+        PressEText.setPosition(sf::Vector2f(25, 50));
+        PressEText.setCharacterSize(20);
 
-        JamCooldownText.setString("Jam cooldown: " + std::to_string(GetPlayerCharacter()->RadioJamTimer));
-        JamCooldownText.setPosition(sf::Vector2f(30,120));
+        Window.draw(PressQText);
+        Window.draw(PressEText);
 
-        Window.draw(JamCooldownText);
+        if (GetPlayerCharacter()->bRadioJamming)
+        {
+            sf::Text JamCooldownText(Font);
+
+            JamCooldownText.setString("Jam cooldown: " + std::to_string(GetPlayerCharacter()->RadioJamTimer));
+            JamCooldownText.setPosition(sf::Vector2f(25, 80));
+            JamCooldownText.setCharacterSize(20);
+
+            Window.draw(JamCooldownText);
+        }
+
+        sf::CircleShape Circle;
+        Circle.setFillColor(sf::Color::Yellow);
+        Circle.setRadius(5.f);
+        Circle.setPosition(GetGlobalBlackboard()->ListenToRadio().PlayerLastPosition);
+        Window.draw(Circle);
     }
-
-    sf::CircleShape Circle;
-    Circle.setFillColor(sf::Color::Yellow);
-    Circle.setRadius(5.f);
-    Circle.setPosition(GetGlobalBlackboard()->ListenToRadio().PlayerLastPosition);
-    Window.draw(Circle);
-
     Window.display();
 }
 

@@ -17,7 +17,7 @@ int main()
 
     try
     {
-        GGame Game(sf::Vector2u(1568, 928));
+        GGame Game(sf::Vector2u(1920, 1080));
         Game.Run();
     } catch (const std::exception &e)
     {

@@ -17,6 +17,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
+#include <set>
 
 enum class EWallType {
 	Stone, 
@@ -38,6 +39,7 @@ struct FGenRoom {
 	EWallType WallType;
 	bool bVisited = false;
 	std::vector<int> ConnectedTo;
+	std::set<std::pair<int, int>> UsedConnectionPoints;
 };
 
 struct FRoom {
@@ -53,7 +55,6 @@ struct FRoom {
 	sf::Vector2f Center() const { return Origin + Size / 2.f; }
 	sf::Vector2f CenterTile() const { 
 		sf::Vector2f C = Center();
-
 		
 		return sf::Vector2f(
 			std::floor(C.x / TileSize) * TileSize + TileSize / 2.f,
@@ -82,9 +83,9 @@ struct FRoom {
 };
 
 struct FCorridor {
-	std::multimap<ECorridorTileType, sf::Vector2f> Tiles;
-	sf::Vector2f Start;
-	sf::Vector2f End;
+	std::vector<std::pair<ECorridorTileType, sf::Vector2f>> Tiles;
+	std::optional<sf::Vector2f> Start;
+	std::optional<sf::Vector2f> End;
 };
 
 class GMap : public GObject {
@@ -163,6 +164,16 @@ private:
 		{EWallTileType::EE_UR, "row-3-column-3"},
 		{EWallTileType::EE_BL, "row-9-column-1"},
 		{EWallTileType::EE_BR, "row-9-column-2"},
+		{EWallTileType::EC_BR, "row-4-column-6"},
+		{EWallTileType::EC_BL, "row-4-column-7"},
+		{EWallTileType::EC_UR, "row-5-column-6"},
+		{EWallTileType::EC_UL, "row-5-column-7"},
+		{EWallTileType::IE_TopBottom, "row-6-column-2"},
+		{EWallTileType::IE_LeftRight, "row-4-column-4"},
+		{EWallTileType::IC_UL, "row-8-column-1"},
+		{EWallTileType::IC_UR, "row-8-column-2"},
+		{EWallTileType::IC_BL, "row-9-column-1"},
+		{EWallTileType::IC_BR, "row-9-column-2"}
 	};
 
 	std::map<EWallTileType, std::string> ClayWallTileNames = {
@@ -186,11 +197,16 @@ private:
 
 	//Procedural Generation
 	void CarveRoom(int row, int col, int width, int height);
+	void ConnectRoomsBacktrack(std::vector<FGenRoom>& Rooms, int current, std::vector<bool>& visited);
+	bool CanCarveCorridor(int r1, int c1, int r2, int c2);
 	void CarveCorridor(int r1, int c1, int r2, int c2);
+	sf::Vector2f GetEdgePoint(FGenRoom& A, const FGenRoom& B);
 	void PlaceRoomBorders(int row, int col, int width, int height);
 	void PlaceCorridorBorders(const FCorridor& Corridor);
 	std::string GetRandomizedImage(std::string imagesName);
 	void PlaceCorridorJunctionImages(int row, int col);
+	bool IsTooCloseToCorridor(int r, int c, bool bEndPoint);
+	void PlaceExit();
 
 	sf::Font DebugFont;
 };
