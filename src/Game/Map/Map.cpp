@@ -49,13 +49,13 @@ FTile GMap::CreateTile(const std::string& rawValue, int row, int col)
 	//Exit
 	if (rawValue.find("row-10-column-8") == 0) {
 		bHasExit = true;
-		ExitTile = sf::Vector2f(row, col);
+		ExitTilePos = sf::Vector2f(row, col);
 
 		tile.Type = ETileType::Floor;
 		tile.Walkable = true;
 		tile.BlocksVision = false;
 		tile.MovementCost = 1;
-
+		tile.bIsExit = true;
 		return tile;
 	}
 
@@ -363,8 +363,8 @@ sf::Vector2f GMap::GetRandomPosition()
 
 void GMap::ChangeExitVisibility(bool bIsOn)
 {
-	int row = ExitTile.x;
-	int col = ExitTile.y;
+	int row = ExitTilePos.x;
+	int col = ExitTilePos.y;
 
 	FTile& Tile = Map[row][col];
 

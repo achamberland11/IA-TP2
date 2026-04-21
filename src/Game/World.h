@@ -30,6 +30,7 @@ public:
     GMap *GetMap() const { return Map.get(); }
     GPlayerCharacter *GetPlayerCharacter() const { return Player; }
     std::vector<GAgentCharacter*> GetAgentsCharacter() const { return Agents; }
+    GSwitch* GetSwitch() const { return GameSwitch; }
 
     void TryInteractSwitch();
 
