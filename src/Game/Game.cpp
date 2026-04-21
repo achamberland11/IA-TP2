@@ -169,10 +169,15 @@ void GGame::CheckWinCondition()
 
     int row = static_cast<int>(GridPos.y);
     int col = static_cast<int>(GridPos.x);
+    FTile tile = Map->GetTile(row, col);
 
     if (!Map->HasExit())
         return;
 
     if (row == Map->GetExitTilePos().x && col == Map->GetExitTilePos().y)
-        OnGameWon();
+    {
+        SwitchStatus switchStatus = World->GetSwitch()->GetStatus();
+        if (tile.CanExit(switchStatus))
+            OnGameWon();
+    }
 }

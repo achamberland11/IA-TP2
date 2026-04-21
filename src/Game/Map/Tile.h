@@ -32,7 +32,8 @@ struct FTile {
 	bool bIsExit = false;
 	bool bIsRoomInterior = false;
 
-	bool CanExit(SwitchStatus Status) {
-		return bIsExit && Status == SwitchStatus::On;
+	bool CanExit(SwitchStatus Status) const
+	{
+		return bIsExit && Status == On;
 	}
 };

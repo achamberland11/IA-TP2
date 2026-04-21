@@ -4,6 +4,7 @@
 
 #pragma once
 #include "Core/Object.h"
+#include "Game/Map/Map.h"
 #include "IA/GOB/Goal.h"
 #include "SFML/System/Vector2.hpp"
 
@@ -54,11 +55,12 @@ public:
     void SetBreakLocation(sf::Vector2f location) { BreakLocation = location; }
 
 private:
+    FRoom* BreakRoom = nullptr;
     sf::Vector2f BreakLocation;
     bool bGoToBreakRoom = true;
     float BreakDuration = 10.f;
     float CurrentBreakTime = 0.f;
-    float distToBreakRoom = 0.f;
+    float DistToBreakRoomSqrd = 0.f;
 };
 
 class RespondToAlertGoal : public Goal

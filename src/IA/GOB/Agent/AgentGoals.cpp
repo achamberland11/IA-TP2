@@ -70,10 +70,11 @@ void TakeBreakGoal::Activate()
     bFinished = false;
     CurrentBreakTime = 0.f;
 
+    BreakRoom = Owner->GetBreakRoom();
     BreakLocation = Owner->GetBreakRoom()->Center();
 
     sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
-    distToBreakRoom = std::sqrt(std::pow(agentPos.x - BreakLocation.x, 2) + std::pow(agentPos.y - BreakLocation.y, 2));
+    DistToBreakRoomSqrd = std::pow(agentPos.x - BreakLocation.x, 2) + std::pow(agentPos.y - BreakLocation.y, 2);
 
     Owner->GetAgentController()->FindPath(BreakLocation);
 }
@@ -82,11 +83,19 @@ void TakeBreakGoal::Execute(float dt)
 {
     if (!Owner->GetWaypoints().empty())
         return;
+    
+    if (BreakRoom == nullptr)
+    {
+        Activate();
+    }
+    
+    if (BreakLocation != BreakRoom->Center())
+        BreakLocation = BreakRoom->Center();
 
     sf::Vector2f agentPos = Owner->GetTransformComponent()->GetPosition();
-    float sqrdDist = std::pow(agentPos.x - BreakLocation.x, 2) + std::pow(agentPos.y - BreakLocation.y, 2);
+    DistToBreakRoomSqrd = std::pow(agentPos.x - BreakLocation.x, 2) + std::pow(agentPos.y - BreakLocation.y, 2);
 
-    if (sqrdDist < DetectionRangeSqrd)
+    if (DistToBreakRoomSqrd < DetectionRangeSqrd)
     {
         CurrentBreakTime += dt;
         if (CurrentBreakTime >= BreakDuration)
@@ -112,7 +121,7 @@ float TakeBreakGoal::CalculateUtility()
 float TakeBreakGoal::CalculateCost()
 {
     // Coût faible-modéré (dépend de la distance)
-    return Cost * (distToBreakRoom * 0.05f);
+    return Cost;
 }
 
 /**

@@ -119,11 +119,12 @@ public:
 	FRoom Merge(const FRoom& RoomA, const FRoom& RoomB);
 	bool Intersects(const FRoom& RoomA, const FRoom& RoomB);
 	const std::vector<FRoom>& GetRooms() const { return Rooms; }
+	const FTile GetTile(int row, int col) const { return Map[row][col]; }
 
 	sf::Vector2f GetRandomPosition();
 
 	bool HasExit() { return bHasExit; }
-	sf::Vector2f GetExitTilePos() { return ExitTile; }
+	sf::Vector2f GetExitTilePos() { return ExitTilePos; }
 	void ChangeExitVisibility(bool bIsOn);
 
 	void SetTileToObstacle(int row, int col) {
@@ -192,7 +193,7 @@ private:
 	FRoom* BreakRoom = nullptr;
 	std::vector<FCorridor> Corridors;
 
-	sf::Vector2f ExitTile;
+	sf::Vector2f ExitTilePos;
 	bool bHasExit = false;
 
 	//Procedural Generation
