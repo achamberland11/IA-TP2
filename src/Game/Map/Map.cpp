@@ -4,6 +4,7 @@
 
 #include "Map.h"
 #include <stack>
+#include <array>
 
 GMap::GMap(int width, int height)
 {
@@ -134,6 +135,7 @@ void GMap::LoadMap(const std::string mapPath)
 	MergeRooms();
 	FindBreakRoom();
 	PlaceExit();
+	PlaceObstacles();
 	BuildNavGraph();
 }
 
@@ -984,4 +986,54 @@ void GMap::PlaceExit()
 
 	while(Map[row - 1][col + j].Type == ETileType::Wall)
 		Map[row - 1][col + j] = CreateTile("row-10-column-8", row - 1, col + j);
+}
+
+void GMap::PlaceObstacles()
+{
+	const std::array<std::vector<std::string>, 3> obstacleSpritePools = {
+		std::vector<std::string>{"O_Rock1", "O_Rock2", "O_Rock3", "O_Rock4", "O_Rock5", "O_Rock6", "O_Rock7", "O_Rock9", "O_Rock10", "O_Rock11", "O_Rock12", "O_Rock13", "O_Rock14", "O_Rock15"},
+		std::vector<std::string>{"O_Basket1", "O_Basket2", "O_Basket3", "O_Basket4", "O_Basket5", "O_Basket6", "O_Basket7", "O_Basket8"},
+		std::vector<std::string>{"O_CartDiagonal", "O_CartForward", "O_CartSide"}
+	};
+
+	for (const FRoom& Room : Rooms)
+	{
+		const int startRow = static_cast<int>(Room.Origin.y / PixelsPerTile);
+		const int startCol = static_cast<int>(Room.Origin.x / PixelsPerTile);
+		const int roomRows = static_cast<int>(Room.Size.y / PixelsPerTile);
+		const int roomCols = static_cast<int>(Room.Size.x / PixelsPerTile);
+
+		std::vector<std::pair<int, int>> candidates;
+		for (int row = startRow + 1; row < startRow + roomRows - 1; row++)
+			for (int col = startCol + 1; col < startCol + roomCols - 1; col++) {
+				if (row < 0 || row >= Height || col < 0 || col >= Width)
+					continue;
+				if (Map[row][col].Type != ETileType::Floor)
+					continue;
+				if (!Map[row][col].ObjectID.empty())
+					continue;
+
+				candidates.push_back({ row, col });
+			}
+
+		if (candidates.empty())
+			continue;
+
+		const int maxObstacles = std::max(1, std::min(5, static_cast<int>(candidates.size() / 6)));
+		const int obstacleCount = 1 + (rand() % maxObstacles);
+
+		for (int i = 0; i < obstacleCount && !candidates.empty(); i++) {
+			const int index = rand() % static_cast<int>(candidates.size());
+			const int row = candidates[index].first;
+			const int col = candidates[index].second;
+			candidates.erase(candidates.begin() + index);
+
+			const std::vector<std::string>& spritePool = obstacleSpritePools[rand() % static_cast<int>(obstacleSpritePools.size())];
+			const std::string& spriteName = spritePool[rand() % static_cast<int>(spritePool.size())];
+
+			Map[row][col].ObjectID = spriteName;
+			Map[row][col].Type = ETileType::Obstacle;
+			Map[row][col].Walkable = false;
+		}
+	}
 }

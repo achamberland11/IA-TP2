@@ -207,6 +207,7 @@ private:
 	void PlaceCorridorJunctionImages(int row, int col);
 	bool IsTooCloseToCorridor(int r, int c, bool bEndPoint);
 	void PlaceExit();
+	void PlaceObstacles();
 
 	sf::Font DebugFont;
 };
