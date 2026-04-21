@@ -63,6 +63,9 @@ void AgentPatrolState::Execute(GEntity* agent)
 		Agent->SetPatrolIndex(nextIndex);
 		Agent->GetAgentController()->FindPath(patrolPoints[nextIndex]);
 	}
+	
+	if (Agent->IsPlayerVisible() && Agent->GetFSM())
+		Agent->GetFSM()->ChangeState(AgentChaseState::Instance());
 }
 
 void AgentPatrolState::Exit(GEntity* agent)
@@ -91,7 +94,13 @@ void AgentChaseState::Execute(GEntity* agent)
 
 	sf::Vector2f targetPos = Agent->GetAgentController()->GetPlayer()->GetTransformComponent()->GetPosition();
 
+	if (!Agent->IsPlayerVisible())
+		targetPos = Agent->GetBlackboard()->ListenToRadio().PlayerLastPosition;
+	
 	Agent->GetAgentController()->FindPath(targetPos);
+	
+	if (Agent->GetWaypoints().empty() && !Agent->IsPlayerVisible() && Agent->GetFSM())
+		Agent->GetFSM()->ChangeState(AgentReturnState::Instance());
 }
 
 void AgentChaseState::Exit(GEntity* agent)
@@ -113,16 +122,20 @@ void AgentReturnState::Enter(GEntity* agent)
 	Agent = static_cast<GAgentCharacter*>(agent);
 
 	std::vector<sf::Vector2f> patrolPoints = Agent->GetPatrolPoints();
+	sf::Vector2f targetPos = patrolPoints[Agent->GetPatrolIndex()];
 
-	Agent->GetAgentController()->FindPath(patrolPoints[Agent->GetPatrolIndex()]);
+	Agent->GetAgentController()->FindPath(targetPos);
+	
+	if (Agent->IsPlayerVisible())
+		Agent->GetFSM()->ChangeState(AgentChaseState::Instance());
 }
 
 void AgentReturnState::Execute(GEntity* agent)
 {
 	std::vector<sf::Vector2f> waypoints = Agent->GetWaypoints();
-	if (waypoints.empty())
+	if (waypoints.empty() && Agent->GetFSM())
 	{
-		// Agent->GetFSM()->ChangeState(AgentPatrolState::Instance());
+		Agent->GetFSM()->ChangeState(AgentPatrolState::Instance());
 	}
 }
 

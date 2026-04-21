@@ -5,15 +5,20 @@
 #include "Game.h"
 
 GGame *GGame::Instance = nullptr;
+sf::Font GGame::Font;
 
 GGame::GGame(sf::Vector2u windowSize)
-    : WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI"), EndText(Font) {
+    : WindowSize(windowSize), Window(sf::VideoMode(windowSize), "TP AI"){
     Instance = this;
     Window.setFramerateLimit(120);
     Initialize();
 }
 
 GGame::~GGame() {
+    World.reset();
+    GlobalBB.reset();
+    delete EndText;
+    EndText = nullptr;
     Instance = nullptr;
 }
 
@@ -23,13 +28,17 @@ void GGame::Initialize() {
     World = std::make_unique<GWorld>(WindowSize, this);
     World->Start();
 
-    if (!Font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
+    Font = sf::Font();
+    
+    if (Font.openFromFile("Assets/Fonts/Roboto/Roboto.ttf"))
+        bFontLoaded = true;
+    else
         std::cerr << "Failed to load font" << std::endl;
 
-    EndText.setFont(Font);
-    EndText.setCharacterSize(80);
-    EndText.setFillColor(sf::Color::White);
-    EndText.setStyle(sf::Text::Bold);
+    EndText = new sf::Text(Font);
+    EndText->setCharacterSize(80);
+    EndText->setFillColor(sf::Color::White);
+    EndText->setStyle(sf::Text::Bold);
 }
 
 void GGame::Run() {
@@ -73,7 +82,7 @@ void GGame::Render() {
             World->Render(Window);
     }
     else
-        Window.draw(EndText);
+        Window.draw(*EndText);
 
     if (GameState != EGameState::Lost) {
         sf::Text PressQText(Font);
@@ -113,12 +122,12 @@ void GGame::OnGameOver()
 {
     GameState = EGameState::Lost;
 
-    EndText.setFillColor(sf::Color::Red);
-    EndText.setString("GAME OVER!");
+    EndText->setFillColor(sf::Color::Red);
+    EndText->setString("GAME OVER!");
 
-    sf::FloatRect Bounds = EndText.getLocalBounds();
-    EndText.setOrigin(sf::Vector2f(Bounds.size.x / 2, Bounds.size.y / 2));
-    EndText.setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
+    sf::FloatRect Bounds = EndText->getLocalBounds();
+    EndText->setOrigin(sf::Vector2f(Bounds.size.x / 2, Bounds.size.y / 2));
+    EndText->setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
 
     std::cout << "Agent collided with player! Exiting program.\n";
 }
@@ -127,12 +136,12 @@ void GGame::OnGameWon()
 {
     GameState = EGameState::Won;
 
-    EndText.setFillColor(sf::Color::Green);
-    EndText.setString("YOU WON!");
+    EndText->setFillColor(sf::Color::Green);
+    EndText->setString("YOU WON!");
 
-    sf::FloatRect Bounds = EndText.getLocalBounds();
-    EndText.setOrigin(sf::Vector2f(Bounds.size.x / 2, Bounds.size.y / 2));
-    EndText.setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
+    sf::FloatRect Bounds = EndText->getLocalBounds();
+    EndText->setOrigin(sf::Vector2f(Bounds.size.x / 2, Bounds.size.y / 2));
+    EndText->setPosition(sf::Vector2f(WindowSize.x / 2, WindowSize.y / 2));
 
     std::cout << "Player exited the mine! Exiting program.\n";
 }

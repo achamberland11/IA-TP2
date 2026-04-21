@@ -49,7 +49,7 @@ public:
     void SetupVisionComponent(float range = 150.f, float angle = 90.f);
 
     GAgentController *GetAgentController() const { return AgentController; }
-    // GFSMComponent *GetFSM() const { return FSM; }
+    GFSMComponent *GetFSM() const { return FSM; }
     GGOBComponent *GetGOB() const { return GOB; }
 
     void SetListener(IGameEventListener *l) { Listener = l; }
@@ -65,6 +65,7 @@ public:
 
     FRoom GetRoom() const { return Room; }
     FRoom* GetBreakRoom() const { return BreakRoom; }
+    GlobalBlackboard* GetBlackboard() const { return AgentController->GetBlackboard(); }
 
 private:
     void LoadTextures();
@@ -73,7 +74,7 @@ private:
 
     sf::Vector2f ComputeSteering(float dt);
 
-    // GFSMComponent *FSM = nullptr;
+    GFSMComponent *FSM = nullptr;
     GGOBComponent *GOB = nullptr;
     GConeVisionComponent *VisionComponent = nullptr;
 
@@ -84,10 +85,7 @@ private:
 
     int Tiredness = 1.0f;
     bool bPlayerVisible = false;
-
-    sf::Font Font;
-    bool bFontLoaded = false;
-
+    
     float SpriteTimer = 0.f;
     float SpriteDuration = 0.5f;
 

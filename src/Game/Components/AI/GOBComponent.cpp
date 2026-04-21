@@ -12,9 +12,20 @@
 #include "IA/GOB/Goal.h"
 #include "IA/GOB/Agent/AgentGoals.h"
 
+GGOBComponent::~GGOBComponent()
+{
+    TerminateActiveGoal();
+    
+    for (Goal *goal : Goals)
+    {
+        delete goal;
+    }
+    Goals.clear();
+}
+
 void GGOBComponent::Start()
 {
-    GAgentCharacter* agent = (GAgentCharacter*)Owner;
+    GAgentCharacter *agent = (GAgentCharacter *) Owner;
 
     Blackboard = GGame::GetInstance()->GetGlobalBlackboard();
 
@@ -36,6 +47,36 @@ void GGOBComponent::Update(float deltaSeconds)
     EvaluateGoals();
 }
 
+void GGOBComponent::Render(sf::RenderWindow &window)
+{
+    GComponent::Render(window);
+
+    if (Owner && GetActiveGoal() && GGame::GetInstance()->IsFontLoaded())
+    {
+        std::string stateName = GetActiveGoal()->GetName();
+        const std::string& textGoal = stateName;
+        sf::Vector2f textPosition = Owner->GetTransformComponent()->GetPosition();
+
+        const sf::Font& font = GGame::GetFont();
+        sf::Text goalText(font);
+        
+        goalText.setString(textGoal);
+        goalText.setCharacterSize(12);
+        goalText.setFillColor(sf::Color::White);
+        goalText.setStyle(sf::Text::Bold);
+        goalText.setOutlineColor(sf::Color::Black);
+        goalText.setOutlineThickness(1.5f);
+        goalText.setOrigin(goalText.getGlobalBounds().getCenter());
+        textPosition.y = textPosition.y + Owner->GetRendererComponent()->GetSprite()->getGlobalBounds().size.y;
+        goalText.setPosition(textPosition);
+        
+        GoalTextPosition = goalText.getPosition();
+        GoalTextHeight = goalText.getGlobalBounds().size.y;
+
+        window.draw(goalText);
+    }
+}
+
 void GGOBComponent::EvaluateGoals()
 {
     if (Goals.empty()) return;
@@ -43,7 +84,7 @@ void GGOBComponent::EvaluateGoals()
     Goal *bestGoal = Goals[0];
     float bestScore = -std::numeric_limits<float>::infinity();
 
-    for (Goal *goal : Goals)
+    for (Goal *goal: Goals)
     {
         if (!goal)
             continue;
